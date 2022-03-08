@@ -84,8 +84,8 @@ class ACCProperty {
 
   //UndoAbleList<ContentsModel> get contents => _contents;
 
-  UndoAble<int> _order = UndoAble<int>(0);
-  UndoAble<int> get order => _order;
+  //UndoAble<int> _order = UndoAble<int>(0);
+  //UndoAble<int> get order => _order;
 
   UndoAble<Color> _bgColor = UndoAble<Color>(MyColors.accBg);
   UndoAble<Color> get bgColor => _bgColor;

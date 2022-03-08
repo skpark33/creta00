@@ -22,11 +22,11 @@ class PageModel extends AbsModel {
 
   // final UndoMonitorAble<int> _pageNo = UndoMonitorAble<int>(0);
   // UndoMonitorAble<int> get pageNo => _pageNo;
-  final UndoAble<int> _pageNo = UndoAble<int>(0);
-  UndoAble<int> get pageNo => _pageNo;
-  void setPageNo(int val) {
-    _pageNo.set(val);
-  }
+  // final UndoAble<int> _pageNo = UndoAble<int>(0);
+  // UndoAble<int> get pageNo => _pageNo;
+  // void setPageNo(int val) {
+  //   _pageNo.set(val);
+  // }
 
   Offset origin = Offset.zero;
   Size realSize = Size(400, 400);
@@ -58,7 +58,7 @@ class PageModel extends AbsModel {
 
   void printIt() {
     logHolder.log(
-        'id=[$mid],width=[$width.value],height=[$height.value],pageNo=[$pageNo.value],description=[$description.value],shortCut=[$shortCut.value], bgColor=[$bgColor.value]');
+        'id=[$mid],width=[$width.value],height=[$height.value],pageNo=[$order.value],description=[$description.value],shortCut=[$shortCut.value], bgColor=[$bgColor.value]');
   }
 
   Offset getPosition() {

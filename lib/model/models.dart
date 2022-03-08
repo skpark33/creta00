@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 //import '../common/util/logger.dart';
 import '../../constants/constants.dart';
+import '../common/undo/undo.dart';
 
 enum ModelType { page, acc, contents }
 
@@ -15,7 +16,11 @@ abstract class AbsModel {
 
   final GlobalKey key = GlobalKey();
   final ModelType type;
-  //int index;
+
+  final UndoAble<int> _order = UndoAble<int>(0);
+  UndoAble<int> get order => _order;
+  final UndoAble<String> _hashTag = UndoAble<String>('');
+  UndoAble<String> get hashTag => _hashTag;
 
   AbsModel({required this.type}) {
     if (type == ModelType.page) {

@@ -19,7 +19,7 @@ class ACCMenu {
   bool _visible = false;
   bool get visible => _visible;
   OverlayEntry? entry;
-  int accIndex = -1;
+  String accMid = '';
 
   double buttonWidth = 30.0;
   double buttonHeight = 30.0;
@@ -30,7 +30,7 @@ class ACCMenu {
 
   void unshow(BuildContext context) {
     if (_visible == true) {
-      accIndex = -1;
+      accMid = '';
       _visible = false;
       if (entry != null) {
         entry!.remove();
@@ -51,7 +51,7 @@ class ACCMenu {
     _visible = true;
     entry = OverlayEntry(builder: (context) {
       if (acc != null) {
-        accIndex = acc.index;
+        accMid = acc.mid;
       }
       overlayWidget = showOverlay(context, acc);
       return overlayWidget!;

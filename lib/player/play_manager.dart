@@ -440,7 +440,7 @@ class PlayManager {
         } // skpark carousel problem
         accManagerHolder!.resizeMenu(_playList.value[_currentIndex].model!.type);
         if (pageManagerHolder!.isContents() &&
-            accManagerHolder!.isCurrentIndex(baseWidget.acc!.index)) {
+            accManagerHolder!.isCurrentIndex(baseWidget.acc!.mid)) {
           selectedModelHolder!.setModel(_playList.value[_currentIndex].model!);
         }
       }
@@ -476,7 +476,7 @@ class PlayManager {
         } // skpark carousel problem
         accManagerHolder!.resizeMenu(_playList.value[_currentIndex].model!.type);
         if (pageManagerHolder!.isContents() &&
-            accManagerHolder!.isCurrentIndex(baseWidget.acc!.index)) {
+            accManagerHolder!.isCurrentIndex(baseWidget.acc!.mid)) {
           selectedModelHolder!.setModel(_playList.value[_currentIndex].model!);
         }
       }
@@ -557,10 +557,9 @@ class PlayManager {
     List<Node> conNodes = [];
     int idx = 0;
     for (AbsPlayWidget playWidget in _playList.value) {
-      String accNo = baseWidget.acc!.index.toString().padLeft(2, '0');
       String idxStr = idx.toString().padLeft(2, '0');
       conNodes.add(Node(
-          key: '$accPrefix$accNo/$contentsPrefix$idxStr/${playWidget.model!.key}',
+          key: '${baseWidget.acc!.mid}/$contentsPrefix$idxStr/${playWidget.model!.key}',
           label: playWidget.model!.name,
           //expanded: (currentIndex == idx),
           data: model));

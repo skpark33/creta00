@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_treeview/flutter_treeview.dart';
 
 import 'package:creta00/studio/pages/page_manager.dart';
-import 'package:creta00/constants/constants.dart';
+//import 'package:creta00/constants/constants.dart';
 
 import '../model/contents.dart';
 import '../model/pages.dart';
@@ -24,7 +24,7 @@ import '../acc/acc_menu.dart';
 ACCManager? accManagerHolder;
 
 class ACCManager extends ChangeNotifier {
-  Map<int, ACC> accMap = <int, ACC>{};
+  Map<String, ACC> accMap = <String, ACC>{};
   SortedMap<int, ACC> orderMap = SortedMap<int, ACC>();
   ACCMenu accMenu = ACCMenu();
   bool orderVisible = false;
@@ -32,34 +32,33 @@ class ACCManager extends ChangeNotifier {
 
   int accIndex = -1;
   // ignore: prefer_final_fields
-  int _currentAccIndex = -1;
+  String _currentAccMid = '';
 
-  //static int get currentAccIndex => _currentAccIndex;
-  void setCurrentIndex(int i, {bool setAsAcc = true}) {
-    _currentAccIndex = i;
-    if (setAsAcc && _currentAccIndex >= 0 && pageManagerHolder != null) {
+  //static int get currentAccIndex => _currentAccMid;
+  void setCurrentMid(String mid, {bool setAsAcc = true}) {
+    _currentAccMid = mid;
+    if (setAsAcc && _currentAccMid.isNotEmpty && pageManagerHolder != null) {
       pageManagerHolder!.setAsAcc();
     }
     setState();
   }
 
-  bool isCurrentIndex(int index) {
-    return index >= 0 && index == _currentAccIndex;
+  bool isCurrentIndex(String mid) {
+    return mid == _currentAccMid;
   }
 
   ACC? getCurrentACC() {
-    if (_currentAccIndex < 0) return null;
-    return accMap[_currentAccIndex];
+    if (_currentAccMid.isEmpty) return null;
+    return accMap[_currentAccMid];
   }
 
-  ACC createACC(int keyIdx, BuildContext context, BaseWidget widget, PageModel page) {
-    accIndex = keyIdx;
-    logHolder.log("createACC($accIndex)");
-    ACC acc = ACC(page: page, accChild: widget, index: accIndex);
+  ACC createACC(int order, BuildContext context, BaseWidget widget, PageModel page) {
+    logHolder.log("createACC($order)");
+    ACC acc = ACC(page: page, accChild: widget, idx: order);
     acc.initSizeAndPosition();
     acc.registerOverlay(context);
-    accMap[accIndex] = acc;
-    setCurrentIndex(accIndex);
+    accMap[acc.mid] = acc;
+    setCurrentMid(acc.mid);
     orderMap[acc.order.value] = acc;
 
     widget.setParentAcc(acc);
@@ -67,12 +66,12 @@ class ACCManager extends ChangeNotifier {
   }
 
   void setPrimary() {
-    if (_currentAccIndex < 0) return;
+    if (_currentAccMid.isEmpty) return;
 
-    ACC acc = accMap[_currentAccIndex]!;
+    ACC acc = accMap[_currentAccMid]!;
     bool primary = !acc.primary.value;
     if (primary == true) {
-      for (int key in accMap.keys) {
+      for (String key in accMap.keys) {
         if (accMap[key]!.primary.value) {
           accMap[key]!.primary.set(false);
           accMap[key]!.setState();
@@ -84,8 +83,8 @@ class ACCManager extends ChangeNotifier {
   }
 
   bool isPrimary() {
-    if (_currentAccIndex < 0) return false;
-    ACC acc = accMap[_currentAccIndex]!;
+    if (_currentAccMid.isEmpty) return false;
+    ACC acc = accMap[_currentAccMid]!;
     return acc.primary.value;
   }
 
@@ -94,8 +93,8 @@ class ACCManager extends ChangeNotifier {
   }
 
   Future<void> showMenu(BuildContext context, ACC? acc) async {
-    if (_currentAccIndex < 0) return;
-    acc ??= accMap[_currentAccIndex]!;
+    if (_currentAccMid.isEmpty) return;
+    acc ??= accMap[_currentAccMid]!;
 
     Offset realOffset = acc.getRealOffset();
     double dx = realOffset.dx;
@@ -144,7 +143,7 @@ class ACCManager extends ChangeNotifier {
   }
 
   bool isMenuHostChanged() {
-    return accMenu.accIndex != _currentAccIndex;
+    return accMenu.accMid != _currentAccMid;
   }
 
   void reorderMap() {
@@ -188,8 +187,8 @@ class ACCManager extends ChangeNotifier {
   }
 
   void next(BuildContext context) {
-    if (_currentAccIndex < 0) return;
-    ACC? acc = accMap[_currentAccIndex];
+    if (_currentAccMid.isEmpty) return;
+    ACC? acc = accMap[_currentAccMid];
     if (acc == null) {
       return;
     }
@@ -197,8 +196,8 @@ class ACCManager extends ChangeNotifier {
   }
 
   void pause(BuildContext context) {
-    if (_currentAccIndex < 0) return;
-    ACC? acc = accMap[_currentAccIndex];
+    if (_currentAccMid.isEmpty) return;
+    ACC? acc = accMap[_currentAccMid];
     if (acc == null) {
       return;
     }
@@ -206,8 +205,8 @@ class ACCManager extends ChangeNotifier {
   }
 
   void play(BuildContext context) {
-    if (_currentAccIndex < 0) return;
-    ACC? acc = accMap[_currentAccIndex];
+    if (_currentAccMid.isEmpty) return;
+    ACC? acc = accMap[_currentAccMid];
     if (acc == null) {
       return;
     }
@@ -215,8 +214,8 @@ class ACCManager extends ChangeNotifier {
   }
 
   void prev(BuildContext context) {
-    if (_currentAccIndex < 0) return;
-    ACC? acc = accMap[_currentAccIndex];
+    if (_currentAccMid.isEmpty) return;
+    ACC? acc = accMap[_currentAccMid];
     if (acc == null) {
       return;
     }
@@ -224,8 +223,8 @@ class ACCManager extends ChangeNotifier {
   }
 
   void mute(BuildContext context) {
-    if (_currentAccIndex < 0) return;
-    ACC? acc = accMap[_currentAccIndex];
+    if (_currentAccMid.isEmpty) return;
+    ACC? acc = accMap[_currentAccMid];
     if (acc == null) {
       return;
     }
@@ -233,22 +232,22 @@ class ACCManager extends ChangeNotifier {
   }
 
   void up(BuildContext context) {
-    if (_currentAccIndex < 0) return;
-    if (swapUp(_currentAccIndex)) {
+    if (_currentAccMid.isEmpty) return;
+    if (swapUp(_currentAccMid)) {
       applyOrder(context);
     }
   }
 
   void down(BuildContext context) {
-    if (_currentAccIndex < 0) return;
-    if (swapDown(_currentAccIndex)) {
+    if (_currentAccMid.isEmpty) return;
+    if (swapDown(_currentAccMid)) {
       applyOrder(context);
     }
   }
 
   void remove(BuildContext context) {
-    if (_currentAccIndex < 0) return;
-    ACC? acc = accMap[_currentAccIndex];
+    if (_currentAccMid.isEmpty) return;
+    ACC? acc = accMap[_currentAccMid];
     if (acc == null) {
       return;
     }
@@ -295,13 +294,13 @@ class ACCManager extends ChangeNotifier {
     setState();
   }
 
-  bool swapUp(int index) {
+  bool swapUp(String mid) {
     int len = accMap.length;
     len--;
     if (len <= 0) {
       return false; // 자기 혼자 밖에 없다. 올리고 내리고 할일이 없다.
     }
-    ACC target = accMap[index]!;
+    ACC target = accMap[mid]!;
 
     int oldOrder = target.order.value;
     int newOrder = -1;
@@ -319,7 +318,7 @@ class ACCManager extends ChangeNotifier {
       return false; // 이미 top 이다.
     }
 
-    logHolder.log('swapUp($index) : oldOder=$oldOrder, newOrder=$newOrder');
+    logHolder.log('swapUp($mid) : oldOder=$oldOrder, newOrder=$newOrder');
 
     // acc 중에 newOrder 값을 가지고 있는 놈을 찾아서 oldOrder 와 치환해준다.
     ACC? friend = orderMap[newOrder];
@@ -336,14 +335,14 @@ class ACCManager extends ChangeNotifier {
     return false;
   }
 
-  bool swapDown(int index) {
+  bool swapDown(String mid) {
     int len = accMap.length;
     len--;
     if (len <= 0) {
       return false; // 자기 혼자 밖에 없다. 올리고 내리고 할일이 없다.
     }
 
-    ACC target = accMap[index]!;
+    ACC target = accMap[mid]!;
 
     int oldOrder = target.order.value;
     if (oldOrder == 0) {
@@ -409,10 +408,20 @@ class ACCManager extends ChangeNotifier {
   }
 
   void nextACC(BuildContext context) {
-    _currentAccIndex++;
-    if (_currentAccIndex >= accMap.length) {
-      _currentAccIndex = 0;
+    ACC? acc = accMap[_currentAccMid];
+    if (acc == null) {
+      return;
     }
+
+    int nextOrder = 0;
+    for (int order in orderMap.keys) {
+      if (order > acc.order.value) {
+        nextOrder = order;
+        break;
+      }
+    }
+    _currentAccMid = orderMap[nextOrder]!.mid;
+
     accManagerHolder!.unshowMenu(context);
     setState();
   }
@@ -456,8 +465,8 @@ class ACCManager extends ChangeNotifier {
   }
 
   void toggleFullscreen(BuildContext context) {
-    if (_currentAccIndex < 0) return;
-    ACC? acc = accMap[_currentAccIndex];
+    if (_currentAccMid.isEmpty) return;
+    ACC? acc = accMap[_currentAccMid];
     if (acc == null) {
       return;
     }
@@ -467,8 +476,8 @@ class ACCManager extends ChangeNotifier {
   }
 
   bool isFullscreen() {
-    if (_currentAccIndex < 0) return false;
-    ACC? acc = accMap[_currentAccIndex];
+    if (_currentAccMid.isEmpty) return false;
+    ACC? acc = accMap[_currentAccMid];
     if (acc == null) {
       return false;
     }
@@ -490,13 +499,12 @@ List<ACC> accList = accManagerHolder!.getAccList(model.id);
     List<Node> accNodes = [];
     for (ACC acc in orderMap.values) {
       if (acc.page!.mid == model.mid) {
-        String accNo = acc.index.toString().padLeft(2, '0');
         List<Node> conNodes = acc.accChild.playManager!.toNodes(model);
         accNodes.add(Node(
-            key: '$accPrefix$accNo',
-            label: 'Frame $accNo',
+            key: acc.mid,
+            label: 'Frame ${acc.mid.substring(acc.mid.length - 4)}',
             data: model,
-            expanded: accManagerHolder != null && accManagerHolder!.isCurrentIndex(acc.index),
+            expanded: accManagerHolder != null && accManagerHolder!.isCurrentIndex(acc.mid),
             children: conNodes));
       }
     }

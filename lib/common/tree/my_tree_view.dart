@@ -90,23 +90,17 @@ class _MyTreeViewState extends State<MyTreeView> {
     ContentsModel? model = await acc.accChild.playManager!.getCurrentModel();
 
     if (model == null) {
-      return accPrefix + acc.index.toString().padLeft(2, '0');
+      return acc.mid;
     }
 
     String contentsId = acc.accChild.playManager!.currentIndex.toString().padLeft(2, '0');
-    return accPrefix +
-        acc.index.toString().padLeft(2, '0') +
-        '/' +
-        contentsPrefix +
-        contentsId +
-        '/' +
-        model.key;
+    return acc.mid + '/' + contentsPrefix + contentsId + '/' + model.key;
   }
 
   @override
   void initState() {
     //_selectedNode = widget.pageManager.getSelected()!.id.toString();
-    logHolder.log('myTreeView inited : _selectedNode=$_selectedNode', level: 6);
+    logHolder.log('myTreeView inited : _selectedNode=$_selectedNode');
     super.initState();
   }
 
@@ -187,19 +181,20 @@ class _MyTreeViewState extends State<MyTreeView> {
                   _treeViewController = _treeViewController.copyWith(selectedKey: key);
                   Node? node = _treeViewController.getNode(key);
                   widget.pageManager.setSelectedIndex(context, node!.data.mid);
-                  int accId = -1;
+                  String mid = '';
                   if (key.contains(accPrefix)) {
                     int pos = accPrefix.length;
-                    accId = int.parse(key.substring(pos, pos + 2));
-                    accManagerHolder!.setCurrentIndex(accId);
+                    mid = key.substring(0, pos + 36);
+                    logHolder.log('mid=$mid', level: 6);
+                    accManagerHolder!.setCurrentMid(mid);
                   }
-                  if (accId >= 0 && key.contains(contentsPrefix)) {
+                  if (mid.isNotEmpty && key.contains(contentsPrefix)) {
                     ACC? acc = accManagerHolder!.getCurrentACC();
                     if (acc != null) {
-                      int pos = accPrefix.length + 2 + 1 + contentsPrefix.length;
+                      int pos = mid.length + 1 + contentsPrefix.length;
                       int contentsIdx = int.parse(key.substring(pos, pos + 2));
                       debugPrint('selectContents: $contentsIdx');
-                      acc.selectContents(context, accId, contentsIdx: contentsIdx);
+                      acc.selectContents(context, mid, contentsIdx: contentsIdx);
                     }
                   }
                 });

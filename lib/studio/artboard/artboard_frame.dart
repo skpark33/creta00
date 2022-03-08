@@ -124,7 +124,7 @@ class _ArtBoardScreenState extends State<ArtBoardScreen> {
               child: GestureDetector(
                 onPanDown: (details) {
                   if (pageManagerHolder != null) {
-                    accManagerHolder!.setCurrentIndex(-1);
+                    accManagerHolder!.setCurrentMid('');
                     accManagerHolder!.setState();
                     logHolder.log('artboard onPanDown : ${details.localPosition}', level: 6);
                     accManagerHolder!.unshowMenu(context);

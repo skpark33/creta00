@@ -79,9 +79,9 @@ class PageManager extends ChangeNotifier {
 
   String createPage() {
     PageModel page = PageModel();
-    page.setPageNo(pageIndex);
+    page.order.set(pageIndex);
     pageMap[page.mid] = page;
-    orderMap[page.pageNo.value] = page;
+    orderMap[page.order.value] = page;
     pageIndex++;
     return page.mid;
   }
@@ -95,8 +95,8 @@ class PageManager extends ChangeNotifier {
 
     mychangeStack.startTrans();
     for (PageModel model in pageMap.values) {
-      if (model.pageNo.value > pageMap[mid]!.pageNo.value) {
-        model.pageNo.set(model.pageNo.value - 1);
+      if (model.order.value > pageMap[mid]!.order.value) {
+        model.order.set(model.order.value - 1);
       }
     }
     pageMap[mid]!.setIsRemoved(true);
@@ -105,8 +105,8 @@ class PageManager extends ChangeNotifier {
 
   changeOrder(int newIndex, int oldIndex) {
     mychangeStack.startTrans();
-    orderMap[newIndex]!.setPageNo(oldIndex);
-    orderMap[oldIndex]!.setPageNo(newIndex);
+    orderMap[newIndex]!.order.set(oldIndex);
+    orderMap[oldIndex]!.order.set(newIndex);
     mychangeStack.endTrans();
   }
 
@@ -131,7 +131,7 @@ class PageManager extends ChangeNotifier {
     orderMap.clear();
     for (PageModel model in pageMap.values) {
       if (model.isRemoved.value == false) {
-        orderMap[model.pageNo.value] = model;
+        orderMap[model.order.value] = model;
       }
     }
   }
@@ -151,7 +151,7 @@ class PageManager extends ChangeNotifier {
     //  );
     for (PageModel model in orderMap.values) {
       if (model.isRemoved.value == false) {
-        String pageNo = (model.pageNo.value + 1).toString().padLeft(2, '0');
+        String pageNo = (model.order.value + 1).toString().padLeft(2, '0');
         String desc = model.getDescription();
         List<Node> accNodes = accManagerHolder!.toNodes(model);
         nodes.add(Node(

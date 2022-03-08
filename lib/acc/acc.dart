@@ -17,6 +17,7 @@ import '../widgets/base_widget.dart';
 import '../constants/styles.dart';
 import '../constants/constants.dart';
 import '../studio/artboard/artboard_frame.dart';
+import '../model/models.dart';
 import '../model/pages.dart';
 import '../model/contents.dart';
 
@@ -27,13 +28,13 @@ class RotateCorner {
   double dy = 0;
 }
 
-class ACC with ACCProperty {
-  ACC({required this.page, required this.accChild, required this.index}) {
-    order.set(index);
+class ACC extends AbsModel with ACCProperty {
+  ACC({required this.page, required this.accChild, required int idx}) : super(type: ModelType.acc) {
+    order.set(idx);
   }
 
   final BaseWidget accChild;
-  final int index;
+  //final int index;
   PageModel? page;
   //bool isStart = false;
 
@@ -205,7 +206,7 @@ class ACC with ACCProperty {
     Size ratio = getRealRatio();
     Offset realOffset = getRealOffsetWithGivenRatio(ratio);
     Size realSize = getRealSize();
-    bool isAccSelected = accManagerHolder!.isCurrentIndex(index);
+    bool isAccSelected = accManagerHolder!.isCurrentIndex(mid);
     double mouseMargin = resizeButtonSize / 2;
     Size marginSize = Size(realSize.width + resizeButtonSize, realSize.height + resizeButtonSize);
 
@@ -226,10 +227,10 @@ class ACC with ACCProperty {
               logHolder.log("onLongPressDown", level: 7);
               if (isCorners(details.localPosition, marginSize, resizeButtonSize) ||
                   isRadius(details.localPosition, marginSize, resizeButtonSize / 2, realSize)) {
-                accManagerHolder!.setCurrentIndex(index);
+                accManagerHolder!.setCurrentMid(mid);
                 return;
               }
-              selectContents(context, index);
+              selectContents(context, mid);
             },
             // onPanDown: (details) {
             //   logHolder.log("onPanDown", level: 7);
@@ -428,17 +429,17 @@ class ACC with ACCProperty {
         ));
   }
 
-  void selectContents(BuildContext context, int accId, {int contentsIdx = -1}) {
+  void selectContents(BuildContext context, String accMid, {int contentsIdx = -1}) {
     if (contentsIdx >= 0) {
       accChild.playManager!.getModel(contentsIdx).then((model) {
         if (model != null) {
           logHolder.log('Its contents click!!! ${model.key}', level: 5);
           selectedModelHolder!.setModel(model);
           pageManagerHolder!.setAsContents();
-          accManagerHolder!.setCurrentIndex(accId, setAsAcc: false);
+          accManagerHolder!.setCurrentMid(accMid, setAsAcc: false);
           accChild.playManager!.next(pause: true, until: contentsIdx);
         } else {
-          accManagerHolder!.setCurrentIndex(accId);
+          accManagerHolder!.setCurrentMid(accMid);
         }
         _showACCMenu(context);
       });
@@ -448,9 +449,9 @@ class ACC with ACCProperty {
           logHolder.log('Its contents click!!! ${model.key}', level: 5);
           selectedModelHolder!.setModel(model);
           pageManagerHolder!.setAsContents();
-          accManagerHolder!.setCurrentIndex(accId, setAsAcc: false);
+          accManagerHolder!.setCurrentMid(accMid, setAsAcc: false);
         } else {
-          accManagerHolder!.setCurrentIndex(accId);
+          accManagerHolder!.setCurrentMid(accMid);
         }
         _showACCMenu(context);
       });
