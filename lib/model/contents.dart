@@ -1,6 +1,7 @@
-import 'package:uuid/uuid.dart';
+//import 'package:uuid/uuid.dart';
 import '../common/util/logger.dart';
 import '../common/undo/undo.dart';
+import 'models.dart';
 
 enum ContentsType {
   free,
@@ -20,7 +21,7 @@ enum PlayState {
 }
 
 // ignore: camel_case_types
-class ContentsModel {
+class ContentsModel extends AbsModel {
   final String name; // aaa.jpg
   final int bytes;
   final String url;
@@ -31,8 +32,8 @@ class ContentsModel {
   double videoPlayTime = 5000; // 1000 분의 1초 milliseconds
   bool mute = false;
   double volume = 100;
-  ContentsType type = ContentsType.free;
-  String key = '';
+  ContentsType contentsType = ContentsType.free;
+  //String mid = '';
   double aspectRatio = 1;
 
   // 동영상의 크기에 맞게 frame 사이즈를 변경해야 하는 경우
@@ -59,9 +60,10 @@ class ContentsModel {
     playTime.set(prevPlayTime);
   }
 
-  ContentsModel({required this.name, required this.mime, required this.bytes, required this.url}) {
-    const uuid = Uuid();
-    key = uuid.v1() + '/' + bytes.toString();
+  ContentsModel({required this.name, required this.mime, required this.bytes, required this.url})
+      : super(type: ModelType.contents) {
+    // const uuid = Uuid();
+    // mid = uuid.v1() + '/' + bytes.toString();
     genType();
   }
 
@@ -75,36 +77,36 @@ class ContentsModel {
   void genType() {
     if (mime.startsWith('video')) {
       logHolder.log('video type');
-      type = ContentsType.video;
+      contentsType = ContentsType.video;
     } else if (mime.startsWith('image')) {
       logHolder.log('image type');
-      type = ContentsType.image;
+      contentsType = ContentsType.image;
     } else if (mime.endsWith('sheet')) {
       logHolder.log('sheet type');
-      type = ContentsType.sheet;
+      contentsType = ContentsType.sheet;
     } else if (mime.startsWith('text')) {
       logHolder.log('text type');
-      type = ContentsType.text;
+      contentsType = ContentsType.text;
     } else {
       logHolder.log('ERROR: unknown type');
-      type = ContentsType.free;
+      contentsType = ContentsType.free;
     }
   }
 
   bool isVideo() {
-    return (type == ContentsType.video);
+    return (contentsType == ContentsType.video);
   }
 
   bool isImage() {
-    return (type == ContentsType.image);
+    return (contentsType == ContentsType.image);
   }
 
   bool isText() {
-    return (type == ContentsType.text);
+    return (contentsType == ContentsType.text);
   }
 
   bool isSheet() {
-    return (type == ContentsType.sheet);
+    return (contentsType == ContentsType.sheet);
   }
 
   void printIt() {

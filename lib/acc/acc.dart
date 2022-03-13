@@ -417,7 +417,7 @@ class ACC extends AbsModel with ACCProperty {
                     },
                     child: DropZoneWidget(
                       onDroppedFile: (model) {
-                        logHolder.log('contents added  ${model.key}');
+                        logHolder.log('contents added  ${model.mid}');
                         accChild.playManager!.push(this, model);
                       },
                     ),
@@ -433,7 +433,7 @@ class ACC extends AbsModel with ACCProperty {
     if (contentsIdx >= 0) {
       accChild.playManager!.getModel(contentsIdx).then((model) {
         if (model != null) {
-          logHolder.log('Its contents click!!! ${model.key}', level: 5);
+          logHolder.log('Its contents click!!! ${model.mid}', level: 5);
           selectedModelHolder!.setModel(model);
           pageManagerHolder!.setAsContents();
           accManagerHolder!.setCurrentMid(accMid, setAsAcc: false);
@@ -446,7 +446,7 @@ class ACC extends AbsModel with ACCProperty {
     } else {
       accChild.playManager!.getCurrentModel().then((model) {
         if (model != null) {
-          logHolder.log('Its contents click!!! ${model.key}', level: 5);
+          logHolder.log('Its contents click!!! ${model.mid}', level: 5);
           selectedModelHolder!.setModel(model);
           pageManagerHolder!.setAsContents();
           accManagerHolder!.setCurrentMid(accMid, setAsAcc: false);

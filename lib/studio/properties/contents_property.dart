@@ -106,7 +106,7 @@ class ContentsPropertyState extends State<ContentsProperty> with SingleTickerPro
                       ),
                       smallDivider(height: 8, indent: 0, endIndent: 20),
                       Text(
-                        '${model.type}',
+                        '${model.contentsType}',
                         style: MyTextStyles.subtitle1,
                       ),
                       Text(
@@ -117,7 +117,7 @@ class ContentsPropertyState extends State<ContentsProperty> with SingleTickerPro
                         'width/height.${(model.aspectRatio * 100).round() / 100}',
                         style: MyTextStyles.subtitle2,
                       ),
-                      model.type == ContentsType.image
+                      model.contentsType == ContentsType.image
                           ? Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,

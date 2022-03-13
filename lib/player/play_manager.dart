@@ -19,6 +19,7 @@ import 'package:creta00/model/contents.dart';
 import 'package:creta00/widgets/base_widget.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:creta00/model/pages.dart';
+import 'package:creta00/model/models.dart';
 import 'package:creta00/constants/constants.dart';
 
 class CurrentData {
@@ -48,7 +49,7 @@ class SelectedModel extends ChangeNotifier {
 
   Future<bool> isSelectedModel(ContentsModel m) async {
     return await _lock.synchronized<bool>(() async {
-      return _model!.key == m.key;
+      return _model!.mid == m.mid;
     });
   }
 }
@@ -147,7 +148,7 @@ class PlayManager {
     ContentsType type = ContentsType.free;
     await _lock.synchronized(() async {
       if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-        type = _playList.value[_currentIndex].model!.type;
+        type = _playList.value[_currentIndex].model!.contentsType;
       }
     });
     return type;
@@ -268,7 +269,7 @@ class PlayManager {
       if (model.isVideo()) {
         logHolder.log('push video');
         GlobalObjectKey<VideoPlayerWidgetState> key =
-            GlobalObjectKey<VideoPlayerWidgetState>(model.key);
+            GlobalObjectKey<VideoPlayerWidgetState>(model.mid);
         aWidget = VideoPlayerWidget(
           key: key,
           onAfterEvent: onVideoAfterEvent,
@@ -280,7 +281,7 @@ class PlayManager {
         if (_currentIndex < 0) _currentIndex = 0;
       } else if (model.isImage()) {
         GlobalObjectKey<ImagePlayerWidgetState> key =
-            GlobalObjectKey<ImagePlayerWidgetState>(model.key);
+            GlobalObjectKey<ImagePlayerWidgetState>(model.mid);
         aWidget = ImagePlayerWidget(
           key: key,
           model: model,
@@ -298,7 +299,7 @@ class PlayManager {
         // 애니타입인 경우, 새로운 데이터를 이해시키기 위해
         baseWidget.invalidate();
       }
-      logHolder.log('push(${model.key})=${_playList.value.length}');
+      logHolder.log('push(${model.mid})=${_playList.value.length}');
       selectedModelHolder!.setModel(model);
       accManagerHolder!.setState();
     });
@@ -359,7 +360,7 @@ class PlayManager {
       int len = _playList.value.length;
       for (int i = 0; i < len; i++) {
         ContentsModel ele = _playList.value[i].getModel();
-        if (model.key == ele.key) {
+        if (model.mid == ele.mid) {
           remove(i);
           return;
         }
@@ -438,7 +439,7 @@ class PlayManager {
         } else {
           await _changeAnimePage();
         } // skpark carousel problem
-        accManagerHolder!.resizeMenu(_playList.value[_currentIndex].model!.type);
+        accManagerHolder!.resizeMenu(_playList.value[_currentIndex].model!.contentsType);
         if (pageManagerHolder!.isContents() &&
             accManagerHolder!.isCurrentIndex(baseWidget.acc!.mid)) {
           selectedModelHolder!.setModel(_playList.value[_currentIndex].model!);
@@ -474,7 +475,7 @@ class PlayManager {
         } else {
           await _changeAnimePage();
         } // skpark carousel problem
-        accManagerHolder!.resizeMenu(_playList.value[_currentIndex].model!.type);
+        accManagerHolder!.resizeMenu(_playList.value[_currentIndex].model!.contentsType);
         if (pageManagerHolder!.isContents() &&
             accManagerHolder!.isCurrentIndex(baseWidget.acc!.mid)) {
           selectedModelHolder!.setModel(_playList.value[_currentIndex].model!);
@@ -558,11 +559,12 @@ class PlayManager {
     int idx = 0;
     for (AbsPlayWidget playWidget in _playList.value) {
       String idxStr = idx.toString().padLeft(2, '0');
-      conNodes.add(Node(
-          key: '${baseWidget.acc!.mid}/$contentsPrefix$idxStr/${playWidget.model!.key}',
+      conNodes.add(Node<AbsModel>(
+          key:
+              '${model.mid}/${baseWidget.acc!.mid}/$contentsPrefix$idxStr/${playWidget.model!.mid}',
           label: playWidget.model!.name,
           //expanded: (currentIndex == idx),
-          data: model));
+          data: playWidget.model!));
       idx++;
     }
     return conNodes;

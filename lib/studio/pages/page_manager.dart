@@ -6,6 +6,7 @@ import 'package:sortedmap/sortedmap.dart';
 import 'package:creta00/acc/acc_manager.dart';
 //import 'package:creta00/constants/strings.dart';
 import '../../model/pages.dart';
+import '../../model/models.dart';
 import '../../common/undo/undo.dart';
 
 enum PropertyType {
@@ -110,7 +111,8 @@ class PageManager extends ChangeNotifier {
     mychangeStack.endTrans();
   }
 
-  bool isSelected(String mid) {
+  bool isPageSelected(String mid) {
+    logHolder.log('isPageSelected($mid)', level: 6);
     return _selectedMid == mid;
   }
 
@@ -123,8 +125,9 @@ class PageManager extends ChangeNotifier {
 
   void setSelectedIndex(BuildContext context, String val) {
     _selectedMid = val;
+    logHolder.log('pageId=$val', level: 6);
     accManagerHolder!.showPages(context, val);
-    setState();
+    pageManagerHolder!.setAsPage(); //setAsPage contain setState()
   }
 
   void reorderMap() {
@@ -154,11 +157,11 @@ class PageManager extends ChangeNotifier {
         String pageNo = (model.order.value + 1).toString().padLeft(2, '0');
         String desc = model.getDescription();
         List<Node> accNodes = accManagerHolder!.toNodes(model);
-        nodes.add(Node(
+        nodes.add(Node<AbsModel>(
             key: model.mid,
             label: 'Page $pageNo. $desc',
             data: model,
-            expanded: (selectedModel != null && model.mid == selectedModel.mid),
+            //expanded: (selectedModel != null && model.mid == selectedModel.mid),
             children: accNodes));
       }
     }

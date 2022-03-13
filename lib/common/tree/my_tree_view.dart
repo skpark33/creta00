@@ -78,23 +78,26 @@ class _MyTreeViewState extends State<MyTreeView> {
 
   //final ScrollController _scrollController = ScrollController(initialScrollOffset: 0.0);
   Future<String> _getSelectedNode() async {
+    //if (_selectedNode.isNotEmpty) return _selectedNode;
     PageModel? pageModel = widget.pageManager.getSelected();
     if (pageModel == null) {
       return '';
     }
     ACC? acc = accManagerHolder!.getCurrentACC();
-    if (acc == null) {
-      return pageModel.mid.toString();
+    if (acc == null || pageManagerHolder!.isPage()) {
+      return pageModel.mid;
+    }
+    if (acc.page!.mid != pageModel.mid) {
+      // 현재 선택된 acc 는 다른 페이지에 있다.
+      return pageModel.mid;
     }
 
-    ContentsModel? model = await acc.accChild.playManager!.getCurrentModel();
-
-    if (model == null) {
-      return acc.mid;
+    String accKey = pageModel.mid + '/' + acc.mid;
+    ContentsModel? conModel = await acc.accChild.playManager!.getCurrentModel();
+    if (conModel == null || pageManagerHolder!.isAcc()) {
+      return accKey;
     }
-
-    String contentsId = acc.accChild.playManager!.currentIndex.toString().padLeft(2, '0');
-    return acc.mid + '/' + contentsPrefix + contentsId + '/' + model.key;
+    return pageModel.mid + '/' + acc.mid + '/' + conModel.mid;
   }
 
   @override
@@ -146,6 +149,7 @@ class _MyTreeViewState extends State<MyTreeView> {
             return errMsgWidget(snapshot);
           }
           _selectedNode = snapshot.data!;
+          logHolder.log('_getSelectedNode=$_selectedNode', level: 6);
           _treeViewController = TreeViewController(
             children: widget.nodes,
             selectedKey: _selectedNode,
@@ -176,15 +180,24 @@ class _MyTreeViewState extends State<MyTreeView> {
               onExpansionChanged: (key, expanded) => _expandNode(key, expanded),
               onNodeTap: (key) {
                 debugPrint('Selected: $key');
+                if (_selectedNode == key) {
+                  return;
+                }
                 setState(() {
                   _selectedNode = key;
                   _treeViewController = _treeViewController.copyWith(selectedKey: key);
                   Node? node = _treeViewController.getNode(key);
-                  widget.pageManager.setSelectedIndex(context, node!.data.mid);
+                  if (node == null) {
+                    logHolder.log('Invalid key', level: 7);
+                    return;
+                  }
+                  logHolder.log('key=$key', level: 6);
+                  widget.pageManager.setSelectedIndex(context, key.substring(0, 5 + 36));
+
                   String mid = '';
                   if (key.contains(accPrefix)) {
-                    int pos = accPrefix.length;
-                    mid = key.substring(0, pos + 36);
+                    //int pos = accPrefix.length;
+                    mid = key.substring(5 + 36 + 1, 5 + 36 + 1 + 4 + 36);
                     logHolder.log('mid=$mid', level: 6);
                     accManagerHolder!.setCurrentMid(mid);
                   }

@@ -92,13 +92,13 @@ class PageSwipListState extends State<PageSwipList> {
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
             child: Card(
-              color: pageManager.isSelected(model.mid)
+              color: pageManager.isPageSelected(model.mid)
                   ? MyColors.pageSmallBG
                   : MyColors.secondaryCompl,
               shape: RoundedRectangleBorder(
                 side: BorderSide(
                     width: 1.0,
-                    color: pageManager.isSelected(model.mid)
+                    color: pageManager.isPageSelected(model.mid)
                         ? MyColors.pageSmallBorder
                         : MyColors.pageSmallBorderCompl),
                 borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -191,7 +191,7 @@ class PageSwipListState extends State<PageSwipList> {
                             child: Container(
                               height: pageHeight,
                               width: pageWidth,
-                              color: pageManager.isSelected(model.mid)
+                              color: pageManager.isPageSelected(model.mid)
                                   ? MyColors.pageSmallBG2
                                   : MyColors.primaryCompl,
                             ),

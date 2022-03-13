@@ -12,6 +12,7 @@ import 'package:creta00/studio/pages/page_manager.dart';
 
 import '../model/contents.dart';
 import '../model/pages.dart';
+import '../model/models.dart';
 
 import '../acc/acc.dart';
 import '../common/undo/undo.dart';
@@ -500,11 +501,11 @@ List<ACC> accList = accManagerHolder!.getAccList(model.id);
     for (ACC acc in orderMap.values) {
       if (acc.page!.mid == model.mid) {
         List<Node> conNodes = acc.accChild.playManager!.toNodes(model);
-        accNodes.add(Node(
-            key: acc.mid,
+        accNodes.add(Node<AbsModel>(
+            key: model.mid + '/' + acc.mid,
             label: 'Frame ${acc.mid.substring(acc.mid.length - 4)}',
-            data: model,
-            expanded: accManagerHolder != null && accManagerHolder!.isCurrentIndex(acc.mid),
+            data: acc,
+            //expanded: accManagerHolder != null && accManagerHolder!.isCurrentIndex(acc.mid),
             children: conNodes));
       }
     }
