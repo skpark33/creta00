@@ -32,6 +32,9 @@ abstract class AbsModel {
     }
     _mid += const Uuid().v4();
   }
+
+  // 모델과 상관없고,  Tree 가 초기에 펼쳐져있을지를 결정하기 위해 있을 뿐이다.
+  bool expanded = true;
 }
 
 // class ModelChanged extends ChangeNotifier {

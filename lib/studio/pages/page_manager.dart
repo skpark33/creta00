@@ -161,7 +161,7 @@ class PageManager extends ChangeNotifier {
             key: model.mid,
             label: 'Page $pageNo. $desc',
             data: model,
-            //expanded: (selectedModel != null && model.mid == selectedModel.mid),
+            expanded: (selectedModel != null && model.mid == selectedModel.mid) || model.expanded,
             children: accNodes));
       }
     }

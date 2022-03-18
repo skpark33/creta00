@@ -505,7 +505,8 @@ List<ACC> accList = accManagerHolder!.getAccList(model.id);
             key: model.mid + '/' + acc.mid,
             label: 'Frame ${acc.mid.substring(acc.mid.length - 4)}',
             data: acc,
-            //expanded: accManagerHolder != null && accManagerHolder!.isCurrentIndex(acc.mid),
+            expanded: acc.expanded ||
+                (accManagerHolder != null && accManagerHolder!.isCurrentIndex(acc.mid)),
             children: conNodes));
       }
     }

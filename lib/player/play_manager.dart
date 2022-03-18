@@ -20,7 +20,7 @@ import 'package:creta00/widgets/base_widget.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:creta00/model/pages.dart';
 import 'package:creta00/model/models.dart';
-import 'package:creta00/constants/constants.dart';
+//import 'package:creta00/constants/constants.dart';
 
 class CurrentData {
   ContentsType type = ContentsType.free;
@@ -302,6 +302,7 @@ class PlayManager {
       logHolder.log('push(${model.mid})=${_playList.value.length}');
       selectedModelHolder!.setModel(model);
       accManagerHolder!.setState();
+      pageManagerHolder!.setState();
     });
   }
 
@@ -558,12 +559,11 @@ class PlayManager {
     List<Node> conNodes = [];
     int idx = 0;
     for (AbsPlayWidget playWidget in _playList.value) {
-      String idxStr = idx.toString().padLeft(2, '0');
+      playWidget.model!.order.set(idx);
       conNodes.add(Node<AbsModel>(
-          key:
-              '${model.mid}/${baseWidget.acc!.mid}/$contentsPrefix$idxStr/${playWidget.model!.mid}',
+          key: '${model.mid}/${baseWidget.acc!.mid}/${playWidget.model!.mid}',
           label: playWidget.model!.name,
-          //expanded: (currentIndex == idx),
+          expanded: playWidget.model!.expanded || (currentIndex == idx),
           data: playWidget.model!));
       idx++;
     }

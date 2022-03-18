@@ -5,6 +5,7 @@ import 'package:flutter_treeview/flutter_treeview.dart';
 //import 'package:provider/provider.dart';
 import 'package:creta00/model/pages.dart';
 import 'package:creta00/model/contents.dart';
+import 'package:creta00/model/models.dart';
 import 'package:creta00/common/util/my_utils.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:creta00/acc/acc_manager.dart';
@@ -149,7 +150,7 @@ class _MyTreeViewState extends State<MyTreeView> {
             return errMsgWidget(snapshot);
           }
           _selectedNode = snapshot.data!;
-          logHolder.log('_getSelectedNode=$_selectedNode', level: 6);
+          //logHolder.log('_getSelectedNode=$_selectedNode', level: 6);
           _treeViewController = TreeViewController(
             children: widget.nodes,
             selectedKey: _selectedNode,
@@ -204,10 +205,9 @@ class _MyTreeViewState extends State<MyTreeView> {
                   if (mid.isNotEmpty && key.contains(contentsPrefix)) {
                     ACC? acc = accManagerHolder!.getCurrentACC();
                     if (acc != null) {
-                      int pos = mid.length + 1 + contentsPrefix.length;
-                      int contentsIdx = int.parse(key.substring(pos, pos + 2));
-                      debugPrint('selectContents: $contentsIdx');
-                      acc.selectContents(context, mid, contentsIdx: contentsIdx);
+                      int order = node.data.order.value;
+                      debugPrint('selectContents: $order');
+                      acc.selectContents(context, mid, contentsIdx: order);
                     }
                   }
                 });
@@ -405,6 +405,12 @@ class _MyTreeViewState extends State<MyTreeView> {
     debugPrint(msg);
     Node? node = _treeViewController.getNode(key);
     if (node != null) {
+      //skpark
+      if (node.data != null) {
+        AbsModel model = node.data;
+        model.expanded = expanded;
+      }
+
       List<Node> updated;
       if (key == 'docs') {
         updated = _treeViewController.updateNode(
