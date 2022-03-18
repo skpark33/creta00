@@ -10,9 +10,13 @@ import 'package:rxdart/rxdart.dart';
 import 'menu_item.dart';
 import '../../common/util/logger.dart';
 import '../../constants/styles.dart';
+import '../../db/creta_db.dart';
+import '../../model/users.dart';
+import 'package:creta00/common/util/my_utils.dart';
 
 class SideBar extends StatefulWidget {
-  const SideBar({Key? key}) : super(key: key);
+  final UserModel user;
+  const SideBar({Key? key, required this.user}) : super(key: key);
 
   @override
   _SideBarState createState() => _SideBarState();
@@ -65,160 +69,184 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
     const double clipWidth = 24;
     const double clipHeight = 90;
 
-    return StreamBuilder<bool>(
-      initialData: false,
-      stream: isSidebarOpenedStream,
-      builder: (context, isSideBarOpenedAsync) {
-        return AnimatedPositioned(
-          //width: 400,
-          duration: _animationDuration,
-          top: 0,
-          bottom: 0,
-          left: isSideBarOpenedAsync.data! ? 0 : -(menuWidth - clipWidth),
-          right: isSideBarOpenedAsync.data! ? screenWidth - menuWidth : screenWidth - clipWidth,
-          //left: isSideBarOpenedAsync.data! ? 0 : -screenWidth,
-          //right: isSideBarOpenedAsync.data! ? 0 : 500,
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  color: MyColors.primaryColor.withOpacity(0.5),
-                  child: Column(
-                    children: <Widget>[
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      CircleAvatar(
-                        backgroundImage: AssetImage(
-                          'assets/pilot.PNG',
+    String userName = 'Unknown';
+    String email = 'Unknown';
+    late List<dynamic> userList;
+
+    return FutureBuilder(
+        future: CretaDB('creta_user').getData(widget.user.id),
+        builder: (context, snapshot) {
+          if (snapshot.hasData == false) {
+            //해당 부분은 data를 아직 받아 오지 못했을때 실행되는 부분을 의미한다.
+            return errMsgWidget2(snapshot);
+          }
+          if (snapshot.hasError) {
+            //error가 발생하게 될 경우 반환하게 되는 부분
+            return errMsgWidget2(snapshot);
+          }
+          userList = snapshot.data as List;
+          if (userList.isNotEmpty) {
+            logHolder.log("${widget.user.id} is not found");
+            userName = userList[0]["name"];
+            email = userList[0]["id"];
+          }
+
+          return StreamBuilder<bool>(
+            initialData: false,
+            stream: isSidebarOpenedStream,
+            builder: (context, isSideBarOpenedAsync) {
+              return AnimatedPositioned(
+                //width: 400,
+                duration: _animationDuration,
+                top: 0,
+                bottom: 0,
+                left: isSideBarOpenedAsync.data! ? 0 : -(menuWidth - clipWidth),
+                right:
+                    isSideBarOpenedAsync.data! ? screenWidth - menuWidth : screenWidth - clipWidth,
+                //left: isSideBarOpenedAsync.data! ? 0 : -screenWidth,
+                //right: isSideBarOpenedAsync.data! ? 0 : 500,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        color: MyColors.primaryColor.withOpacity(0.5),
+                        child: Column(
+                          children: <Widget>[
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            CircleAvatar(
+                              backgroundImage: AssetImage(
+                                'assets/pilot.PNG',
+                              ),
+                              radius: 60,
+                            ),
+                            Text(
+                              userName,
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800),
+                            ),
+                            Text(
+                              email,
+                              style: MyTextStyles.body1,
+                            ),
+                            // ListTile(
+                            //   title: Text(
+                            //     "skpark",
+                            //     style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800),
+                            //   ),
+                            //   subtitle: Text(
+                            //     "skpark33333@gmail.com",
+                            //     style: MyTextStyles.body1,
+                            //   ),
+                            //   leading: CircleAvatar(
+                            //     backgroundImage: AssetImage(
+                            //       'assets/pilot.png',
+                            //     ),
+                            //     radius: 50,
+                            //   ),
+                            // ),
+                            Divider(
+                              height: 32,
+                              thickness: 0.5,
+                              color: Colors.white.withOpacity(0.3),
+                              indent: 32,
+                              endIndent: 32,
+                            ),
+                            MenuItem(
+                              icon: Icons.create_new_folder,
+                              title: "새로만들기",
+                              onTap: () {
+                                onIconPressed();
+                                //BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.homePageClickedEvent);
+                              },
+                            ),
+                            MenuItem(
+                              icon: Icons.folder_open,
+                              title: "열기",
+                              onTap: () {
+                                onIconPressed();
+                                //BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.myAccountClickedEvent);
+                              },
+                            ),
+                            MenuItem(
+                              onTap: () {},
+                              icon: Icons.last_page,
+                              title: "최근 파일 열기",
+                            ),
+                            MenuItem(
+                              onTap: () {},
+                              icon: Icons.paste,
+                              title: "다른 패키지에서 불러오기",
+                            ),
+                            Divider(
+                              height: 32,
+                              thickness: 0.5,
+                              color: Colors.white.withOpacity(0.3),
+                              indent: 32,
+                              endIndent: 32,
+                            ),
+                            MenuItem(
+                              onTap: () {},
+                              icon: Icons.save,
+                              title: "저장",
+                            ),
+                            MenuItem(
+                              onTap: () {},
+                              icon: Icons.save_outlined,
+                              title: "다른이름 저장",
+                            ),
+                            MenuItem(
+                              onTap: () {},
+                              icon: Icons.send,
+                              title: "발행하기",
+                            ),
+                            Divider(
+                              height: 32,
+                              thickness: 0.5,
+                              color: Colors.white.withOpacity(0.3),
+                              indent: 32,
+                              endIndent: 32,
+                            ),
+                            MenuItem(
+                              onTap: () {},
+                              icon: Icons.book,
+                              title: "콘텐츠북 속성 변경",
+                            ),
+                          ],
                         ),
-                        radius: 60,
-                      ),
-                      Text(
-                        "skpark",
-                        style: TextStyle(
-                            color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800),
-                      ),
-                      Text(
-                        "skpark33333@gmail.com",
-                        style: MyTextStyles.body1,
-                      ),
-                      // ListTile(
-                      //   title: Text(
-                      //     "skpark",
-                      //     style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800),
-                      //   ),
-                      //   subtitle: Text(
-                      //     "skpark33333@gmail.com",
-                      //     style: MyTextStyles.body1,
-                      //   ),
-                      //   leading: CircleAvatar(
-                      //     backgroundImage: AssetImage(
-                      //       'assets/pilot.png',
-                      //     ),
-                      //     radius: 50,
-                      //   ),
-                      // ),
-                      Divider(
-                        height: 32,
-                        thickness: 0.5,
-                        color: Colors.white.withOpacity(0.3),
-                        indent: 32,
-                        endIndent: 32,
-                      ),
-                      MenuItem(
-                        icon: Icons.create_new_folder,
-                        title: "새로만들기",
-                        onTap: () {
-                          onIconPressed();
-                          //BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.homePageClickedEvent);
-                        },
-                      ),
-                      MenuItem(
-                        icon: Icons.folder_open,
-                        title: "열기",
-                        onTap: () {
-                          onIconPressed();
-                          //BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.myAccountClickedEvent);
-                        },
-                      ),
-                      MenuItem(
-                        onTap: () {},
-                        icon: Icons.last_page,
-                        title: "최근 파일 열기",
-                      ),
-                      MenuItem(
-                        onTap: () {},
-                        icon: Icons.paste,
-                        title: "다른 패키지에서 불러오기",
-                      ),
-                      Divider(
-                        height: 32,
-                        thickness: 0.5,
-                        color: Colors.white.withOpacity(0.3),
-                        indent: 32,
-                        endIndent: 32,
-                      ),
-                      MenuItem(
-                        onTap: () {},
-                        icon: Icons.save,
-                        title: "저장",
-                      ),
-                      MenuItem(
-                        onTap: () {},
-                        icon: Icons.save_outlined,
-                        title: "다른이름 저장",
-                      ),
-                      MenuItem(
-                        onTap: () {},
-                        icon: Icons.send,
-                        title: "발행하기",
-                      ),
-                      Divider(
-                        height: 32,
-                        thickness: 0.5,
-                        color: Colors.white.withOpacity(0.3),
-                        indent: 32,
-                        endIndent: 32,
-                      ),
-                      MenuItem(
-                        onTap: () {},
-                        icon: Icons.book,
-                        title: "콘텐츠북 속성 변경",
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Align(
-                alignment: const Alignment(0, -0.999),
-                child: GestureDetector(
-                  onTap: () {
-                    onIconPressed();
-                  },
-                  child: ClipPath(
-                    clipper: CustomMenuClipper(),
-                    child: Container(
-                      width: clipWidth,
-                      height: clipHeight,
-                      color: MyColors.primaryColor.withOpacity(0.5),
-                      alignment: Alignment.centerLeft,
-                      child: AnimatedIcon(
-                        progress: _animationController!.view,
-                        icon: AnimatedIcons.menu_close,
-                        color: MyColors.secondaryColor,
-                        size: 15,
                       ),
                     ),
-                  ),
+                    Align(
+                      alignment: const Alignment(0, -0.999),
+                      child: GestureDetector(
+                        onTap: () {
+                          onIconPressed();
+                        },
+                        child: ClipPath(
+                          clipper: CustomMenuClipper(),
+                          child: Container(
+                            width: clipWidth,
+                            height: clipHeight,
+                            color: MyColors.primaryColor.withOpacity(0.5),
+                            alignment: Alignment.centerLeft,
+                            child: AnimatedIcon(
+                              progress: _animationController!.view,
+                              icon: AnimatedIcons.menu_close,
+                              color: MyColors.secondaryColor,
+                              size: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+              );
+            },
+          );
+        });
   }
 }
 

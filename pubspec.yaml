@@ -72,6 +72,9 @@ dev_dependencies:
   flutter_datetime_picker: ^1.5.1
   http: ^0.13.4
   flutter_treeview: ^1.0.7+1
+  firebase_core: ^1.13.1
+  cloud_firestore: ^3.1.10
+  cloud_firestore_web: ^2.6.10
   
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

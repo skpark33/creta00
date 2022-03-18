@@ -396,6 +396,28 @@ Widget errMsgWidget(AsyncSnapshot<Object> snapshot) {
   );
 }
 
+Widget errMsgWidget2(AsyncSnapshot<Object?> snapshot) {
+  logHolder.log('errMsg :  ${snapshot.error}');
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Text(
+      'Error: ${snapshot.error}',
+      style: const TextStyle(fontSize: 8),
+    ),
+  );
+}
+
+Widget errMsgWidget3(String msg) {
+  logHolder.log('errMsg :  $msg}');
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Text(
+      'Error: $msg',
+      style: const TextStyle(fontSize: 8),
+    ),
+  );
+}
+
 Widget emptyImage() {
   // return const Center(
   //   child: Icon(

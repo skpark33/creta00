@@ -108,7 +108,7 @@ class _MainScreenState extends State<StudioMainScreen> {
                       flex: 9,
                       child: Stack(children: [
                         isNarrow ? narrowLayout(isShort) : wideLayout(isShort),
-                        SideBar(),
+                        SideBar(user: widget.user),
                       ]),
                     ),
                     logHolder.showLog ? DebugBar(key: logHolder.veiwerKey) : SizedBox(height: 1),

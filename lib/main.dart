@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_core/firebase_core.dart';
+
 import 'studio/studio_main_screen.dart';
 import 'model/users.dart';
 import 'constants/styles.dart';
+import 'db/creta_db.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized(); //for firebase
+  await Firebase.initializeApp(
+      options: const FirebaseOptions(
+          apiKey: FirebaseConfig.apiKey,
+          appId: FirebaseConfig.appId,
+          messagingSenderId: FirebaseConfig.messagingSenderId,
+          projectId: FirebaseConfig.projectId)); // for firebase
   runApp(const MyApp());
 }
 
@@ -44,7 +54,8 @@ class MyApp extends StatelessWidget {
             .copyWith(primary: MyColors.primaryColor)
             .copyWith(secondary: MyColors.secondaryColor),
       ),
-      home: StudioMainScreen(contentsBoookName: '나의 첫 콘텐츠북', user: UserModel(id: 'skpark')),
+      home: StudioMainScreen(
+          contentsBoookName: '나의 첫 콘텐츠북', user: UserModel(id: '`1skpark@sqisoft.com')),
     );
   }
 }
