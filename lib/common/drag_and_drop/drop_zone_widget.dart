@@ -8,8 +8,10 @@ import '../util/logger.dart';
 
 class DropZoneWidget extends StatefulWidget {
   final ValueChanged<ContentsModel> onDroppedFile;
+  final String accId;
 
-  const DropZoneWidget({Key? key, required this.onDroppedFile}) : super(key: key);
+  const DropZoneWidget({Key? key, required this.onDroppedFile, required this.accId})
+      : super(key: key);
   @override
   _DropZoneWidgetState createState() => _DropZoneWidgetState();
 }
@@ -107,7 +109,7 @@ class _DropZoneWidgetState extends State<DropZoneWidget> {
     logHolder.log('URL: $url');
 
     // update the data model with recent file uploaded
-    final droppedFile = ContentsModel(name: name, mime: mime, bytes: byte, url: url);
+    final droppedFile = ContentsModel(widget.accId, name: name, mime: mime, bytes: byte, url: url);
 
     //Update the UI
     widget.onDroppedFile(droppedFile);

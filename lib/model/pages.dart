@@ -7,19 +7,10 @@ import '../common/undo/undo.dart';
 //import '../constants/styles.dart';
 import 'models.dart';
 
-enum PageType {
-  circled,
-  fixed,
-}
-
 // ignore: camel_case_types
 class PageModel extends AbsModel {
   // final int id; //page number
   // final GlobalKey key = GlobalKey();
-
-  UndoAble<int> width = UndoAble<int>(1920);
-  UndoAble<int> height = UndoAble<int>(1080);
-
   // final UndoMonitorAble<int> _pageNo = UndoMonitorAble<int>(0);
   // UndoMonitorAble<int> get pageNo => _pageNo;
   // final UndoAble<int> _pageNo = UndoAble<int>(0);
@@ -31,19 +22,29 @@ class PageModel extends AbsModel {
   Offset origin = Offset.zero;
   Size realSize = Size(400, 400);
 
+  UndoAble<int> width = UndoAble<int>(1920);
+  UndoAble<int> height = UndoAble<int>(1080);
   UndoAble<String> description = UndoAble<String>('');
   UndoAble<String> shortCut = UndoAble<String>('');
   UndoAble<Color> bgColor = UndoAble<Color>(Colors.white);
   UndoAble<bool> used = UndoAble<bool>(true);
   UndoAble<bool> isCircle = UndoAble<bool>(true);
 
-  final UndoAble<bool> _isRemoved = UndoAble<bool>(false);
-  UndoAble<bool> get isRemoved => _isRemoved;
-  void setIsRemoved(bool val) {
-    _isRemoved.set(val);
-  }
+  PageModel(String bookId) : super(type: ModelType.page, parentMid: bookId);
 
-  PageModel() : super(type: ModelType.page);
+  @override
+  Map<String, dynamic> serialize() {
+    return super.serialize()
+      ..addEntries({
+        "width": width.value,
+        "height": height.value,
+        "description": description.value,
+        "shortCut": shortCut.value,
+        "bgColor": bgColor.value.toString(),
+        "used": used.value,
+        "isCircle": isCircle.value,
+      }.entries);
+  }
 
   double getRatio() {
     return height.value / width.value;

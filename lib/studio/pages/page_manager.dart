@@ -1,4 +1,5 @@
 import 'package:creta00/common/util/logger.dart';
+import 'package:creta00/studio/studio_main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_treeview/flutter_treeview.dart';
 import 'package:sortedmap/sortedmap.dart';
@@ -79,7 +80,7 @@ class PageManager extends ChangeNotifier {
   }
 
   String createPage() {
-    PageModel page = PageModel();
+    PageModel page = PageModel(studioMainHolder!.book.mid);
     page.order.set(pageIndex);
     pageMap[page.mid] = page;
     orderMap[page.order.value] = page;

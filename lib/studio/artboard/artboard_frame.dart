@@ -132,6 +132,7 @@ class _ArtBoardScreenState extends State<ArtBoardScreen> {
                   }
                 },
                 child: DropZoneWidget(
+                  accId: '',
                   onDroppedFile: (model) {
                     logHolder.log('contents added ${model.mid}', level: 6);
                     model.dynamicSize.set(true); // 동영상에 맞게 frame size 를 조절하라는 뜻

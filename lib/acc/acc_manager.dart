@@ -150,7 +150,7 @@ class ACCManager extends ChangeNotifier {
   void reorderMap() {
     orderMap.clear();
     for (ACC acc in accMap.values) {
-      if (acc.removed.value == false) {
+      if (acc.isRemoved.value == false) {
         orderMap[acc.order.value] = acc;
         logHolder.log('oderMap[${acc.order.value}]');
       }
@@ -254,10 +254,10 @@ class ACCManager extends ChangeNotifier {
     }
 
     mychangeStack.startTrans();
-    acc.removed.set(true);
+    acc.isRemoved.set(true);
     int removedOrder = acc.order.value;
     for (ACC ele in accMap.values) {
-      if (ele.removed.value == true) {
+      if (ele.isRemoved.value == true) {
         continue;
       }
 
@@ -447,7 +447,7 @@ class ACCManager extends ChangeNotifier {
 
   void showPages(BuildContext context, String modelId) {
     for (ACC acc in accMap.values) {
-      if (acc.removed.value == true) {
+      if (acc.isRemoved.value == true) {
         continue;
       }
       if (acc.page!.mid == modelId) {

@@ -15,4 +15,5 @@ const double playTimeForever = -1;
 
 const String pagePrefix = 'Page=';
 const String accPrefix = 'ACC=';
-const String contentsPrefix = 'CON=';
+const String contentsPrefix = 'Con=';
+const String bookPrefix = 'Book=';

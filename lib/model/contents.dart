@@ -4,11 +4,12 @@ import '../common/undo/undo.dart';
 import 'models.dart';
 
 enum ContentsType {
-  free,
-  text,
-  image,
   video,
+  image,
+  text,
+  youtube,
   sheet,
+  free,
 }
 
 enum PlayState {
@@ -60,11 +61,48 @@ class ContentsModel extends AbsModel {
     playTime.set(prevPlayTime);
   }
 
-  ContentsModel({required this.name, required this.mime, required this.bytes, required this.url})
-      : super(type: ModelType.contents) {
+  ContentsModel(String accId,
+      {required this.name, required this.mime, required this.bytes, required this.url})
+      : super(type: ModelType.contents, parentMid: accId) {
     // const uuid = Uuid();
     // mid = uuid.v1() + '/' + bytes.toString();
     genType();
+  }
+
+  int contentsTypeToInt() {
+    switch (contentsType) {
+      case ContentsType.video:
+        return 0;
+      case ContentsType.image:
+        return 1;
+      case ContentsType.text:
+        return 2;
+      case ContentsType.sheet:
+        return 3;
+      case ContentsType.youtube:
+        return 4;
+      case ContentsType.free:
+        return 99;
+    }
+  }
+
+  @override
+  Map<String, dynamic> serialize() {
+    return super.serialize()
+      ..addEntries({
+        "name": name,
+        "bytes": bytes,
+        "url": url,
+        "mime": mime,
+        "playTime": playTime.value,
+        "videoPlayTime": videoPlayTime,
+        "mute": mute,
+        "volume": volume,
+        "contentsType": contentsType.toString(),
+        "aspectRatio": aspectRatio,
+        "dynamicSize": dynamicSize.value,
+        "prevPlayTime": prevPlayTime,
+      }.entries);
   }
 
   String get size {

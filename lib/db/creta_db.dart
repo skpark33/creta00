@@ -34,8 +34,27 @@ class CretaDB {
       }
       return resultList;
     } catch (e) {
-      logHolder.log("GET DB ERROR : $e");
+      logHolder.log("GET DB ERROR : $e", level: 7);
       return resultList;
+    }
+  }
+
+  Future<void> setData(
+    String? key,
+    Object data,
+  ) async {
+    try {
+      if (key != null) {
+        await collectionRef.doc(key).set(data, SetOptions(merge: false));
+        logHolder.log('$key saved');
+      } else {
+        await collectionRef.add(data);
+        logHolder.log('$key created');
+      }
+      return;
+    } catch (e) {
+      logHolder.log("SET DB ERROR : $e", level: 7);
+      return;
     }
   }
 }

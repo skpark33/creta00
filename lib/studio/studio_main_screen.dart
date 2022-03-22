@@ -10,6 +10,7 @@ import '../acc/acc_manager.dart';
 import '../common/util/logger.dart';
 import '../common/buttons/basic_button.dart';
 import '../model/users.dart';
+import '../model/book.dart';
 //import '../widgets/base_widget.dart';
 import '../constants/styles.dart';
 import 'sidebar/sidebar.dart';
@@ -22,9 +23,10 @@ import '../constants/constants.dart';
 //import '../common/cursor/cursor_manager.dart';
 //import 'side_menu.dart';
 
+StudioMainScreen? studioMainHolder;
+
 class StudioMainScreen extends StatefulWidget {
-  const StudioMainScreen({Key? key, required this.contentsBoookName, required this.user})
-      : super(key: key);
+  const StudioMainScreen({Key? key, required this.book, required this.user}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -35,7 +37,7 @@ class StudioMainScreen extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
-  final String contentsBoookName;
+  final BookModel book;
   final UserModel user;
 
   @override
@@ -221,7 +223,7 @@ class _MainScreenState extends State<StudioMainScreen> {
     bool isNarrow = MediaQuery.of(context).size.width <= minWindowWidth;
     return AppBar(
       backgroundColor: MyColors.appbar,
-      title: Text(widget.contentsBoookName),
+      title: Text(widget.book.name),
       leadingWidth: isNarrow ? 200 : 400,
       leading: isNarrow ? logoIconButton(onPressed: () {}) : appBarLeading(),
       actions: isNarrow ? [] : appBarAction(),

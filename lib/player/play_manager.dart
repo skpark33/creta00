@@ -569,4 +569,12 @@ class PlayManager {
     }
     return conNodes;
   }
+
+  List<ContentsModel> getModelList() {
+    List<ContentsModel> list = [];
+    for (AbsPlayWidget playWidget in _playList.value) {
+      list.add(playWidget.model!);
+    }
+    return list;
+  }
 }

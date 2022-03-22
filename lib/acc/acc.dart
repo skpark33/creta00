@@ -29,8 +29,14 @@ class RotateCorner {
 }
 
 class ACC extends AbsModel with ACCProperty {
-  ACC({required this.page, required this.accChild, required int idx}) : super(type: ModelType.acc) {
+  ACC({required this.page, required this.accChild, required int idx})
+      : super(type: ModelType.acc, parentMid: page!.mid) {
     order.set(idx);
+  }
+
+  @override
+  Map<String, dynamic> serialize() {
+    return super.serialize()..addEntries(serializeProperty().entries);
   }
 
   final BaseWidget accChild;
@@ -211,7 +217,7 @@ class ACC extends AbsModel with ACCProperty {
     Size marginSize = Size(realSize.width + resizeButtonSize, realSize.height + resizeButtonSize);
 
     return Visibility(
-        visible: (visible && !removed.value),
+        visible: (visible && !isRemoved.value),
         child: Positioned(
           // left: realOffset.dx,
           // top: realOffset.dy,
@@ -416,6 +422,7 @@ class ACC extends AbsModel with ACCProperty {
                       }
                     },
                     child: DropZoneWidget(
+                      accId: mid,
                       onDroppedFile: (model) {
                         logHolder.log('contents added  ${model.mid}');
                         accChild.playManager!.push(this, model);

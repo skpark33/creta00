@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:creta00/db/db_actions.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
@@ -28,6 +29,8 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
   Stream<bool>? isSidebarOpenedStream;
   StreamSink<bool>? isSidebarOpenedSink;
   final _animationDuration = const Duration(milliseconds: 500);
+
+  //sbool _isEditMode = false;
 
   @override
   void initState() {
@@ -110,110 +113,49 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
                     Expanded(
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        color: MyColors.primaryColor.withOpacity(0.5),
+                        color: MyColors.primaryColor.withOpacity(0.8),
                         child: Column(
                           children: <Widget>[
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            CircleAvatar(
-                              backgroundImage: AssetImage(
-                                'assets/pilot.PNG',
+                            GestureDetector(
+                              onLongPressDown: (details) {
+                                logHolder.log("onLongPressDown", level: 7);
+                                setState(() {});
+                                //_isEditMode = true;
+                              },
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  CircleAvatar(
+                                    backgroundImage: AssetImage(
+                                      'assets/pilot.PNG',
+                                    ),
+                                    radius: 60,
+                                  ),
+                                  Text(
+                                    userName,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w800),
+                                  ),
+                                  Text(
+                                    email,
+                                    style: MyTextStyles.body1,
+                                  ),
+                                  Divider(
+                                    height: 32,
+                                    thickness: 0.5,
+                                    color: Colors.white.withOpacity(0.3),
+                                    indent: 32,
+                                    endIndent: 32,
+                                  ),
+                                ],
                               ),
-                              radius: 60,
                             ),
-                            Text(
-                              userName,
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800),
-                            ),
-                            Text(
-                              email,
-                              style: MyTextStyles.body1,
-                            ),
-                            // ListTile(
-                            //   title: Text(
-                            //     "skpark",
-                            //     style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800),
-                            //   ),
-                            //   subtitle: Text(
-                            //     "skpark33333@gmail.com",
-                            //     style: MyTextStyles.body1,
-                            //   ),
-                            //   leading: CircleAvatar(
-                            //     backgroundImage: AssetImage(
-                            //       'assets/pilot.png',
-                            //     ),
-                            //     radius: 50,
-                            //   ),
-                            // ),
-                            Divider(
-                              height: 32,
-                              thickness: 0.5,
-                              color: Colors.white.withOpacity(0.3),
-                              indent: 32,
-                              endIndent: 32,
-                            ),
-                            MenuItem(
-                              icon: Icons.create_new_folder,
-                              title: "새로만들기",
-                              onTap: () {
-                                onIconPressed();
-                                //BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.homePageClickedEvent);
-                              },
-                            ),
-                            MenuItem(
-                              icon: Icons.folder_open,
-                              title: "열기",
-                              onTap: () {
-                                onIconPressed();
-                                //BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.myAccountClickedEvent);
-                              },
-                            ),
-                            MenuItem(
-                              onTap: () {},
-                              icon: Icons.last_page,
-                              title: "최근 파일 열기",
-                            ),
-                            MenuItem(
-                              onTap: () {},
-                              icon: Icons.paste,
-                              title: "다른 패키지에서 불러오기",
-                            ),
-                            Divider(
-                              height: 32,
-                              thickness: 0.5,
-                              color: Colors.white.withOpacity(0.3),
-                              indent: 32,
-                              endIndent: 32,
-                            ),
-                            MenuItem(
-                              onTap: () {},
-                              icon: Icons.save,
-                              title: "저장",
-                            ),
-                            MenuItem(
-                              onTap: () {},
-                              icon: Icons.save_outlined,
-                              title: "다른이름 저장",
-                            ),
-                            MenuItem(
-                              onTap: () {},
-                              icon: Icons.send,
-                              title: "발행하기",
-                            ),
-                            Divider(
-                              height: 32,
-                              thickness: 0.5,
-                              color: Colors.white.withOpacity(0.3),
-                              indent: 32,
-                              endIndent: 32,
-                            ),
-                            MenuItem(
-                              onTap: () {},
-                              icon: Icons.book,
-                              title: "콘텐츠북 속성 변경",
-                            ),
+                            ...menuList(),
+                            //...(_isEditMode ? userInfoEditList() : menuList()),
                           ],
                         ),
                       ),
@@ -247,6 +189,82 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
             },
           );
         });
+  }
+
+  List<Widget> userInfoEditList() {
+    return [
+      Container(
+        height: 400,
+        color: Colors.amber,
+      )
+    ];
+  }
+
+  List<Widget> menuList() {
+    return [
+      MenuItem(
+        icon: Icons.create_new_folder,
+        title: "새로만들기",
+        onTap: () {
+          onIconPressed();
+          //BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.homePageClickedEvent);
+        },
+      ),
+      MenuItem(
+        icon: Icons.folder_open,
+        title: "열기",
+        onTap: () {
+          onIconPressed();
+          //BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.myAccountClickedEvent);
+        },
+      ),
+      MenuItem(
+        onTap: () {},
+        icon: Icons.last_page,
+        title: "최근 파일 열기",
+      ),
+      MenuItem(
+        onTap: () {},
+        icon: Icons.paste,
+        title: "다른 패키지에서 불러오기",
+      ),
+      Divider(
+        height: 32,
+        thickness: 0.5,
+        color: Colors.white.withOpacity(0.3),
+        indent: 32,
+        endIndent: 32,
+      ),
+      MenuItem(
+        onTap: () {
+          DbActions.saveAll();
+        },
+        icon: Icons.save,
+        title: "저장",
+      ),
+      MenuItem(
+        onTap: () {},
+        icon: Icons.save_outlined,
+        title: "다른이름 저장",
+      ),
+      MenuItem(
+        onTap: () {},
+        icon: Icons.send,
+        title: "발행하기",
+      ),
+      Divider(
+        height: 32,
+        thickness: 0.5,
+        color: Colors.white.withOpacity(0.3),
+        indent: 32,
+        endIndent: 32,
+      ),
+      MenuItem(
+        onTap: () {},
+        icon: Icons.book,
+        title: "콘텐츠북 속성 변경",
+      ),
+    ];
   }
 }
 

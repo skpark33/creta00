@@ -47,7 +47,7 @@ class ACCProperty {
   UndoAble<double> _radiusTopRight = UndoAble<double>(0);
   UndoAble<double> _radiusBottomLeft = UndoAble<double>(0);
   UndoAble<double> _radiusBottomRight = UndoAble<double>(0);
-  UndoAble<bool> _removed = UndoAble<bool>(false);
+
   UndoAble<bool> _primary = UndoAble<bool>(false);
   UndoAble<bool> _fullscreen = UndoAble<bool>(false);
   UndoAble<Offset> _containerOffset = UndoAble<Offset>(const Offset(100, 100));
@@ -56,21 +56,55 @@ class ACCProperty {
   UndoAble<bool> _contentRotate = UndoAble<bool>(false);
   UndoAble<double> _opacity = UndoAble<double>(1);
   UndoAble<bool> _sourceRatio = UndoAble<bool>(false);
-  UndoAble<bool> _fixRatio = UndoAble<bool>(false);
+  UndoAble<bool> _isFixedRatio = UndoAble<bool>(false);
   UndoAble<bool> _glass = UndoAble<bool>(false);
+  UndoAble<Color> _bgColor = UndoAble<Color>(MyColors.accBg);
+  UndoAble<Color> _borderColor = UndoAble<Color>(Colors.transparent);
+  UndoAble<double> _borderWidth = UndoAble<double>(0);
+  UndoAble<LightSource> _lightSource = UndoAble<LightSource>(LightSource.topLeft);
+  UndoAble<double> _depth = UndoAble<double>(0);
+  UndoAble<double> _intensity = UndoAble<double>(0.8);
+  UndoAble<BoxType> _boxType = UndoAble<BoxType>(BoxType.rountRect);
 
-  //UndoAbleList<ContentsModel> _contents = UndoAbleList<ContentsModel>([]);
+  Map<String, dynamic> serializeProperty() {
+    return {
+      "animeType": animeType.value.toString(),
+      "radiusAll": radiusAll.value,
+      "radiusTopLeft": radiusTopLeft.value,
+      "radiusTopRight": radiusTopRight.value,
+      "radiusBottomLeft": radiusBottomLeft.value,
+      "radiusBottomRight": radiusBottomRight.value,
+      "primary": primary.value,
+      "fullscreen": fullscreen.value,
+      "containerOffset": containerOffset.value.toString(),
+      "containerSize": containerSize.value.toString(),
+      "rotate": rotate.value,
+      "contentRotate": contentRotate.value,
+      "opacity": opacity.value,
+      "sourceRatio": sourceRatio.value,
+      "isFixedRatio": isFixedRatio.value,
+      "glass": glass.value,
+      "bgColor": bgColor.value.toString(),
+      "borderColor": borderColor.value.toString(),
+      "borderWidth": borderWidth.value,
+      "lightSource": lightSource.value.toString(),
+      "depth": depth.value,
+      "intensity": intensity.value,
+      "boxType": boxType.value.toString(),
+    };
+  }
 
   bool get visible => _visible;
   bool get resizable => _resizable;
   bool get dirty => _dirty;
+
   UndoAble<AnimeType> get animeType => _animeType;
   UndoAble<double> get radiusAll => _radiusAll;
   UndoAble<double> get radiusTopLeft => _radiusTopLeft;
   UndoAble<double> get radiusTopRight => _radiusTopRight;
   UndoAble<double> get radiusBottomLeft => _radiusBottomLeft;
   UndoAble<double> get radiusBottomRight => _radiusBottomRight;
-  UndoAble<bool> get removed => _removed;
+
   UndoAble<bool> get primary => _primary;
   UndoAble<bool> get fullscreen => _fullscreen;
   UndoAble<Offset> get containerOffset => _containerOffset;
@@ -80,27 +114,13 @@ class ACCProperty {
   UndoAble<double> get opacity => _opacity;
   UndoAble<bool> get glass => _glass;
   UndoAble<bool> get sourceRatio => _sourceRatio;
-  UndoAble<bool> get isFixedRatio => _fixRatio;
-
-  //UndoAbleList<ContentsModel> get contents => _contents;
-
-  //UndoAble<int> _order = UndoAble<int>(0);
-  //UndoAble<int> get order => _order;
-
-  UndoAble<Color> _bgColor = UndoAble<Color>(MyColors.accBg);
+  UndoAble<bool> get isFixedRatio => _isFixedRatio;
   UndoAble<Color> get bgColor => _bgColor;
-
-  UndoAble<Color> _borderColor = UndoAble<Color>(Colors.transparent);
   UndoAble<Color> get borderColor => _borderColor;
-  UndoAble<double> _borderWidth = UndoAble<double>(0);
   UndoAble<double> get borderWidth => _borderWidth;
-  UndoAble<LightSource> _lightSource = UndoAble<LightSource>(LightSource.topLeft);
   UndoAble<LightSource> get lightSource => _lightSource;
-  UndoAble<double> _depth = UndoAble<double>(0);
   UndoAble<double> get depth => _depth;
-  UndoAble<double> _intensity = UndoAble<double>(0.8);
   UndoAble<double> get intensity => _intensity;
-  UndoAble<BoxType> _boxType = UndoAble<BoxType>(BoxType.rountRect);
   UndoAble<BoxType> get boxType => _boxType;
 
   void setDirty(bool p) {
