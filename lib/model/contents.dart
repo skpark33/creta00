@@ -107,7 +107,7 @@ class ContentsModel extends AbsModel {
         "aspectRatio": aspectRatio,
         "dynamicSize": dynamicSize.value,
         "prevPlayTime": prevPlayTime,
-        "lastModifiedTime": (file != null) ? file!.lastModified : 0,
+        "lastModifiedTime": (file != null) ? file!.lastModifiedDate.toString() : 0,
         "remoteUrl": (remoteUrl != null) ? remoteUrl : '',
       }.entries);
   }

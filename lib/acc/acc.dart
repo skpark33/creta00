@@ -20,6 +20,7 @@ import '../studio/artboard/artboard_frame.dart';
 import '../model/models.dart';
 import '../model/pages.dart';
 import '../model/contents.dart';
+import '../db/db_actions.dart';
 
 //import 'package:creta00/studio/pages/page_manager.dart';
 class RotateCorner {
@@ -259,6 +260,7 @@ class ACC extends AbsModel with ACCProperty {
             // });
             //},
             onPanStart: (details) {
+              SaveNotifier.blockAutoSave(); // 자동 Save 를 막는다.
               actionStart = true;
               logHolder.log('onPanStart:${details.localPosition}', level: 5);
               //if (isCorners(details.localPosition, realSize, resizeButtonSize)) {
@@ -299,7 +301,8 @@ class ACC extends AbsModel with ACCProperty {
               entry!.markNeedsBuild();
               //invalidateContents();
             },
-            onPanEnd: (details) {
+            onPanEnd: (details) async {
+              SaveNotifier.releaseAutoSave(); // 자동 Save를 풀어준다.
               actionStart = false;
               sizeActionStart = false;
               radiusActionStart = false;

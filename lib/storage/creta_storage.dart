@@ -2,7 +2,6 @@
 //import 'package:creta00/common/util/logger.dart';
 //ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
-
 //import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/db/creta_db.dart';
@@ -28,20 +27,36 @@ class CretaStorage {
       required void Function(String newPath) onComplete}) async {
     try {
       String fullpath = '$remotePath/${content.file!.name}';
-      final reader = FileReader();
-      reader.readAsDataUrl(content.file!);
-      reader.onLoadEnd.listen((event) {
-        logHolder.log('Upload ${content.file!.name}', level: 6);
-        fb
-            .storage()
-            .refFromURL(fbServerUrl)
-            .child(fullpath)
-            .put(content.file!)
-            .future
-            .then((value) {
+
+      fb.StorageReference ref = fb.storage().refFromURL(fbServerUrl).child(fullpath);
+
+      if (content.remoteUrl != null && content.remoteUrl!.isNotEmpty) {
+        ref.getDownloadURL().then((founed) {
+          // 이미 있다.
+          logHolder.log('Alreday Exist ${content.file!.name}', level: 6);
           onComplete(fullpath);
+          return;
+        }, onError: (error) {
+          // 없다 .업로드 해야 한다.
+          final reader = FileReader();
+          reader.readAsDataUrl(content.file!);
+          reader.onLoadEnd.listen((event) {
+            logHolder.log('Upload ${content.file!.name}', level: 6);
+            ref.put(content.file!).future.then((value) {
+              onComplete(fullpath);
+            });
+          });
         });
-      });
+      } else {
+        final reader = FileReader();
+        reader.readAsDataUrl(content.file!);
+        reader.onLoadEnd.listen((event) {
+          logHolder.log('Upload ${content.file!.name}', level: 6);
+          ref.put(content.file!).future.then((value) {
+            onComplete(fullpath);
+          });
+        });
+      }
     } catch (e) {
       logHolder.log("UPLOAD ERROR : $e", level: 7);
     }

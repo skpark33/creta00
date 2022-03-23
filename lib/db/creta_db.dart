@@ -39,7 +39,7 @@ class CretaDB {
     }
   }
 
-  Future<void> setData(
+  Future<bool> setData(
     String? key,
     Object data,
   ) async {
@@ -51,10 +51,10 @@ class CretaDB {
         await collectionRef.add(data);
         logHolder.log('$key created');
       }
-      return;
+      return true;
     } catch (e) {
       logHolder.log("SET DB ERROR : $e", level: 7);
-      return;
+      return false;
     }
   }
 }

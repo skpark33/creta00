@@ -19,12 +19,13 @@ import '../common/undo/undo.dart';
 import '../widgets/base_widget.dart';
 import '../common/util/logger.dart';
 import '../acc/acc_menu.dart';
+import '../db/db_actions.dart';
 //import '../studio/properties/properties_frame.dart';
 
 //import '../overlay/overlay.dart' as my_overlay;
 ACCManager? accManagerHolder;
 
-class ACCManager extends ChangeNotifier {
+class ACCManager extends SaveNotifier {
   Map<String, ACC> accMap = <String, ACC>{};
   SortedMap<int, ACC> orderMap = SortedMap<int, ACC>();
   ACCMenu accMenu = ACCMenu();

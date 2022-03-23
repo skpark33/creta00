@@ -9,6 +9,7 @@ import 'package:creta00/acc/acc_manager.dart';
 import '../../model/pages.dart';
 import '../../model/models.dart';
 import '../../common/undo/undo.dart';
+import '../../db/db_actions.dart';
 
 enum PropertyType {
   page,
@@ -18,7 +19,7 @@ enum PropertyType {
 
 PageManager? pageManagerHolder;
 
-class PageManager extends ChangeNotifier {
+class PageManager extends SaveNotifier {
   // factory PageManager.singleton() {
   //   return PageManager();
   // }
