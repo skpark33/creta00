@@ -426,7 +426,9 @@ Widget emptyImage() {
   //     color: Colors.white,
   //   ),
   // );
-  return Container();
+  return const Center(
+    child: CircularProgressIndicator(),
+  );
 }
 
 double getRadiusPos(double radius, {double minus = 1.0}) {

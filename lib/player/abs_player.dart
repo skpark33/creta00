@@ -1,11 +1,13 @@
 // ignore_for_file: prefer_final_fields
 //import 'package:creta00/common/util/logger.dart';
 //import 'package:creta00/acc/acc_manager.dart';
+import 'dart:math';
 import 'package:creta00/player/play_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:creta00/model/contents.dart';
 import 'package:creta00/acc/acc.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
+import 'package:blobs/blobs.dart';
 
 // page (1) --> (n) acc (1) --> (1) baseWidget --> (1) PlayManager (n) absPlayWidget                                                                 (n) absPlayWidget
 
@@ -95,6 +97,16 @@ abstract class AbsPlayWidget extends StatefulWidget {
         ),
       )),
     );
+  }
+
+  Widget getBlob(Size outSize, Widget child) {
+    return Blob.animatedRandom(
+        size: sqrt(acc.getRealSize().width * acc.getRealSize().height),
+        duration: const Duration(microseconds: 100),
+        edgesCount: 5,
+        minGrowth: 4,
+        styles: BlobStyles(color: Colors.green, fillType: BlobFillType.stroke, strokeWidth: 2),
+        child: child);
   }
 }
 

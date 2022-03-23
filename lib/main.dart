@@ -14,6 +14,7 @@ Future<void> main() async {
       options: const FirebaseOptions(
           apiKey: FirebaseConfig.apiKey,
           appId: FirebaseConfig.appId,
+          storageBucket: FirebaseConfig.storageBucket,
           messagingSenderId: FirebaseConfig.messagingSenderId,
           projectId: FirebaseConfig.projectId)); // for firebase
   runApp(const MyApp());

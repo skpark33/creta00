@@ -1,4 +1,7 @@
 //import 'package:flutter/cupertino.dart';
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
@@ -96,11 +99,12 @@ class _DropZoneWidgetState extends State<DropZoneWidget> {
 
   Future uploadedFile(dynamic event) async {
     // this method is called when user drop the file in drop area in flutter
-
+    File file = event as File;
     final name = event.name;
     final mime = await controller.getFileMIME(event);
     final byte = await controller.getFileSize(event);
     final url = await controller.createFileUrl(event);
+    //final blob = await controller.getFileData(event);
 
     logHolder.log('Name : $name');
     logHolder.log('Mime: $mime');
@@ -109,7 +113,8 @@ class _DropZoneWidgetState extends State<DropZoneWidget> {
     logHolder.log('URL: $url');
 
     // update the data model with recent file uploaded
-    final droppedFile = ContentsModel(widget.accId, name: name, mime: mime, bytes: byte, url: url);
+    final droppedFile =
+        ContentsModel(widget.accId, name: name, mime: mime, bytes: byte, url: url, file: file);
 
     //Update the UI
     widget.onDroppedFile(droppedFile);

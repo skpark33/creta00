@@ -81,7 +81,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
         builder: (context, snapshot) {
           if (snapshot.hasData == false) {
             //해당 부분은 data를 아직 받아 오지 못했을때 실행되는 부분을 의미한다.
-            return errMsgWidget2(snapshot);
+            return emptyImage();
           }
           if (snapshot.hasError) {
             //error가 발생하게 될 경우 반환하게 되는 부분

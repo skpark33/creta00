@@ -1,4 +1,7 @@
 //import 'package:uuid/uuid.dart';
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html';
+
 import '../common/util/logger.dart';
 import '../common/undo/undo.dart';
 import 'models.dart';
@@ -26,7 +29,9 @@ class ContentsModel extends AbsModel {
   final String name; // aaa.jpg
   final int bytes;
   final String url;
+  String? remoteUrl;
   final String mime;
+  final File? file;
   //mime, ex : video/mp4, image/png, 등등 xls 파일은 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
   //ContentsType _type = ContentsType.FREE;
   UndoAble<double> playTime = UndoAble<double>(5000); // 1000 분의 1초 milliseconds
@@ -62,7 +67,7 @@ class ContentsModel extends AbsModel {
   }
 
   ContentsModel(String accId,
-      {required this.name, required this.mime, required this.bytes, required this.url})
+      {required this.name, required this.mime, required this.bytes, required this.url, this.file})
       : super(type: ModelType.contents, parentMid: accId) {
     // const uuid = Uuid();
     // mid = uuid.v1() + '/' + bytes.toString();
@@ -102,6 +107,8 @@ class ContentsModel extends AbsModel {
         "aspectRatio": aspectRatio,
         "dynamicSize": dynamicSize.value,
         "prevPlayTime": prevPlayTime,
+        "lastModifiedTime": (file != null) ? file!.lastModified : 0,
+        "remoteUrl": (remoteUrl != null) ? remoteUrl : '',
       }.entries);
   }
 

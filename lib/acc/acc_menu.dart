@@ -15,7 +15,7 @@ class ACCMenu {
   }
 
   Offset position = const Offset(0, 0);
-  Size size = const Size(210, 40);
+  Size size = const Size(210, 36);
   bool _visible = false;
   bool get visible => _visible;
   OverlayEntry? entry;
@@ -187,7 +187,7 @@ class ACCMenu {
         builder: (BuildContext context, AsyncSnapshot<CurrentData> snapshot) {
           if (snapshot.hasData == false) {
             //해당 부분은 data를 아직 받아 오지 못했을때 실행되는 부분을 의미한다.
-            return emptyImage();
+            return Container();
           }
           if (snapshot.hasError) {
             //error가 발생하게 될 경우 반환하게 되는 부분
