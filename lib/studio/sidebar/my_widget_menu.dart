@@ -64,7 +64,7 @@ class MyMenuStickState extends State<MyMenuStick> {
     ACC acc = accManagerHolder!.createACC(_keyIdx, context,
         BaseWidget(baseWidgetKey: baseWidgetKey), pageManagerHolder!.getSelected()!);
     _keyIdx++;
-    model.parentMid = acc.mid;
+    model.parentMid.set(acc.mid);
     if (acc.accChild.playManager != null) {
       acc.accChild.playManager!.push(acc, model);
     }

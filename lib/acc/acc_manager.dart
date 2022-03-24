@@ -19,13 +19,13 @@ import '../common/undo/undo.dart';
 import '../widgets/base_widget.dart';
 import '../common/util/logger.dart';
 import '../acc/acc_menu.dart';
-import '../db/db_actions.dart';
+//import '../db/db_actions.dart';
 //import '../studio/properties/properties_frame.dart';
 
 //import '../overlay/overlay.dart' as my_overlay;
 ACCManager? accManagerHolder;
 
-class ACCManager extends SaveNotifier {
+class ACCManager extends ChangeNotifier {
   Map<String, ACC> accMap = <String, ACC>{};
   SortedMap<int, ACC> orderMap = SortedMap<int, ACC>();
   ACCMenu accMenu = ACCMenu();
@@ -37,7 +37,7 @@ class ACCManager extends SaveNotifier {
   String _currentAccMid = '';
 
   //static int get currentAccIndex => _currentAccMid;
-  void setCurrentMid(String mid, {bool setAsAcc = true}) {
+  Future<void> setCurrentMid(String mid, {bool setAsAcc = true}) async {
     _currentAccMid = mid;
     if (setAsAcc && _currentAccMid.isNotEmpty && pageManagerHolder != null) {
       pageManagerHolder!.setAsAcc();
@@ -170,7 +170,7 @@ class ACCManager extends SaveNotifier {
       acc.entry!.remove();
       acc.entry = null;
       acc.registerOverlay(context);
-      acc.setDirty(false);
+      //acc.setDirty(false);
     }
     setState();
     pageManagerHolder!.setState(); // Tree 순서를 바꾸기 위해
@@ -327,9 +327,9 @@ class ACCManager extends SaveNotifier {
     if (friend != null) {
       mychangeStack.startTrans();
       friend.order.set(oldOrder);
-      friend.setDirty(true);
+      //friend.setDirty(true);
       target.order.set(newOrder);
-      target.setDirty(true);
+      //target.setDirty(true);
       mychangeStack.endTrans();
       return true;
     }
@@ -371,9 +371,9 @@ class ACCManager extends SaveNotifier {
     if (friend != null) {
       mychangeStack.startTrans();
       friend.order.set(oldOrder);
-      friend.setDirty(true);
+      //friend.setDirty(true);
       target.order.set(newOrder);
-      target.setDirty(true);
+      //target.setDirty(true);
       mychangeStack.endTrans();
       return true;
     }
@@ -452,13 +452,13 @@ class ACCManager extends SaveNotifier {
         continue;
       }
       if (acc.page!.mid == modelId) {
-        if (!acc.visible) {
-          acc.setVisible(true);
+        if (!acc.visible.value) {
+          acc.visible.set(true);
           acc.setState();
         }
       } else {
-        if (acc.visible) {
-          acc.setVisible(false);
+        if (acc.visible.value) {
+          acc.visible.set(false);
           acc.setState();
         }
       }

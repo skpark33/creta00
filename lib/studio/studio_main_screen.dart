@@ -3,30 +3,29 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
-//import 'package:flutter_animated_button/flutter_animated_button.dart';
 
-//import '../controllers/menu_controller.dart';
-import '../acc/acc_manager.dart';
-import '../common/util/logger.dart';
-import '../common/buttons/basic_button.dart';
-import '../model/users.dart';
-import '../model/book.dart';
-//import '../widgets/base_widget.dart';
-import '../constants/styles.dart';
-import 'sidebar/sidebar.dart';
-import '../studio/artboard/artboard_frame.dart';
-import '../studio/pages/pages_frame.dart';
-import '../studio/pages/page_manager.dart';
-import '../studio/properties/properties_frame.dart';
+import 'package:creta00/acc/acc_manager.dart';
+import 'package:creta00/common/util/logger.dart';
+import 'package:creta00/common/buttons/basic_button.dart';
+import 'package:creta00/model/users.dart';
+import 'package:creta00/model/book.dart';
+import 'package:creta00/constants/styles.dart';
+import 'package:creta00/studio/sidebar/sidebar.dart';
+import 'package:creta00/studio/artboard/artboard_frame.dart';
+import 'package:creta00/studio/pages/pages_frame.dart';
+import 'package:creta00/studio/pages/page_manager.dart';
+import 'package:creta00/studio/properties/properties_frame.dart';
+import 'package:creta00/studio/save_manager.dart';
+import 'package:creta00/studio/save_indicator.dart';
 import 'package:creta00/player/play_manager.dart';
-import '../constants/constants.dart';
-//import '../common/cursor/cursor_manager.dart';
-//import 'side_menu.dart';
+import 'package:creta00/constants/constants.dart';
 
 StudioMainScreen? studioMainHolder;
 
 class StudioMainScreen extends StatefulWidget {
-  const StudioMainScreen({Key? key, required this.book, required this.user}) : super(key: key);
+  StudioMainScreen({Key? key, required this.book, required this.user}) : super(key: key) {
+    saveManagerHolder = SaveManager();
+  }
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -54,11 +53,15 @@ class _MainScreenState extends State<StudioMainScreen> {
     if (mounted) super.setState(fn);
   }
 
-//  MultiProvider(
-//       providers: [
-//         ChangeNotifierProvider(create: (context) => Data()),
-//         ListenableProvider(create: (context) => Repo()),
-//       ],
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      logHolder.log('afterBuild StudioMainScreen', level: 6);
+      saveManagerHolder!.initTimer();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +91,15 @@ class _MainScreenState extends State<StudioMainScreen> {
               logHolder.log('ChangeNotifierProvider<SelectedModel>', level: 5);
               selectedModelHolder = SelectedModel();
               return selectedModelHolder!;
+            },
+          ),
+          ChangeNotifierProvider<SaveManager>(
+            create: (context) {
+              logHolder.log('ChangeNotifierProvider<SaveManager>', level: 5);
+              // 생성자에서 미리 만들었다.
+              //saveManagerHolder = SaveManager();
+
+              return saveManagerHolder!;
             },
           ),
         ],
@@ -144,7 +156,13 @@ class _MainScreenState extends State<StudioMainScreen> {
           child: PagesFrame(isNarrow: false),
         ),
         Expanded(
-          child: ArtBoardScreen(),
+          child: //ArtBoardScreen(),
+              Column(
+            children: [
+              SaveIndicator(),
+              Expanded(child: ArtBoardScreen()),
+            ],
+          ),
         ),
         SizedBox(
           width: layoutPropertiesWidth,

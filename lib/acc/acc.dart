@@ -5,6 +5,7 @@ import 'package:creta00/player/play_manager.dart';
 import 'package:flutter_neumorphic_null_safety/flutter_neumorphic.dart';
 import 'package:creta00/common/util/my_utils.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
+import 'package:creta00/studio/save_manager.dart';
 
 import 'resizable.dart';
 import 'acc_property.dart';
@@ -20,7 +21,6 @@ import '../studio/artboard/artboard_frame.dart';
 import '../model/models.dart';
 import '../model/pages.dart';
 import '../model/contents.dart';
-import '../db/db_actions.dart';
 
 //import 'package:creta00/studio/pages/page_manager.dart';
 class RotateCorner {
@@ -29,9 +29,9 @@ class RotateCorner {
   double dy = 0;
 }
 
-class ACC extends AbsModel with ACCProperty {
+class ACC extends ACCProperty {
   ACC({required this.page, required this.accChild, required int idx})
-      : super(type: ModelType.acc, parentMid: page!.mid) {
+      : super(type: ModelType.acc, parent: page!.mid) {
     order.set(idx);
   }
 
@@ -94,7 +94,7 @@ class ACC extends AbsModel with ACCProperty {
       final overlay = Overlay.of(context)!;
       overlay.insert(entry!, below: menuStickEntry);
     } else {
-      setVisible(true);
+      visible.set(true);
     }
     if (overlayWidget != null) {
       return overlayWidget!;
@@ -218,7 +218,7 @@ class ACC extends AbsModel with ACCProperty {
     Size marginSize = Size(realSize.width + resizeButtonSize, realSize.height + resizeButtonSize);
 
     return Visibility(
-        visible: (visible && !isRemoved.value),
+        visible: (visible.value && !isRemoved.value),
         child: Positioned(
           // left: realOffset.dx,
           // top: realOffset.dy,
@@ -232,12 +232,14 @@ class ACC extends AbsModel with ACCProperty {
           child: GestureDetector(
             onLongPressDown: (details) {
               logHolder.log("onLongPressDown", level: 7);
+              //saveManagerHolder!.blockAutoSave();
               if (isCorners(details.localPosition, marginSize, resizeButtonSize) ||
                   isRadius(details.localPosition, marginSize, resizeButtonSize / 2, realSize)) {
                 accManagerHolder!.setCurrentMid(mid);
                 return;
               }
               selectContents(context, mid);
+              //saveManagerHolder!.delayedReleaseAutoSave(500);
             },
             // onPanDown: (details) {
             //   logHolder.log("onPanDown", level: 7);
@@ -260,7 +262,7 @@ class ACC extends AbsModel with ACCProperty {
             // });
             //},
             onPanStart: (details) {
-              SaveNotifier.blockAutoSave(); // 자동 Save 를 막는다.
+              saveManagerHolder!.blockAutoSave(); // 자동 Save 를 막는다.
               actionStart = true;
               logHolder.log('onPanStart:${details.localPosition}', level: 5);
               //if (isCorners(details.localPosition, realSize, resizeButtonSize)) {
@@ -302,7 +304,7 @@ class ACC extends AbsModel with ACCProperty {
               //invalidateContents();
             },
             onPanEnd: (details) async {
-              SaveNotifier.releaseAutoSave(); // 자동 Save를 풀어준다.
+              await saveManagerHolder!.releaseAutoSave(); // 자동 Save를 풀어준다.
               actionStart = false;
               sizeActionStart = false;
               radiusActionStart = false;
@@ -371,7 +373,7 @@ class ACC extends AbsModel with ACCProperty {
                       isInvisibleColorACC(),
                       bgColor.value,
                       //borderColor.value,
-                      resizable,
+                      resizable.value,
                       realSize,
                       isCornered,
                       isRadiused,

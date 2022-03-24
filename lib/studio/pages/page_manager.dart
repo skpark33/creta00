@@ -9,7 +9,7 @@ import 'package:creta00/acc/acc_manager.dart';
 import '../../model/pages.dart';
 import '../../model/models.dart';
 import '../../common/undo/undo.dart';
-import '../../db/db_actions.dart';
+//import '../../db/db_actions.dart';
 
 enum PropertyType {
   page,
@@ -19,7 +19,7 @@ enum PropertyType {
 
 PageManager? pageManagerHolder;
 
-class PageManager extends SaveNotifier {
+class PageManager extends ChangeNotifier {
   // factory PageManager.singleton() {
   //   return PageManager();
   // }
@@ -102,7 +102,7 @@ class PageManager extends SaveNotifier {
         model.order.set(model.order.value - 1);
       }
     }
-    pageMap[mid]!.setIsRemoved(true);
+    pageMap[mid]!.isRemoved.set(true);
     mychangeStack.endTrans();
   }
 
@@ -114,7 +114,7 @@ class PageManager extends SaveNotifier {
   }
 
   bool isPageSelected(String mid) {
-    logHolder.log('isPageSelected($mid)', level: 6);
+    logHolder.log('isPageSelected($mid)');
     return _selectedMid == mid;
   }
 

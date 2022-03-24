@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../model/pages.dart';
 import '../../common/util/logger.dart';
 import '../../constants/styles.dart';
+//import '../../db/db_actions.dart';
 //import '../../constants/strings.dart';
 //import '../../common/undo/undo.dart';
 import 'page_manager.dart';
@@ -39,9 +40,9 @@ class PageSwipListState extends State<PageSwipList> {
             logHolder.log('Consumer build PageSwipListState ${pageManager.pageIndex}', level: 6);
 
             pageManager.reorderMap();
-            logHolder.log('after reorderMap', level: 6);
+            logHolder.log('after reorderMap');
             List<PageModel> items = pageManager.orderMap.values.toList();
-            logHolder.log('after toList, ${items.length}', level: 6);
+            logHolder.log('after toList, ${items.length}');
 
             if (items.isEmpty) {
               logHolder.log('item is empty');
@@ -70,7 +71,7 @@ class PageSwipListState extends State<PageSwipList> {
     double pageHeight = 0;
     double pageWidth = 0;
 
-    logHolder.log('eachCard($pageIndex)', level: 6);
+    logHolder.log('eachCard($pageIndex)');
     String pageNo = 'P ';
     pageNo += (pageIndex + 1).toString().padLeft(2, '0');
     return ReorderableDragStartListener(

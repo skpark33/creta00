@@ -192,14 +192,14 @@ class _MyTreeViewState extends State<MyTreeView> {
                     logHolder.log('Invalid key', level: 7);
                     return;
                   }
-                  logHolder.log('key=$key', level: 6);
+                  logHolder.log('key=$key');
                   widget.pageManager.setSelectedIndex(context, key.substring(0, 5 + 36));
 
                   String mid = '';
                   if (key.contains(accPrefix)) {
                     //int pos = accPrefix.length;
                     mid = key.substring(5 + 36 + 1, 5 + 36 + 1 + 4 + 36);
-                    logHolder.log('mid=$mid', level: 6);
+                    logHolder.log('mid=$mid');
                     accManagerHolder!.setCurrentMid(mid);
                   }
                   if (mid.isNotEmpty && key.contains(contentsPrefix)) {

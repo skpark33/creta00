@@ -21,32 +21,31 @@ class CretaStorage {
     return uri.toString();
   }
 
-  static Future<void> uploadToStrage(
+  static void uploadToStrage(
       {required String remotePath,
       required ContentsModel content,
-      required void Function(String newPath) onComplete}) async {
+      required void Function(String newPath) onComplete}) {
     try {
       String fullpath = '$remotePath/${content.file!.name}';
 
       fb.StorageReference ref = fb.storage().refFromURL(fbServerUrl).child(fullpath);
 
       if (content.remoteUrl != null && content.remoteUrl!.isNotEmpty) {
-        ref.getDownloadURL().then((founed) {
-          // 이미 있다.
-          logHolder.log('Alreday Exist ${content.file!.name}', level: 6);
-          onComplete(fullpath);
-          return;
-        }, onError: (error) {
-          // 없다 .업로드 해야 한다.
-          final reader = FileReader();
-          reader.readAsDataUrl(content.file!);
-          reader.onLoadEnd.listen((event) {
-            logHolder.log('Upload ${content.file!.name}', level: 6);
-            ref.put(content.file!).future.then((value) {
-              onComplete(fullpath);
-            });
-          });
-        });
+        //ref.getDownloadURL().then((founed) {
+        // 이미 있다.
+        logHolder.log('Alreday Exist ${content.file!.name}', level: 6);
+        return;
+        // }, onError: (error) {
+        //   // 없다 .업로드 해야 한다.
+        //   final reader = FileReader();
+        //   reader.readAsDataUrl(content.file!);
+        //   reader.onLoadEnd.listen((event) {
+        //     logHolder.log('Upload ${content.file!.name}', level: 6);
+        //     ref.put(content.file!).future.then((value) {
+        //       onComplete(fullpath);
+        //     });
+        //   });
+        //});
       } else {
         final reader = FileReader();
         reader.readAsDataUrl(content.file!);

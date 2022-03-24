@@ -3,6 +3,8 @@ import 'dart:collection';
 //import 'package:flutter/foundation.dart';
 //import 'package:flutter/material.dart';
 import '../util/logger.dart';
+import '../../studio/save_manager.dart';
+//import '../../model/models.dart';
 
 enum TransState {
   none,
@@ -15,9 +17,11 @@ MyChangeStack mychangeStack = MyChangeStack();
 
 class UndoAble<T> {
   late T _value;
+  late String _mid;
 
-  UndoAble(T val) {
+  UndoAble(T val, String m) {
     _value = val;
+    _mid = m;
   }
 
   T get value => _value;
@@ -29,6 +33,7 @@ class UndoAble<T> {
       _value = old;
     });
     mychangeStack.add(c);
+    saveManagerHolder!.pushChanged(_mid);
   }
 
   // this function doesn't support undo
@@ -219,8 +224,7 @@ class MyChangeStack {
       final change = _redos.removeFirst();
       _applyChanges(change);
       _history.addLast(change);
-      if (change.transState == TransState.none ||
-          change.transState == TransState.end) {
+      if (change.transState == TransState.none || change.transState == TransState.end) {
         break;
       }
     }
@@ -236,8 +240,7 @@ class MyChangeStack {
       logHolder.log('TransState=${change.transState}');
       change.undo();
       _redos.addFirst(change);
-      if (change.transState == TransState.none ||
-          change.transState == TransState.start) {
+      if (change.transState == TransState.none || change.transState == TransState.start) {
         break;
       }
     }

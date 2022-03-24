@@ -86,7 +86,7 @@ class ContentsPropertyState extends State<ContentsProperty> with SingleTickerPro
 
             double millisec = model.playTime.value;
             if (model.isVideo()) {
-              millisec = model.videoPlayTime;
+              millisec = model.videoPlayTime.value;
             }
             double sec = (millisec / 1000);
             return Column(children: [
@@ -114,7 +114,7 @@ class ContentsPropertyState extends State<ContentsProperty> with SingleTickerPro
                         style: MyTextStyles.subtitle1,
                       ),
                       Text(
-                        'width/height.${(model.aspectRatio * 100).round() / 100}',
+                        'width/height.${(model.aspectRatio.value * 100).round() / 100}',
                         style: MyTextStyles.subtitle2,
                       ),
                       model.contentsType == ContentsType.image

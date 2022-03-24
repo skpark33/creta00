@@ -10,8 +10,8 @@ enum ContentsType {
   video,
   image,
   text,
-  youtube,
   sheet,
+  youtube,
   free,
 }
 
@@ -24,26 +24,34 @@ enum PlayState {
   disposed,
 }
 
-// ignore: camel_case_types
 class ContentsModel extends AbsModel {
   final String name; // aaa.jpg
   final int bytes;
   final String url;
-  String? remoteUrl;
   final String mime;
   final File? file;
-  //mime, ex : video/mp4, image/png, 등등 xls 파일은 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-  //ContentsType _type = ContentsType.FREE;
-  UndoAble<double> playTime = UndoAble<double>(5000); // 1000 분의 1초 milliseconds
-  double videoPlayTime = 5000; // 1000 분의 1초 milliseconds
-  bool mute = false;
-  double volume = 100;
+  String? remoteUrl;
   ContentsType contentsType = ContentsType.free;
-  //String mid = '';
-  double aspectRatio = 1;
 
-  // 동영상의 크기에 맞게 frame 사이즈를 변경해야 하는 경우
-  UndoAble<bool> dynamicSize = UndoAble<bool>(false);
+  late UndoAble<double> playTime; // 1000 분의 1초 milliseconds
+  late UndoAble<double> videoPlayTime; // 1000 분의 1초 milliseconds
+  late UndoAble<bool> mute;
+  late UndoAble<double> volume;
+  late UndoAble<double> aspectRatio;
+  late UndoAble<bool> dynamicSize; // 동영상의 크기에 맞게 frame 사이즈를 변경해야 하는 경우
+
+  ContentsModel(String accId,
+      {required this.name, required this.mime, required this.bytes, required this.url, this.file})
+      : super(type: ModelType.contents, parent: accId) {
+    genType();
+
+    playTime = UndoAble<double>(5000, mid); // 1000 분의 1초 milliseconds
+    videoPlayTime = UndoAble<double>(5000, mid); // 1000 분의 1초 milliseconds
+    mute = UndoAble<bool>(false, mid);
+    volume = UndoAble<double>(100, mid);
+    aspectRatio = UndoAble<double>(1, mid);
+    dynamicSize = UndoAble<bool>(false, mid); //
+  }
 
   // ignore: prefer_final_fields
   PlayState _state = PlayState.none;
@@ -64,14 +72,6 @@ class ContentsModel extends AbsModel {
 
   void resetPlayTime() {
     playTime.set(prevPlayTime);
-  }
-
-  ContentsModel(String accId,
-      {required this.name, required this.mime, required this.bytes, required this.url, this.file})
-      : super(type: ModelType.contents, parentMid: accId) {
-    // const uuid = Uuid();
-    // mid = uuid.v1() + '/' + bytes.toString();
-    genType();
   }
 
   int contentsTypeToInt() {
@@ -100,11 +100,11 @@ class ContentsModel extends AbsModel {
         "url": url,
         "mime": mime,
         "playTime": playTime.value,
-        "videoPlayTime": videoPlayTime,
-        "mute": mute,
-        "volume": volume,
-        "contentsType": contentsType.toString(),
-        "aspectRatio": aspectRatio,
+        "videoPlayTime": videoPlayTime.value,
+        "mute": mute.value,
+        "volume": volume.value,
+        "contentsType": contentsTypeToInt(),
+        "aspectRatio": aspectRatio.value,
         "dynamicSize": dynamicSize.value,
         "prevPlayTime": prevPlayTime,
         "lastModifiedTime": (file != null) ? file!.lastModifiedDate.toString() : 0,

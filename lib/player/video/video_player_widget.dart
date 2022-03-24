@@ -38,7 +38,7 @@ class VideoPlayerWidget extends AbsPlayWidget {
         //setState(() {});
         logHolder.log('initialize complete(${wcontroller!.value.duration.inMilliseconds})');
 
-        model!.videoPlayTime = wcontroller!.value.duration.inMilliseconds.toDouble();
+        model!.videoPlayTime.set(wcontroller!.value.duration.inMilliseconds.toDouble());
         wcontroller!.setLooping(false);
         wcontroller!.onAfterVideoEvent = (event) {
           logHolder.log(
@@ -73,7 +73,7 @@ class VideoPlayerWidget extends AbsPlayWidget {
     // while (model!.state == PlayState.disposed) {
     //   await Future.delayed(const Duration(milliseconds: 100));
     // }
-    logHolder.log('play  ${model!.name}', level: 6);
+    logHolder.log('play  ${model!.name}');
     model!.setState(PlayState.start);
     await wcontroller!.play();
   }
@@ -97,18 +97,18 @@ class VideoPlayerWidget extends AbsPlayWidget {
 
   @override
   Future<void> mute() async {
-    if (model!.mute) {
+    if (model!.mute.value) {
       await wcontroller!.setVolume(1.0);
     } else {
       await wcontroller!.setVolume(0.0);
     }
-    model!.mute = !model!.mute;
+    model!.mute.set(!model!.mute.value);
   }
 
   @override
   Future<void> setSound(double val) async {
     await wcontroller!.setVolume(1.0);
-    model!.volume = val;
+    model!.volume.set(val);
   }
 
   @override
@@ -132,7 +132,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   Future<void> afterBuild() async {
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       logHolder.log('afterBuild video', level: 6);
-      widget.model!.aspectRatio = widget.wcontroller!.value.aspectRatio;
+      widget.model!.aspectRatio.set(widget.wcontroller!.value.aspectRatio);
       widget.afterBuild();
     });
   }

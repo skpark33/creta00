@@ -1,36 +1,31 @@
 // ignore_for_file: prefer_const_constructors
-
-import 'package:creta00/constants/strings.dart';
 import 'package:flutter/material.dart';
-import '../common/util/logger.dart';
-import '../common/undo/undo.dart';
-//import '../constants/styles.dart';
+import 'package:creta00/constants/strings.dart';
+import 'package:creta00/common/util/logger.dart';
+import 'package:creta00/common/undo/undo.dart';
 import 'models.dart';
 
-// ignore: camel_case_types
 class PageModel extends AbsModel {
-  // final int id; //page number
-  // final GlobalKey key = GlobalKey();
-  // final UndoMonitorAble<int> _pageNo = UndoMonitorAble<int>(0);
-  // UndoMonitorAble<int> get pageNo => _pageNo;
-  // final UndoAble<int> _pageNo = UndoAble<int>(0);
-  // UndoAble<int> get pageNo => _pageNo;
-  // void setPageNo(int val) {
-  //   _pageNo.set(val);
-  // }
-
   Offset origin = Offset.zero;
   Size realSize = Size(400, 400);
 
-  UndoAble<int> width = UndoAble<int>(1920);
-  UndoAble<int> height = UndoAble<int>(1080);
-  UndoAble<String> description = UndoAble<String>('');
-  UndoAble<String> shortCut = UndoAble<String>('');
-  UndoAble<Color> bgColor = UndoAble<Color>(Colors.white);
-  UndoAble<bool> used = UndoAble<bool>(true);
-  UndoAble<bool> isCircle = UndoAble<bool>(true);
+  late UndoAble<int> width;
+  late UndoAble<int> height;
+  late UndoAble<String> description;
+  late UndoAble<String> shortCut;
+  late UndoAble<Color> bgColor;
+  late UndoAble<bool> isUsed;
+  late UndoAble<bool> isCircle;
 
-  PageModel(String bookId) : super(type: ModelType.page, parentMid: bookId);
+  PageModel(String bookId) : super(type: ModelType.page, parent: bookId) {
+    width = UndoAble<int>(1920, mid);
+    height = UndoAble<int>(1080, mid);
+    description = UndoAble<String>('', mid);
+    shortCut = UndoAble<String>('', mid);
+    bgColor = UndoAble<Color>(Colors.white, mid);
+    isUsed = UndoAble<bool>(true, mid);
+    isCircle = UndoAble<bool>(true, mid);
+  }
 
   @override
   Map<String, dynamic> serialize() {
@@ -41,7 +36,7 @@ class PageModel extends AbsModel {
         "description": description.value,
         "shortCut": shortCut.value,
         "bgColor": bgColor.value.toString(),
-        "used": used.value,
+        "isUsed": isUsed.value,
         "isCircle": isCircle.value,
       }.entries);
   }

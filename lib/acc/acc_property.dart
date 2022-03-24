@@ -1,7 +1,8 @@
 // ignore_for_file: prefer_final_fields
+import 'package:flutter_neumorphic_null_safety/flutter_neumorphic.dart';
 import '../common/undo/undo.dart';
 import '../constants/styles.dart';
-import 'package:flutter_neumorphic_null_safety/flutter_neumorphic.dart';
+import '../model/models.dart';
 
 enum CursorType {
   pointer,
@@ -36,39 +37,69 @@ enum BoxType {
 }
 
 //class ACCProperty extends ChangeNotifier {
-class ACCProperty {
-  bool _dirty = false;
-  bool _visible = true;
-  bool _resizable = true;
+class ACCProperty extends AbsModel {
+  late UndoAble<bool> visible;
+  late UndoAble<bool> resizable;
+  late UndoAble<AnimeType> animeType;
+  late UndoAble<double> radiusAll;
+  late UndoAble<double> radiusTopLeft;
+  late UndoAble<double> radiusTopRight;
+  late UndoAble<double> radiusBottomLeft;
+  late UndoAble<double> radiusBottomRight;
 
-  UndoAble<AnimeType> _animeType = UndoAble<AnimeType>(AnimeType.none);
-  UndoAble<double> _radiusAll = UndoAble<double>(0);
-  UndoAble<double> _radiusTopLeft = UndoAble<double>(0);
-  UndoAble<double> _radiusTopRight = UndoAble<double>(0);
-  UndoAble<double> _radiusBottomLeft = UndoAble<double>(0);
-  UndoAble<double> _radiusBottomRight = UndoAble<double>(0);
+  late UndoAble<bool> primary;
+  late UndoAble<bool> fullscreen;
+  late UndoAble<Offset> containerOffset;
+  late UndoAble<Size> containerSize;
+  late UndoAble<double> rotate;
+  late UndoAble<bool> contentRotate;
+  late UndoAble<double> opacity;
+  late UndoAble<bool> sourceRatio;
+  late UndoAble<bool> isFixedRatio;
+  late UndoAble<bool> glass;
+  late UndoAble<Color> bgColor;
+  late UndoAble<Color> borderColor;
+  late UndoAble<double> borderWidth;
+  late UndoAble<LightSource> lightSource;
+  late UndoAble<double> depth;
+  late UndoAble<double> intensity;
+  late UndoAble<BoxType> boxType;
 
-  UndoAble<bool> _primary = UndoAble<bool>(false);
-  UndoAble<bool> _fullscreen = UndoAble<bool>(false);
-  UndoAble<Offset> _containerOffset = UndoAble<Offset>(const Offset(100, 100));
-  UndoAble<Size> _containerSize = UndoAble<Size>(const Size(640, 480));
-  UndoAble<double> _rotate = UndoAble<double>(0);
-  UndoAble<bool> _contentRotate = UndoAble<bool>(false);
-  UndoAble<double> _opacity = UndoAble<double>(1);
-  UndoAble<bool> _sourceRatio = UndoAble<bool>(false);
-  UndoAble<bool> _isFixedRatio = UndoAble<bool>(false);
-  UndoAble<bool> _glass = UndoAble<bool>(false);
-  UndoAble<Color> _bgColor = UndoAble<Color>(MyColors.accBg);
-  UndoAble<Color> _borderColor = UndoAble<Color>(Colors.transparent);
-  UndoAble<double> _borderWidth = UndoAble<double>(0);
-  UndoAble<LightSource> _lightSource = UndoAble<LightSource>(LightSource.topLeft);
-  UndoAble<double> _depth = UndoAble<double>(0);
-  UndoAble<double> _intensity = UndoAble<double>(0.8);
-  UndoAble<BoxType> _boxType = UndoAble<BoxType>(BoxType.rountRect);
+  ACCProperty({required ModelType type, required String parent})
+      : super(type: type, parent: parent) {
+    visible = UndoAble<bool>(true, mid);
+    resizable = UndoAble<bool>(true, mid);
+    animeType = UndoAble<AnimeType>(AnimeType.none, mid);
+    radiusAll = UndoAble<double>(0, mid);
+    radiusTopLeft = UndoAble<double>(0, mid);
+    radiusTopRight = UndoAble<double>(0, mid);
+    radiusBottomLeft = UndoAble<double>(0, mid);
+    radiusBottomRight = UndoAble<double>(0, mid);
+
+    primary = UndoAble<bool>(false, mid);
+    fullscreen = UndoAble<bool>(false, mid);
+    containerOffset = UndoAble<Offset>(const Offset(100, 100), mid);
+    containerSize = UndoAble<Size>(const Size(640, 480), mid);
+    rotate = UndoAble<double>(0, mid);
+    contentRotate = UndoAble<bool>(false, mid);
+    opacity = UndoAble<double>(1, mid);
+    sourceRatio = UndoAble<bool>(false, mid);
+    isFixedRatio = UndoAble<bool>(false, mid);
+    glass = UndoAble<bool>(false, mid);
+    bgColor = UndoAble<Color>(MyColors.accBg, mid);
+    borderColor = UndoAble<Color>(Colors.transparent, mid);
+    borderWidth = UndoAble<double>(0, mid);
+    lightSource = UndoAble<LightSource>(LightSource.topLeft, mid);
+    depth = UndoAble<double>(0, mid);
+    intensity = UndoAble<double>(0.8, mid);
+    boxType = UndoAble<BoxType>(BoxType.rountRect, mid);
+  }
 
   Map<String, dynamic> serializeProperty() {
     return {
-      "animeType": animeType.value.toString(),
+      "animeType": animeTypeToInt(),
+      "visible": visible.value,
+      "resizable": resizable.value,
       "radiusAll": radiusAll.value,
       "radiusTopLeft": radiusTopLeft.value,
       "radiusTopRight": radiusTopRight.value,
@@ -90,48 +121,33 @@ class ACCProperty {
       "lightSource": lightSource.value.toString(),
       "depth": depth.value,
       "intensity": intensity.value,
-      "boxType": boxType.value.toString(),
+      "boxType": boxTypeToInt(),
     };
   }
 
-  bool get visible => _visible;
-  bool get resizable => _resizable;
-  bool get dirty => _dirty;
-
-  UndoAble<AnimeType> get animeType => _animeType;
-  UndoAble<double> get radiusAll => _radiusAll;
-  UndoAble<double> get radiusTopLeft => _radiusTopLeft;
-  UndoAble<double> get radiusTopRight => _radiusTopRight;
-  UndoAble<double> get radiusBottomLeft => _radiusBottomLeft;
-  UndoAble<double> get radiusBottomRight => _radiusBottomRight;
-
-  UndoAble<bool> get primary => _primary;
-  UndoAble<bool> get fullscreen => _fullscreen;
-  UndoAble<Offset> get containerOffset => _containerOffset;
-  UndoAble<Size> get containerSize => _containerSize;
-  UndoAble<double> get rotate => _rotate;
-  UndoAble<bool> get contentRotate => _contentRotate;
-  UndoAble<double> get opacity => _opacity;
-  UndoAble<bool> get glass => _glass;
-  UndoAble<bool> get sourceRatio => _sourceRatio;
-  UndoAble<bool> get isFixedRatio => _isFixedRatio;
-  UndoAble<Color> get bgColor => _bgColor;
-  UndoAble<Color> get borderColor => _borderColor;
-  UndoAble<double> get borderWidth => _borderWidth;
-  UndoAble<LightSource> get lightSource => _lightSource;
-  UndoAble<double> get depth => _depth;
-  UndoAble<double> get intensity => _intensity;
-  UndoAble<BoxType> get boxType => _boxType;
-
-  void setDirty(bool p) {
-    _dirty = p;
+  int boxTypeToInt() {
+    switch (boxType.value) {
+      case BoxType.rect:
+        return 0;
+      case BoxType.rountRect:
+        return 1;
+      case BoxType.circle:
+        return 2;
+      case BoxType.beveled:
+        return 3;
+      case BoxType.stadium:
+        return 4;
+    }
   }
 
-  void setVisible(bool p) {
-    _visible = p;
-  }
-
-  void setResizable(bool p) {
-    _resizable = p;
+  int animeTypeToInt() {
+    switch (animeType.value) {
+      case AnimeType.none:
+        return 0;
+      case AnimeType.carousel:
+        return 1;
+      case AnimeType.flip:
+        return 2;
+    }
   }
 }

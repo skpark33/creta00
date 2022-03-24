@@ -79,6 +79,7 @@ dev_dependencies:
   cloud_firestore_web: ^2.6.10
   blobs: ^2.0.0  
   firebase_storage_web: ^3.2.10
+  progress_indicators: ^1.0.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

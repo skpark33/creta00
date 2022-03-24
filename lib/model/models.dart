@@ -5,7 +5,7 @@ import 'package:uuid/uuid.dart';
 import '../../constants/constants.dart';
 import '../common/undo/undo.dart';
 
-enum ModelType { book, page, acc, contents }
+enum ModelType { none, book, page, acc, contents }
 
 abstract class AbsModel {
   static int lastPageIndex = 0;
@@ -15,24 +15,16 @@ abstract class AbsModel {
   String _mid = '';
   String get mid => _mid; // mid 는 변경할 수 없으므로 set 함수는 없다.
 
-  String parentMid;
-
   final GlobalKey key = GlobalKey();
   final ModelType type;
+  final DateTime updateTime = DateTime.now();
 
-  final UndoAble<int> _order = UndoAble<int>(0);
-  UndoAble<int> get order => _order;
-  final UndoAble<String> _hashTag = UndoAble<String>('');
-  UndoAble<String> get hashTag => _hashTag;
+  late UndoAble<String> parentMid;
+  late UndoAble<int> order;
+  late UndoAble<String> hashTag;
+  late UndoAble<bool> isRemoved;
 
-  // ignore: prefer_final_fields
-  final UndoAble<bool> _isRemoved = UndoAble<bool>(false);
-  UndoAble<bool> get isRemoved => _isRemoved;
-  void setIsRemoved(bool val) {
-    _isRemoved.set(val);
-  }
-
-  AbsModel({required this.type, required this.parentMid}) {
+  AbsModel({required this.type, required String parent}) {
     if (type == ModelType.page) {
       _mid = pagePrefix;
     } else if (type == ModelType.acc) {
@@ -43,31 +35,39 @@ abstract class AbsModel {
       _mid = bookPrefix;
     }
     _mid += const Uuid().v4();
+
+    parentMid = UndoAble<String>(parent, mid);
+    order = UndoAble<int>(0, mid);
+    hashTag = UndoAble<String>('', mid);
+    isRemoved = UndoAble<bool>(false, mid);
   }
 
   void deserialize(String str) {}
 
   int typeToInt() {
     switch (type) {
-      case ModelType.book:
+      case ModelType.none:
         return 0;
-      case ModelType.page:
+      case ModelType.book:
         return 1;
-      case ModelType.acc:
+      case ModelType.page:
         return 2;
-      case ModelType.contents:
+      case ModelType.acc:
         return 3;
+      case ModelType.contents:
+        return 4;
     }
   }
 
   Map<String, dynamic> serialize() {
     return {
       "mid": mid,
-      "parentMid": parentMid,
-      "type": type.toString(),
+      "parentMid": parentMid.value,
+      "type": typeToInt(),
       "order": order.value,
       "hashTag": hashTag.value,
       "isRemoved": isRemoved.value,
+      "updateTime": updateTime,
     };
   }
 

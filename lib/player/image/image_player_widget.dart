@@ -98,7 +98,7 @@ class ImagePlayerWidgetState extends State<ImagePlayerWidget> {
 
   Future<void> afterBuild() async {
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      widget.model!.aspectRatio = await _getImageInfo(widget.model!.url);
+      widget.model!.aspectRatio.set(await _getImageInfo(widget.model!.url));
       widget.afterBuild();
     });
   }

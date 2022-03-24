@@ -168,7 +168,7 @@ class PlayManager {
     double aspectRatio = -1;
     await _lock.synchronized(() async {
       if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-        aspectRatio = _playList.value[_currentIndex].model!.aspectRatio;
+        aspectRatio = _playList.value[_currentIndex].model!.aspectRatio.value;
       }
     });
     return aspectRatio;
@@ -196,7 +196,7 @@ class PlayManager {
     bool mute = false;
     await _lock.synchronized(() async {
       if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-        mute = _playList.value[_currentIndex].model!.mute;
+        mute = _playList.value[_currentIndex].model!.mute.value;
       }
     });
     return mute;

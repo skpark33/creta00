@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 //import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
+//import 'package:creta00/studio/save_manager.dart';
 import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/player/play_manager.dart';
 import 'package:creta00/studio/properties/property_selector.dart';
@@ -137,6 +138,12 @@ class PropertiesFrameState extends State<PropertiesFrame> {
             //logHolder.log('Consumer of dummy accManager');
             return Container();
           }),
+          // Consumer<SaveManager>(builder: (context, selectedModel, child) {
+          //   // Dummy Consumer : 컨슈머가 late 하게 만들이지면 Provider 가 초기화가 안되기 때문에
+          //   //  더미 Consumber 를 하나 만들어 둔다.
+          //   //logHolder.log('Consumer of dummy saveManager');
+          //   return Container();
+          // }),
         ],
       ),
     ));
