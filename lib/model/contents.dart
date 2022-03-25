@@ -51,6 +51,8 @@ class ContentsModel extends AbsModel {
     volume = UndoAble<double>(100, mid);
     aspectRatio = UndoAble<double>(1, mid);
     dynamicSize = UndoAble<bool>(false, mid); //
+
+    save();
   }
 
   // ignore: prefer_final_fields

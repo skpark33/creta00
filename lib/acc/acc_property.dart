@@ -93,6 +93,8 @@ class ACCProperty extends AbsModel {
     depth = UndoAble<double>(0, mid);
     intensity = UndoAble<double>(0.8, mid);
     boxType = UndoAble<BoxType>(BoxType.rountRect, mid);
+
+    save();
   }
 
   Map<String, dynamic> serializeProperty() {

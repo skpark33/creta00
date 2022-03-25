@@ -310,6 +310,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.3.1"
+  graphs:
+    dependency: transitive
+    description:
+      name: graphs
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   html:
     dependency: transitive
     description:
@@ -359,6 +366,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  loading_animations:
+    dependency: "direct dev"
+    description:
+      name: loading_animations
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.0"
   matcher:
     dependency: transitive
     description:
@@ -513,6 +527,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1+1"
+  rive:
+    dependency: transitive
+    description:
+      name: rive
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.8.4"
+  rive_loading:
+    dependency: "direct dev"
+    description:
+      name: rive_loading
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1"
   rxdart:
     dependency: "direct dev"
     description:
@@ -732,6 +760,13 @@ packages:
     dependency: transitive
     description:
       name: wakelock_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
+  wave:
+    dependency: "direct dev"
+    description:
+      name: wave
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.0"

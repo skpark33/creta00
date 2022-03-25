@@ -1,3 +1,4 @@
+import 'package:creta00/studio/save_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
@@ -93,6 +94,13 @@ abstract class AbsModel {
     }
     _oldMap.addEntries(newMap.entries);
     return _isDirty;
+  }
+
+  void save() {
+    // 객체가 Create 된것은 모두 Save 대상이다.
+    if (saveManagerHolder != null) {
+      saveManagerHolder!.pushChanged(mid);
+    }
   }
 }
 

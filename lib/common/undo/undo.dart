@@ -27,13 +27,16 @@ class UndoAble<T> {
   T get value => _value;
 
   void set(T val) {
+    if (val == _value) return; // 값이 동일하다면, 할 필요가 없다.
     MyChange<T> c = MyChange<T>(_value, () {
       _value = val;
+      saveManagerHolder!.pushChanged(_mid);
     }, (T old) {
+      if (old == _value) return; // 값이 동일하다면, 할 필요가 없다.
       _value = old;
+      saveManagerHolder!.pushChanged(_mid);
     });
     mychangeStack.add(c);
-    saveManagerHolder!.pushChanged(_mid);
   }
 
   // this function doesn't support undo

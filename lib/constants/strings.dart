@@ -114,4 +114,9 @@ class MyStrings {
   static String playTime = Locale.isKr() ? '플레이 타임 설정' : "playTime";
   static String fitToContents = Locale.isKr() ? '콘텐츠 비율에 맞춤' : "Fit to contents ratio";
   static String isFixedRatio = Locale.isKr() ? '가로 세로 비를 고정' : "Fixed aspect ratio";
+
+  static String saving = Locale.isKr() ? '저장중입니다...' : "Saving...";
+  static String uploading = Locale.isKr() ? '업로드 중입니다...' : "Uploading...";
+  static String downloding = Locale.isKr() ? '다운로드 중입니다...' : "Downloading...";
+  static String savingUploading = Locale.isKr() ? '저장 및 업로드 중입니다...' : "Saving & Uploading...";
 }

@@ -34,6 +34,7 @@ class CretaStorage {
         //ref.getDownloadURL().then((founed) {
         // 이미 있다.
         logHolder.log('Alreday Exist ${content.file!.name}', level: 6);
+        onComplete(fullpath);
         return;
         // }, onError: (error) {
         //   // 없다 .업로드 해야 한다.

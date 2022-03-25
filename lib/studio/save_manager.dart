@@ -15,32 +15,33 @@ SaveManager? saveManagerHolder;
 class SaveManager extends ChangeNotifier {
   static const int timeBlockSec = 2;
 
-  final Lock lock = Lock();
-  final Lock downlLoadlock = Lock();
+  final Lock _lock = Lock();
+  final Lock _uplLoadlock = Lock();
+  final Lock _savelock = Lock();
   bool _autoSaveFlag = true;
   bool _saveInProgress = false;
-  final Queue<int> _downloadInProgressQueue = Queue<int>();
+  final Queue<int> _uploadInProgressQueue = Queue<int>();
   final Queue<String> changedQueue = Queue<String>();
 
   Future<void> addDownloadCount() async {
-    await downlLoadlock.synchronized(() async {
-      _downloadInProgressQueue.add(100);
+    await _uplLoadlock.synchronized(() async {
+      _uploadInProgressQueue.add(100);
     });
     notifyListeners();
   }
 
   Future<void> popDownloadCount() async {
-    await downlLoadlock.synchronized(() async {
-      if (_downloadInProgressQueue.isNotEmpty) {
-        _downloadInProgressQueue.removeFirst();
+    await _uplLoadlock.synchronized(() async {
+      if (_uploadInProgressQueue.isNotEmpty) {
+        _uploadInProgressQueue.removeFirst();
       }
     });
     notifyListeners();
   }
 
   Future<bool> isInUploding() async {
-    return await downlLoadlock.synchronized(() async {
-      if (_downloadInProgressQueue.isEmpty) {
+    return await _uplLoadlock.synchronized(() async {
+      if (_uploadInProgressQueue.isEmpty) {
         return false;
       }
       return true;
@@ -48,8 +49,14 @@ class SaveManager extends ChangeNotifier {
   }
 
   Future<bool> isInSaving() async {
-    return await lock.synchronized(() async {
+    return await _savelock.synchronized(() async {
       return _saveInProgress;
+    });
+  }
+
+  Future<void> setSaveInProgress(bool s) async {
+    return await _savelock.synchronized(() async {
+      _saveInProgress = s;
     });
   }
 
@@ -70,8 +77,9 @@ class SaveManager extends ChangeNotifier {
   }
 
   Future<void> pushChanged(String mid) async {
-    await lock.synchronized(() async {
+    await _lock.synchronized(() async {
       if (!changedQueue.contains(mid)) {
+        logHolder.log('changed:$mid', level: 6);
         changedQueue.add(mid);
       }
     });
@@ -79,32 +87,37 @@ class SaveManager extends ChangeNotifier {
 
   Future<void> initTimer() async {
     Timer.periodic(const Duration(seconds: timeBlockSec), (timer) async {
-      await lock.synchronized(() async {
-        if (_autoSaveFlag && !_saveInProgress && (await isInUploding()) == false) {
-          logHolder.log('autoSave------------By Timer');
-          _saveInProgress = true;
-          notifyListeners();
+      await _lock.synchronized(() async {
+        if (_autoSaveFlag && !(await isInSaving()) && (await isInUploding()) == false) {
+          if (changedQueue.isNotEmpty) {
+            logHolder.log('autoSave------------start', level: 6);
+            await setSaveInProgress(true);
+            notifyListeners();
+          }
           while (changedQueue.isNotEmpty) {
             final mid = changedQueue.first;
             changedQueue.removeFirst();
             await DbActions.save(mid);
           }
-          _saveInProgress = false;
-          notifyListeners();
+          if (await isInSaving()) {
+            await setSaveInProgress(false);
+            notifyListeners();
+            logHolder.log('autoSave------------end', level: 6);
+          }
         }
       });
     });
   }
 
   Future<void> blockAutoSave() async {
-    await lock.synchronized(() async {
+    await _lock.synchronized(() async {
       logHolder.log('autoSave locked------------', level: 6);
       _autoSaveFlag = false;
     });
   }
 
   Future<void> releaseAutoSave() async {
-    await lock.synchronized(() async {
+    await _lock.synchronized(() async {
       logHolder.log('autoSave released------------', level: 6);
       _autoSaveFlag = true;
     });
@@ -112,14 +125,14 @@ class SaveManager extends ChangeNotifier {
 
   Future<void> delayedReleaseAutoSave(int milliSec) async {
     await Future.delayed(Duration(microseconds: milliSec));
-    await lock.synchronized(() async {
+    await _lock.synchronized(() async {
       logHolder.log('autoSave released------------', level: 6);
       _autoSaveFlag = true;
     });
   }
 
   Future<void> autoSave() async {
-    await lock.synchronized(() async {
+    await _lock.synchronized(() async {
       if (_autoSaveFlag) {
         logHolder.log('autoSave------------', level: 6);
         await DbActions.saveAll();

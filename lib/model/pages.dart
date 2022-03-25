@@ -25,6 +25,8 @@ class PageModel extends AbsModel {
     bgColor = UndoAble<Color>(Colors.white, mid);
     isUsed = UndoAble<bool>(true, mid);
     isCircle = UndoAble<bool>(true, mid);
+
+    save();
   }
 
   @override
