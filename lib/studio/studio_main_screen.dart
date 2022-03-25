@@ -23,10 +23,7 @@ import 'package:creta00/constants/constants.dart';
 StudioMainScreen? studioMainHolder;
 
 class StudioMainScreen extends StatefulWidget {
-  StudioMainScreen({Key? key, required this.book, required this.user}) : super(key: key) {
-    saveManagerHolder = SaveManager();
-  }
-
+  const StudioMainScreen({Key? key, required this.book, required this.user}) : super(key: key);
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.

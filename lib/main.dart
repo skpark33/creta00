@@ -1,3 +1,4 @@
+import 'package:creta00/studio/save_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    saveManagerHolder = SaveManager();
     studioMainHolder = StudioMainScreen(
         book: BookModel('나의 첫 콘텐츠북', 'skpark@sqisoft.com'),
         user: UserModel(id: 'skpark@sqisoft.com'));
