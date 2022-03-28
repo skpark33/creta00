@@ -31,6 +31,7 @@ class ContentsModel extends AbsModel {
   final String mime;
   final File? file;
   String? remoteUrl;
+  String? thumbnail;
   ContentsType contentsType = ContentsType.free;
 
   late UndoAble<double> playTime; // 1000 분의 1초 milliseconds
@@ -111,6 +112,7 @@ class ContentsModel extends AbsModel {
         "prevPlayTime": prevPlayTime,
         "lastModifiedTime": (file != null) ? file!.lastModifiedDate.toString() : 0,
         "remoteUrl": (remoteUrl != null) ? remoteUrl : '',
+        "thumbnail": (thumbnail != null) ? thumbnail : '',
       }.entries);
   }
 

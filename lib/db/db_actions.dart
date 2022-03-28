@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:http/http.dart' as http;
 
 import 'package:creta00/constants/constants.dart';
 import 'package:creta00/common/util/logger.dart';
@@ -12,6 +13,8 @@ import 'package:creta00/model/contents.dart';
 import 'package:creta00/model/models.dart';
 import 'package:creta00/db/creta_db.dart';
 import 'package:creta00/storage/creta_storage.dart';
+
+import '../common/util/thumbnail_gen.dart';
 
 class DbActions {
   static Future<void> saveAll() async {
@@ -88,6 +91,31 @@ class DbActions {
                 remotePath: "${studioMainHolder!.user.id}/${studioMainHolder!.book.mid}",
                 content: contents,
                 onComplete: (path) async {
+                  if (contents.contentsType == ContentsType.video && contents.thumbnail == null) {
+                    String thumbnailPath = await CretaStorage.downloadUrlStr(path);
+                    logHolder.log('get Thumbnail $thumbnailPath', level: 6);
+                    try {
+                      VideoThumbnail.getBytes(thumbnailPath).then((value) {
+                        String thumbNailFileName = 'Thumbnail_${contents.file!.name}';
+                        http.MultipartFile image = http.MultipartFile.fromBytes('image', value,
+                            filename: thumbNailFileName);
+
+                        CretaStorage.uploadThumbNailToStrage(
+                            remotePath:
+                                "${studioMainHolder!.user.id}/${studioMainHolder!.book.mid}",
+                            fileName: thumbNailFileName,
+                            file: image,
+                            onComplete: (path) {
+                              contents.thumbnail = thumbnailPath;
+                              logHolder.log('Upload complete ${contents.thumbnail!}', level: 6);
+                              _storeChangedDataOnly(
+                                  contents, "creta_contents", contents.serialize());
+                            });
+                      });
+                    } catch (error) {
+                      logHolder.log('get Thumbnail failed ${error.toString()}', level: 6);
+                    }
+                  }
                   contents.remoteUrl = path;
                   logHolder.log('Upload complete ${contents.remoteUrl!}', level: 6);
                   await _storeChangedDataOnly(contents, "creta_contents", contents.serialize());

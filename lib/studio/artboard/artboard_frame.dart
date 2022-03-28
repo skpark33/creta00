@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 //import 'package:creta00/studio/properties/properties_frame.dart';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,10 +22,10 @@ class ArtBoardScreen extends StatefulWidget {
   const ArtBoardScreen({Key? key}) : super(key: key);
 
   @override
-  State<ArtBoardScreen> createState() => _ArtBoardScreenState();
+  State<ArtBoardScreen> createState() => ArtBoardScreenState();
 }
 
-class _ArtBoardScreenState extends State<ArtBoardScreen> {
+class ArtBoardScreenState extends State<ArtBoardScreen> {
   double pageRatio = 9 / 16;
   double width = 0;
   double height = 0;
@@ -153,5 +155,19 @@ class _ArtBoardScreenState extends State<ArtBoardScreen> {
         );
       });
     });
+  }
+
+  // ignore: non_constant_identifier_names
+  Future<dynamic> ShowCapturedWidget(BuildContext context, Uint8List capturedImage) {
+    return showDialog(
+      useSafeArea: false,
+      context: context,
+      builder: (context) => Scaffold(
+        appBar: AppBar(
+          title: Text("Captured widget screenshot"),
+        ),
+        body: Center(child: capturedImage.isNotEmpty ? Image.memory(capturedImage) : Container()),
+      ),
+    );
   }
 }

@@ -1,12 +1,15 @@
 //import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:creta00/common/util/logger.dart';
 //ignore: avoid_web_libraries_in_flutter
-import 'dart:html';
+import 'dart:html' as html;
+import 'package:http/http.dart' as http;
+
 //import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/db/creta_db.dart';
 import 'package:creta00/model/contents.dart';
 import 'package:firebase/firebase.dart' as fb;
+
 //import 'package:cross_file/cross_file.dart';
 
 class CretaStorage {
@@ -48,7 +51,7 @@ class CretaStorage {
         //   });
         //});
       } else {
-        final reader = FileReader();
+        final reader = html.FileReader();
         reader.readAsDataUrl(content.file!);
         reader.onLoadEnd.listen((event) {
           logHolder.log('Upload ${content.file!.name}', level: 6);
@@ -57,6 +60,25 @@ class CretaStorage {
           });
         });
       }
+    } catch (e) {
+      logHolder.log("UPLOAD ERROR : $e", level: 7);
+    }
+  }
+
+  static void uploadThumbNailToStrage(
+      {required String remotePath,
+      required String fileName,
+      required http.MultipartFile? file,
+      required void Function(String newPath) onComplete}) {
+    try {
+      String fullpath = '$remotePath/$fileName';
+
+      fb.StorageReference ref = fb.storage().refFromURL(fbServerUrl).child(fullpath);
+
+      logHolder.log('Upload $fileName', level: 6);
+      ref.put(file!).future.then((value) {
+        onComplete(fullpath);
+      });
     } catch (e) {
       logHolder.log("UPLOAD ERROR : $e", level: 7);
     }

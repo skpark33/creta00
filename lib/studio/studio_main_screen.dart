@@ -23,7 +23,7 @@ import 'package:creta00/constants/constants.dart';
 StudioMainScreen? studioMainHolder;
 
 class StudioMainScreen extends StatefulWidget {
-  const StudioMainScreen({Key? key, required this.book, required this.user}) : super(key: key);
+  StudioMainScreen({Key? key, required this.book, required this.user}) : super(key: key);
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.
@@ -38,6 +38,8 @@ class StudioMainScreen extends StatefulWidget {
 
   @override
   State<StudioMainScreen> createState() => _MainScreenState();
+
+  final GlobalKey<ArtBoardScreenState> artBoardKey = GlobalKey<ArtBoardScreenState>();
 }
 
 class _MainScreenState extends State<StudioMainScreen> {
@@ -157,7 +159,7 @@ class _MainScreenState extends State<StudioMainScreen> {
               Column(
             children: [
               SaveIndicator(),
-              Expanded(child: ArtBoardScreen()),
+              Expanded(child: ArtBoardScreen(key: widget.artBoardKey)),
             ],
           ),
         ),
