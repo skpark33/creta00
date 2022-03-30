@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:creta00/creta_main.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:creta00/constants/constants.dart';
@@ -91,31 +92,17 @@ class DbActions {
                 remotePath: "${studioMainHolder!.user.id}/${studioMainHolder!.book.mid}",
                 content: contents,
                 onComplete: (path) async {
-                  if (contents.contentsType == ContentsType.video && contents.thumbnail == null) {
-                    String thumbnailPath = await CretaStorage.downloadUrlStr(path);
-                    logHolder.log('get Thumbnail $thumbnailPath', level: 6);
-                    try {
-                      VideoThumbnail.getBytes(thumbnailPath).then((value) {
-                        String thumbNailFileName = 'Thumbnail_${contents.file!.name}';
-                        http.MultipartFile image = http.MultipartFile.fromBytes('image', value,
-                            filename: thumbNailFileName);
-
-                        CretaStorage.uploadThumbNailToStrage(
-                            remotePath:
-                                "${studioMainHolder!.user.id}/${studioMainHolder!.book.mid}",
-                            fileName: thumbNailFileName,
-                            file: image,
-                            onComplete: (path) {
-                              contents.thumbnail = thumbnailPath;
-                              logHolder.log('Upload complete ${contents.thumbnail!}', level: 6);
-                              _storeChangedDataOnly(
-                                  contents, "creta_contents", contents.serialize());
-                            });
-                      });
-                    } catch (error) {
-                      logHolder.log('get Thumbnail failed ${error.toString()}', level: 6);
+                  if (contents.thumbnail == null) {
+                    if (contents.contentsType == ContentsType.video) {
+                      _videoThumbnail(path, contents);
+                    } else if (contents.contentsType == ContentsType.image) {
+                      contents.thumbnail = await CretaStorage.downloadUrlStr(path);
                     }
                   }
+                  if (contents.thumbnail != null) {
+                    cretaMainHolder!.setBookThumbnail(contents.thumbnail!);
+                  }
+
                   contents.remoteUrl = path;
                   logHolder.log('Upload complete ${contents.remoteUrl!}', level: 6);
                   await _storeChangedDataOnly(contents, "creta_contents", contents.serialize());
@@ -129,6 +116,30 @@ class DbActions {
       //   Future.delayed(const Duration(milliseconds: 100));
       // }
       return;
+    }
+  }
+
+  static Future<void> _videoThumbnail(String path, ContentsModel contents) async {
+    String thumbnailPath = await CretaStorage.downloadUrlStr(path);
+    logHolder.log('get Thumbnail $thumbnailPath', level: 6);
+    try {
+      VideoThumbnail.getBytes(thumbnailPath).then((value) {
+        String thumbNailFileName = 'Thumbnail_${contents.file!.name}';
+        http.MultipartFile image =
+            http.MultipartFile.fromBytes('image', value, filename: thumbNailFileName);
+
+        CretaStorage.uploadThumbNailToStrage(
+            remotePath: "${studioMainHolder!.user.id}/${studioMainHolder!.book.mid}",
+            fileName: thumbNailFileName,
+            file: image,
+            onComplete: (path) {
+              contents.thumbnail = thumbnailPath;
+              logHolder.log('Upload complete ${contents.thumbnail!}', level: 6);
+              _storeChangedDataOnly(contents, "creta_contents", contents.serialize());
+            });
+      });
+    } catch (error) {
+      logHolder.log('get Thumbnail failed ${error.toString()}', level: 6);
     }
   }
 

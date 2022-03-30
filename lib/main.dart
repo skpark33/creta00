@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'creta_main.dart';
 import 'studio/studio_main_screen.dart';
 import 'model/users.dart';
 import 'model/book.dart';
@@ -29,8 +30,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     saveManagerHolder = SaveManager();
+    cretaMainHolder = CretaMainScreen(
+        book: BookModel('나의 첫 콘텐츠북', 'skpark@sqisoft.com',
+            "'You could do it simple and plain'\nfrom [Sure thing] of Miguel.", ""),
+        user: UserModel(id: 'skpark@sqisoft.com'));
     studioMainHolder = StudioMainScreen(
-        book: BookModel('나의 첫 콘텐츠북', 'skpark@sqisoft.com'),
+        book: BookModel('나의 첫 콘텐츠북', 'skpark@sqisoft.com',
+            "'You could do it simple and plain'\nfrom [Sure thing] of Miguel.", ""),
         user: UserModel(id: 'skpark@sqisoft.com'));
     return MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -61,6 +67,7 @@ class MyApp extends StatelessWidget {
               .copyWith(primary: MyColors.primaryColor)
               .copyWith(secondary: MyColors.secondaryColor),
         ),
-        home: studioMainHolder!);
+        //home: studioMainHolder!);
+        home: cretaMainHolder!);
   }
 }

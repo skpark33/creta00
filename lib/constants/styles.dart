@@ -70,9 +70,37 @@ class MyTextStyles {
       letterSpacing: 0.05,
       fontWeight: FontWeight.w400);
 
+  static TextStyle get buttonText2 => myTextStyle.copyWith(
+      color: Colors.purple[100],
+      fontSize: MyFontsSize.s16,
+      height: 1.5,
+      letterSpacing: 0.05,
+      fontWeight: FontWeight.w400);
+
   static TextStyle get description => myTextStyle.copyWith(
       color: MyColors.puple900,
       fontSize: MyFontsSize.s14,
+      height: 1.5,
+      letterSpacing: 0,
+      fontWeight: FontWeight.w500);
+
+  static TextStyle get userId => myTextStyle.copyWith(
+      color: Colors.white,
+      fontSize: MyFontsSize.s14,
+      height: 1.5,
+      letterSpacing: 0,
+      fontWeight: FontWeight.w500);
+
+  static TextStyle get h3 => myTextStyle.copyWith(
+      color: Colors.white,
+      fontSize: MyFontsSize.s48,
+      height: 1.5,
+      letterSpacing: 0,
+      fontWeight: FontWeight.w500);
+
+  static TextStyle get h5 => myTextStyle.copyWith(
+      color: Colors.white,
+      fontSize: MyFontsSize.s24,
       height: 1.5,
       letterSpacing: 0,
       fontWeight: FontWeight.w500);
@@ -86,9 +114,7 @@ class MyTextStyles {
 
   static TextStyle get h3Eng =>
       myTextStyle.copyWith(fontFamily: MyFonts.raleway, fontSize: MyFontsSize.s48, height: 72 / 48);
-  static TextStyle get h3 => myTextStyle.copyWith(fontSize: MyFontsSize.s48, height: 72 / 48);
-  static TextStyle get h5 =>
-      myTextStyle.copyWith(fontSize: MyFontsSize.s24, fontWeight: FontWeight.w500, height: 36 / 24);
+
   static TextStyle get h6 => myTextStyle.copyWith(
       fontSize: MyFontsSize.s20, fontWeight: FontWeight.w500, height: 1.2, letterSpacing: 0.15);
   static TextStyle get subtitle1 =>
