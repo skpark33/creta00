@@ -15,8 +15,10 @@ class HoverButton extends StatefulWidget {
   final double height;
   Icon? icon;
   final String text;
-  final double normalSize = 24;
-  final double hoverSize = 28;
+  TextStyle textStyle;
+  TextStyle hoverTextStyle;
+  final double normalSize;
+  final double hoverSize;
 
   IconData? iconData;
   Widget? iconWidget;
@@ -26,47 +28,74 @@ class HoverButton extends StatefulWidget {
   bool useIconData = false;
   bool useIconWidget = false;
 
-  HoverButton({
-    Key? key,
-    required this.width,
-    required this.height,
-    required this.onPressed,
-    required this.icon,
-    required this.onEnter,
-    required this.onExit,
-    this.text = '',
-    normalSize = 24,
-    hoverSize = 28,
-  }) : super(key: key);
+  bool iconRight = false;
+  Color bgColor = Colors.transparent;
+  Color borderColor = Colors.transparent;
+  double border = 0;
+  MainAxisAlignment align = MainAxisAlignment.start;
 
-  HoverButton.withIconData({
-    Key? key,
-    required this.width,
-    required this.height,
-    required this.onPressed,
-    required this.iconData,
-    required this.iconColor,
-    required this.iconHoverColor,
-    required this.onEnter,
-    required this.onExit,
-    this.text = '',
-    normalSize = 24,
-    hoverSize = 28,
-  })  : useIconData = true,
+  HoverButton(
+      {Key? key,
+      required this.width,
+      required this.height,
+      required this.onPressed,
+      required this.icon,
+      required this.onEnter,
+      required this.onExit,
+      this.text = '',
+      this.textStyle = MyTextStyles.body1,
+      this.hoverTextStyle = MyTextStyles.body1Hover,
+      this.normalSize = 24,
+      this.hoverSize = 28,
+      this.iconRight = false,
+      this.bgColor = Colors.transparent,
+      this.borderColor = Colors.transparent,
+      this.border = 0,
+      this.align = MainAxisAlignment.start})
+      : super(key: key);
+
+  HoverButton.withIconData(
+      {Key? key,
+      required this.width,
+      required this.height,
+      required this.onPressed,
+      required this.iconData,
+      required this.iconColor,
+      required this.iconHoverColor,
+      required this.onEnter,
+      required this.onExit,
+      this.text = '',
+      this.textStyle = MyTextStyles.body1,
+      this.hoverTextStyle = MyTextStyles.body1Hover,
+      this.normalSize = 24,
+      this.hoverSize = 28,
+      this.iconRight = false,
+      this.bgColor = Colors.transparent,
+      this.borderColor = Colors.transparent,
+      this.border = 0,
+      this.align = MainAxisAlignment.start})
+      : useIconData = true,
         super(key: key);
 
-  HoverButton.withIconWidget({
-    Key? key,
-    required this.width,
-    required this.height,
-    required this.onPressed,
-    required this.iconWidget,
-    required this.onEnter,
-    required this.onExit,
-    this.text = '',
-    normalSize = 24,
-    hoverSize = 28,
-  })  : useIconWidget = true,
+  HoverButton.withIconWidget(
+      {Key? key,
+      required this.width,
+      required this.height,
+      required this.onPressed,
+      required this.iconWidget,
+      required this.onEnter,
+      required this.onExit,
+      this.text = '',
+      this.textStyle = MyTextStyles.body1,
+      this.hoverTextStyle = MyTextStyles.body1Hover,
+      this.normalSize = 24,
+      this.hoverSize = 28,
+      this.iconRight = false,
+      this.bgColor = Colors.transparent,
+      this.borderColor = Colors.transparent,
+      this.border = 0,
+      this.align = MainAxisAlignment.start})
+      : useIconWidget = true,
         super(key: key);
 
   @override
@@ -119,12 +148,12 @@ class _ButtonHoverState extends State<HoverButton> {
           widget.onPressed.call();
         }
       },
-      // onTapCancel: () {
-      //   logHolder.log('onTapCancel');
-      //   setState(() {
-      //     isClicked = false;
-      //   });
-      // },
+      onTapCancel: () {
+        logHolder.log('onTapCancel');
+        setState(() {
+          isClicked = false;
+        });
+      },
       child: MouseRegion(
         onEnter: (f) {
           setState(() {
@@ -143,16 +172,20 @@ class _ButtonHoverState extends State<HoverButton> {
           margin: EdgeInsets.symmetric(horizontal: isHover ? 10 : 5),
           //margin: EdgeInsets.zero,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(6),
-            //border: isClicked ? Border.all(color: Colors.red, width: 1, style: BorderStyle.solid) : null,
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 7,
-                spreadRadius: 0.5,
-                color: isClicked ? Colors.pink.withOpacity(0.5) : Colors.transparent,
-                //color: Colors.pink.withOpacity(0.1),
-              )
-            ],
+            borderRadius: BorderRadius.circular(8),
+            border: widget.border > 0
+                ? Border.all(
+                    color: widget.borderColor, width: widget.border, style: BorderStyle.solid)
+                : null,
+            boxShadow: widget.bgColor != Colors.transparent
+                ? [
+                    BoxShadow(
+                      blurRadius: 2,
+                      spreadRadius: 0.5,
+                      color: isClicked ? widget.bgColor.withOpacity(0.2) : widget.bgColor,
+                    )
+                  ]
+                : [],
             color: Colors.transparent,
           ),
           duration: const Duration(milliseconds: 200),
@@ -188,7 +221,10 @@ class _ButtonHoverState extends State<HoverButton> {
               ? widget.iconWidget!
               : _iconButton()
           : Row(
-              children: [_iconButton(), Text(widget.text, style: MyTextStyles.body1)],
+              mainAxisAlignment: widget.align,
+              children: widget.iconRight
+                  ? [Text(widget.text, style: widget.textStyle), _iconButton()]
+                  : [_iconButton(), Text(widget.text, style: widget.textStyle)],
             ),
     );
   }

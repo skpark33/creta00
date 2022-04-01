@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'package:creta00/creta_main.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:creta00/constants/constants.dart';
 import 'package:creta00/common/util/logger.dart';
@@ -13,134 +11,112 @@ import 'package:creta00/model/pages.dart';
 import 'package:creta00/model/contents.dart';
 import 'package:creta00/model/models.dart';
 import 'package:creta00/db/creta_db.dart';
-import 'package:creta00/storage/creta_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../common/util/thumbnail_gen.dart';
+import '../model/book.dart';
 
 class DbActions {
+  static Future<List<BookModel>> getMyBookList(String userId) async {
+    List<dynamic> list = await CretaDB('creta_book')
+        .simpleQueryData(orderBy: 'updateTime', name: 'userId', value: userId);
+
+    List<BookModel> retval = [];
+    for (QueryDocumentSnapshot item in list) {
+      logHolder.log(item.data()!.toString(), level: 6);
+      Map<String, dynamic> map = item.data()! as Map<String, dynamic>;
+      String? mid = map["mid"];
+      if (mid != null) {
+        BookModel book = BookModel.copyEmpty(mid, userId);
+        book.deserialize(map);
+        retval.add(book);
+      }
+    }
+
+    return retval;
+  }
+
   static Future<void> saveAll() async {
     _storeChangedDataOnly(studioMainHolder!.book, "creta_book", studioMainHolder!.book.serialize());
 
     for (PageModel page in pageManagerHolder!.orderMap.values) {
-      if (page.isRemoved.value == true) {
-        continue;
+      if (page.isRemoved.value == false) {
+        _storeChangedDataOnly(page, "creta_page", page.serialize());
       }
-      _storeChangedDataOnly(page, "creta_page", page.serialize());
     }
     for (ACC acc in accManagerHolder!.orderMap.values) {
-      if (acc.isRemoved.value == true) {
-        continue;
+      if (acc.isRemoved.value == false) {
+        _storeChangedDataOnly(acc, "creta_acc", acc.serialize());
       }
-      _storeChangedDataOnly(acc, "creta_acc", acc.serialize());
 
       for (ContentsModel contents in acc.accChild.playManager!.getModelList()) {
-        if (contents.isRemoved.value == true) {
-          continue;
-        }
-        if (1 == await _storeChangedDataOnly(contents, "creta_contents", contents.serialize())) {
-          CretaStorage.uploadToStrage(
-              remotePath: "${studioMainHolder!.user.id}/${studioMainHolder!.book.mid}",
-              content: contents,
-              onComplete: (path) async {
-                contents.remoteUrl = path;
-                logHolder.log('Upload complete ${contents.remoteUrl!}', level: 6);
-                await _storeChangedDataOnly(contents, "creta_contents", contents.serialize());
-              });
+        if (contents.isRemoved.value == false) {
+          if (1 == await _storeChangedDataOnly(contents, "creta_contents", contents.serialize())) {
+            saveManagerHolder!.pushUploadContents(contents);
+          }
         }
       }
     }
   }
 
-  static Future<void> save(String mid) async {
-    if (mid.length > bookPrefix.length && mid.substring(0, bookPrefix.length) == bookPrefix) {
-      await _storeChangedDataOnly(
+  static bool isBook(String mid) {
+    return (mid.length > bookPrefix.length && mid.substring(0, bookPrefix.length) == bookPrefix);
+  }
+
+  static bool isPage(String mid) {
+    return (mid.length > pagePrefix.length && mid.substring(0, pagePrefix.length) == pagePrefix);
+  }
+
+  static bool isACC(String mid) {
+    return (mid.length > accPrefix.length && mid.substring(0, accPrefix.length) == accPrefix);
+  }
+
+  static bool isContents(String mid) {
+    return (mid.length > contentsPrefix.length &&
+        mid.substring(0, contentsPrefix.length) == contentsPrefix);
+  }
+
+  static Future<bool> save(String mid) async {
+    int retval = 1;
+    if (isBook(mid)) {
+      retval = await _storeChangedDataOnly(
           studioMainHolder!.book, "creta_book", studioMainHolder!.book.serialize());
-
-      return;
+      return (retval == 1);
     }
-    if (mid.length > pagePrefix.length && mid.substring(0, pagePrefix.length) == pagePrefix) {
+    if (isPage(mid)) {
       for (PageModel page in pageManagerHolder!.orderMap.values) {
-        if (page.mid != mid) {
-          continue;
+        if (page.mid == mid) {
+          retval = await _storeChangedDataOnly(page, "creta_page", page.serialize());
         }
-        await _storeChangedDataOnly(page, "creta_page", page.serialize());
       }
-
-      return;
+      return (retval == 1);
     }
-    if (mid.length > accPrefix.length && mid.substring(0, accPrefix.length) == accPrefix) {
+    if (isACC(mid)) {
       for (ACC acc in accManagerHolder!.orderMap.values) {
-        if (acc.mid != mid) {
-          continue;
+        if (acc.mid == mid) {
+          retval = await _storeChangedDataOnly(acc, "creta_acc", acc.serialize());
         }
-        await _storeChangedDataOnly(acc, "creta_acc", acc.serialize());
       }
-
-      return;
+      return (retval == 1);
     }
-
-    if (mid.length > contentsPrefix.length &&
-        mid.substring(0, contentsPrefix.length) == contentsPrefix) {
+    if (isContents(mid)) {
       for (ACC acc in accManagerHolder!.orderMap.values) {
         for (ContentsModel contents in acc.accChild.playManager!.getModelList()) {
           if (contents.mid != mid) {
             continue;
           }
-          if (1 == await _storeChangedDataOnly(contents, "creta_contents", contents.serialize())) {
-            saveManagerHolder!.addDownloadCount();
-            CretaStorage.uploadToStrage(
-                remotePath: "${studioMainHolder!.user.id}/${studioMainHolder!.book.mid}",
-                content: contents,
-                onComplete: (path) async {
-                  if (contents.thumbnail == null) {
-                    if (contents.contentsType == ContentsType.video) {
-                      _videoThumbnail(path, contents);
-                    } else if (contents.contentsType == ContentsType.image) {
-                      contents.thumbnail = await CretaStorage.downloadUrlStr(path);
-                    }
-                  }
-                  if (contents.thumbnail != null) {
-                    cretaMainHolder!.setBookThumbnail(contents.thumbnail!);
-                  }
-
-                  contents.remoteUrl = path;
-                  logHolder.log('Upload complete ${contents.remoteUrl!}', level: 6);
-                  await _storeChangedDataOnly(contents, "creta_contents", contents.serialize());
-                  saveManagerHolder!.popDownloadCount();
-                });
+          retval = await _storeChangedDataOnly(contents, "creta_contents", contents.serialize());
+          if (1 == retval) {
+            if (contents.remoteUrl == null || contents.remoteUrl!.isEmpty) {
+              // upload 되어 있지 않으므로 업로드한다.
+              if (saveManagerHolder != null) {
+                saveManagerHolder!.pushUploadContents(contents);
+              }
+            }
           }
         }
       }
-      // 다운로드가 끝나기 전에 함수가 종료하는 것을 막는다.
-      // while (downloadInProgress) {
-      //   Future.delayed(const Duration(milliseconds: 100));
-      // }
-      return;
     }
-  }
-
-  static Future<void> _videoThumbnail(String path, ContentsModel contents) async {
-    String thumbnailPath = await CretaStorage.downloadUrlStr(path);
-    logHolder.log('get Thumbnail $thumbnailPath', level: 6);
-    try {
-      VideoThumbnail.getBytes(thumbnailPath).then((value) {
-        String thumbNailFileName = 'Thumbnail_${contents.file!.name}';
-        http.MultipartFile image =
-            http.MultipartFile.fromBytes('image', value, filename: thumbNailFileName);
-
-        CretaStorage.uploadThumbNailToStrage(
-            remotePath: "${studioMainHolder!.user.id}/${studioMainHolder!.book.mid}",
-            fileName: thumbNailFileName,
-            file: image,
-            onComplete: (path) {
-              contents.thumbnail = thumbnailPath;
-              logHolder.log('Upload complete ${contents.thumbnail!}', level: 6);
-              _storeChangedDataOnly(contents, "creta_contents", contents.serialize());
-            });
-      });
-    } catch (error) {
-      logHolder.log('get Thumbnail failed ${error.toString()}', level: 6);
-    }
+    return (retval == 1);
   }
 
   static Future<int> _storeChangedDataOnly(

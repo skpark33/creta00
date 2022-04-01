@@ -20,6 +20,8 @@ import 'package:creta00/widgets/base_widget.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:creta00/model/pages.dart';
 import 'package:creta00/model/models.dart';
+import 'package:creta00/model/model_enums.dart';
+
 //import 'package:creta00/constants/constants.dart';
 
 class CurrentData {
@@ -271,7 +273,7 @@ class PlayManager {
         GlobalObjectKey<VideoPlayerWidgetState> key =
             GlobalObjectKey<VideoPlayerWidgetState>(model.mid);
         aWidget = VideoPlayerWidget(
-          key: key,
+          globalKey: key,
           onAfterEvent: onVideoAfterEvent,
           model: model,
           acc: acc,

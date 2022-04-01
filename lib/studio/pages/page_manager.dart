@@ -89,6 +89,14 @@ class PageManager extends ChangeNotifier {
     return page.mid;
   }
 
+  void changeParent(String oldMid, String newMid) {
+    for (PageModel page in pageMap.values) {
+      if (page.parentMid.value == oldMid) {
+        page.parentMid.set(newMid);
+      }
+    }
+  }
+
   void removePage(String mid) {
     if (pageMap[mid] == null) {
       logHolder.log('removePage($mid) is null', level: 6);

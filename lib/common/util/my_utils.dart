@@ -431,6 +431,10 @@ Widget emptyImage() {
   );
 }
 
+Widget defaultBGImage() {
+  return Image.asset('assets/creta_default.png', fit: BoxFit.cover);
+}
+
 double getRadiusPos(double radius, {double minus = 1.0}) {
   double dx = 0;
   if (radius > 0) {
@@ -438,4 +442,29 @@ double getRadiusPos(double radius, {double minus = 1.0}) {
     if (dx.abs() > 180 * pi) dx = 180 * pi * minus;
   }
   return dx;
+}
+
+Color strToColor(String colorStr) {
+  if (colorStr.length > 16) {
+    // 'Color(0x000000ff)';
+    return Color(int.parse(colorStr.substring(8, 16), radix: 16));
+  }
+  return const Color(0xffffffff);
+}
+
+void naviPush(BuildContext context, Widget page) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (BuildContext context) {
+        return page;
+      },
+    ),
+  );
+}
+
+void naviPop(BuildContext context) {
+  Navigator.pop(
+    context,
+  );
 }

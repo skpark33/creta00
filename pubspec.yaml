@@ -160,3 +160,15 @@ fonts:
         - asset: fonts\Noto_Sans_KR\NotoSansKR-Medium.otf
         - asset: fonts\Noto_Sans_KR\NotoSansKR-Regular.otf
         - asset: fonts\Noto_Sans_KR\NotoSansKR-Thin.otf
+    - family: Pretendard
+      fonts:
+        - asset: fonts\Pretendard\Pretendard-Black.woff2
+        - asset: fonts\Pretendard\Pretendard-Bold.woff2
+        - asset: fonts\Pretendard\Pretendard-ExtraBold.woff2
+        - asset: fonts\Pretendard\Pretendard-ExtraLight.woff2
+        - asset: fonts\Pretendard\Pretendard-Light.woff2
+        - asset: fonts\Pretendard\Pretendard-Medium.woff2
+        - asset: fonts\Pretendard\Pretendard-Regular.woff2
+        - asset: fonts\Pretendard\Pretendard-SemiBold.woff2
+        - asset: fonts\Pretendard\Pretendard-Thin.woff2
+        

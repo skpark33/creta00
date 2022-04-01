@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:creta00/creta_main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
@@ -20,36 +21,53 @@ import 'package:creta00/studio/save_indicator.dart';
 import 'package:creta00/player/play_manager.dart';
 import 'package:creta00/constants/constants.dart';
 
+import '../common/util/my_utils.dart';
+
 StudioMainScreen? studioMainHolder;
 
+// ignore: must_be_immutable
 class StudioMainScreen extends StatefulWidget {
-  StudioMainScreen({Key? key, required this.book, required this.user}) : super(key: key);
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
+  StudioMainScreen({required this.mainScreenKey, required this.book, required this.user})
+      : super(key: mainScreenKey) {
+    saveManagerHolder = SaveManager();
+  }
+  final GlobalKey<MainScreenState> mainScreenKey;
 
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final BookModel book;
+  BookModel book;
   final UserModel user;
 
   @override
-  State<StudioMainScreen> createState() => _MainScreenState();
+  State<StudioMainScreen> createState() => MainScreenState();
+
+  void invalidate() {
+    if (mainScreenKey.currentState != null) {
+      mainScreenKey.currentState!.invalidate();
+    }
+  }
 
   final GlobalKey<ArtBoardScreenState> artBoardKey = GlobalKey<ArtBoardScreenState>();
 }
 
-class _MainScreenState extends State<StudioMainScreen> {
+class MainScreenState extends State<StudioMainScreen> {
   List<LogicalKeyboardKey> keys = [];
 
   bool isPlayed = false;
 
+  void invalidate() {
+    setState(() {});
+  }
+
   @override
   void setState(VoidCallback fn) {
     if (mounted) super.setState(fn);
+  }
+
+  @override
+  void dispose() {
+    if (saveManagerHolder != null) {
+      saveManagerHolder!.stopTimer();
+    }
+    super.dispose();
   }
 
   @override
@@ -96,8 +114,6 @@ class _MainScreenState extends State<StudioMainScreen> {
             create: (context) {
               logHolder.log('ChangeNotifierProvider<SaveManager>', level: 5);
               // 생성자에서 미리 만들었다.
-              //saveManagerHolder = SaveManager();
-
               return saveManagerHolder!;
             },
           ),
@@ -236,20 +252,39 @@ class _MainScreenState extends State<StudioMainScreen> {
     }
   }
 
+  Future<void> goBackHome(BuildContext context) async {
+    if (saveManagerHolder != null) {
+      while (InProgressType.done != await saveManagerHolder!.isInProgress()) {
+        await Future.delayed(Duration(milliseconds: 100));
+      }
+    }
+    naviPop(context);
+    cretaMainHolder!.invalidate();
+  }
+
   PreferredSizeWidget buildAppBar() {
     bool isNarrow = MediaQuery.of(context).size.width <= minWindowWidth;
     return AppBar(
       backgroundColor: MyColors.appbar,
-      title: Text(widget.book.name),
+      title: Text(
+        widget.book.name.value,
+        style: MyTextStyles.h5,
+      ),
       leadingWidth: isNarrow ? 200 : 400,
-      leading: isNarrow ? logoIconButton(onPressed: () {}) : appBarLeading(),
+      leading: isNarrow
+          ? logoIconButton(onPressed: () {
+              goBackHome(context);
+            })
+          : appBarLeading(),
       actions: isNarrow ? [] : appBarAction(),
     );
   }
 
   Widget appBarLeading() {
     return Row(children: [
-      logoIconButton(onPressed: () {}),
+      logoIconButton(onPressed: () {
+        goBackHome(context);
+      }),
       IconButton(
         icon: const Icon(Icons.undo),
         onPressed: () {

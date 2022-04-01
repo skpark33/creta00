@@ -54,16 +54,15 @@ class SaveIndicatorState extends State<SaveIndicator> {
                   height: height,
                   color: color,
                 );
-              case InProgressType.uploading:
-                logHolder.log('Uploding...', level: 6);
-                //return _indicator('Uploding...');
-                return aniIndicator(MyStrings.uploading);
-              //return riveIndicator('Uploding...');
               case InProgressType.saving:
                 logHolder.log('Saving...', level: 6);
-                return fadeIndicator(MyStrings.saving);
-              case InProgressType.savingAndUploading:
-                return _indicator(MyStrings.savingUploading);
+                return aniIndicator(MyStrings.saving);
+              case InProgressType.contentsUploading:
+                logHolder.log('ContentsUploding...', level: 6);
+                return aniIndicator(MyStrings.contentsUploading);
+              case InProgressType.thumbnailUploading:
+                logHolder.log('ThumbnailUploding...', level: 6);
+                return aniIndicator(MyStrings.thumbnailUploading);
             }
           });
     });
@@ -86,7 +85,7 @@ class SaveIndicatorState extends State<SaveIndicator> {
     );
   }
 
-  Widget _indicator(String text) {
+  Widget indicator(String text) {
     return Container(
       height: height,
       color: color,

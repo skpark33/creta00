@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:creta00/player/play_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:creta00/model/contents.dart';
+import 'package:creta00/model/model_enums.dart';
 import 'package:creta00/acc/acc.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:blobs/blobs.dart';

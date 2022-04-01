@@ -18,9 +18,8 @@ import '../widgets/base_widget.dart';
 import '../constants/styles.dart';
 import '../constants/constants.dart';
 import '../studio/artboard/artboard_frame.dart';
-import '../model/models.dart';
+import '../model/model_enums.dart';
 import '../model/pages.dart';
-import '../model/contents.dart';
 
 //import 'package:creta00/studio/pages/page_manager.dart';
 class RotateCorner {

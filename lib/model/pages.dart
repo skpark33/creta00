@@ -4,6 +4,7 @@ import 'package:creta00/constants/strings.dart';
 import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/common/undo/undo.dart';
 import 'models.dart';
+import 'model_enums.dart';
 
 class PageModel extends AbsModel {
   Offset origin = Offset.zero;
@@ -27,6 +28,22 @@ class PageModel extends AbsModel {
     isCircle = UndoAble<bool>(true, mid);
 
     save();
+  }
+
+  @override
+  void deserialize(Map<String, dynamic> map) {
+    super.deserialize(map);
+    width.set(map["width"], save: false);
+    height.set(map["height"], save: false);
+    shortCut.set(map["shortCut"], save: false);
+    description.set(map["description"], save: false);
+    isUsed.set(map["isUsed"], save: false);
+    isCircle.set(map["isCircle"], save: false);
+    String? colorStr = map["bgColor"];
+    if (colorStr != null && colorStr.length > 16) {
+      // 'Color(0x000000ff)';
+      bgColor.set(Color(int.parse(colorStr.substring(8, 16), radix: 16)), save: false);
+    }
   }
 
   @override

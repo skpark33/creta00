@@ -8,6 +8,7 @@ import 'package:video_player_platform_interface/video_player_platform_interface.
 import 'package:creta00/player/video/video_player_controller.dart';
 import 'package:creta00/acc/acc.dart';
 import 'package:creta00/model/contents.dart';
+import 'package:creta00/model/model_enums.dart';
 import 'package:creta00/player/abs_player.dart';
 import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/common/util/my_utils.dart';
@@ -15,16 +16,20 @@ import 'package:creta00/common/util/my_utils.dart';
 // ignore: must_be_immutable
 class VideoPlayerWidget extends AbsPlayWidget {
   VideoPlayerWidget({
-    required GlobalObjectKey<VideoPlayerWidgetState> key,
+    required this.globalKey,
     required void Function() onAfterEvent,
     required ContentsModel model,
     required ACC acc,
     bool autoStart = true,
-  }) : super(key: key, onAfterEvent: onAfterEvent, acc: acc, model: model, autoStart: autoStart) {
-    globalKey = key;
-  }
+  }) : super(
+            key: globalKey,
+            onAfterEvent: onAfterEvent,
+            acc: acc,
+            model: model,
+            autoStart: autoStart);
 
-  GlobalObjectKey<VideoPlayerWidgetState>? globalKey;
+  final GlobalObjectKey<VideoPlayerWidgetState> globalKey;
+
   VideoPlayerController? wcontroller;
   VideoEventType prevEvent = VideoEventType.unknown;
 
@@ -63,8 +68,8 @@ class VideoPlayerWidget extends AbsPlayWidget {
 
   @override
   void invalidate() {
-    if (globalKey != null && globalKey!.currentState != null) {
-      globalKey!.currentState!.invalidate();
+    if (globalKey.currentState != null) {
+      globalKey.currentState!.invalidate();
     }
   }
 

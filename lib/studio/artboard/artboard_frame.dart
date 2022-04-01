@@ -49,6 +49,19 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
   }
 
   @override
+  void dispose() {
+    if (menuStickEntry != null) {
+      menuStickEntry!.remove();
+      menuStickEntry = null;
+    }
+    if (accManagerHolder != null) {
+      accManagerHolder!.destroyEntry(context);
+    }
+
+    super.dispose();
+  }
+
+  @override
   void setState(VoidCallback fn) {
     if (mounted) super.setState(fn);
     menuStickEntry!.markNeedsBuild();

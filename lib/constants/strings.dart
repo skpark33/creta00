@@ -27,7 +27,7 @@ class MyStrings {
   static String recent = Locale.isKr() ? "최근 파일 열기" : 'Open Recently Edited';
   static String bring = Locale.isKr() ? "다른 패키지에서 불러오기" : 'Bring from Another Book';
   static String save = Locale.isKr() ? "저장" : 'Save';
-  static String saveas = Locale.isKr() ? "다른이름 저장" : 'Save as';
+  static String saveas = Locale.isKr() ? "다른 이름으로 저장" : 'Save as';
   static String publish = Locale.isKr() ? "발행하기" : 'Publish';
   static String bookPropChange = Locale.isKr() ? "콘텐츠북 속성 변경" : 'Contents Book Properties';
   static String pageAdd = Locale.isKr() ? "페이지 추가" : 'Add Page';
@@ -116,7 +116,13 @@ class MyStrings {
   static String isFixedRatio = Locale.isKr() ? '가로 세로 비를 고정' : "Fixed aspect ratio";
 
   static String saving = Locale.isKr() ? '저장중입니다...' : "Saving...";
-  static String uploading = Locale.isKr() ? '업로드 중입니다...' : "Uploading...";
+  static String contentsUploading = Locale.isKr() ? '콘텐츠를 업로드 중입니다...' : "Uploading Contents...";
+  static String thumbnailUploading = Locale.isKr() ? '썸네일을 업로드 중입니다...' : "Uploading Thumbnail...";
   static String downloding = Locale.isKr() ? '다운로드 중입니다...' : "Downloading...";
-  static String savingUploading = Locale.isKr() ? '저장 및 업로드 중입니다...' : "Saving & Uploading...";
+
+  static String saveError = Locale.isKr() ? '저장에 실패하였습니다.' : "fail to Save";
+  static String uploadError = Locale.isKr() ? '업로드에 실패하였습니다.' : "fail to upload";
+  static String thumbnailError = Locale.isKr() ? '썸네일 업로드에 실패하였습니다.' : "fail to upload thumbnail";
+  static String alreadyExist =
+      Locale.isKr() ? '실패 : 같은 이름의 데이터가 이미 있습니다.' : "Fail : Same name already exist";
 }

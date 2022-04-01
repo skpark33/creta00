@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:creta00/common/util/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:creta00/model/contents.dart';
+import 'package:creta00/model/model_enums.dart';
 import 'package:creta00/acc/acc.dart';
 import 'package:creta00/player/abs_player.dart';
 

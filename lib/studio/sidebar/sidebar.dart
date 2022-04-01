@@ -2,12 +2,16 @@
 
 import 'dart:async';
 
+import 'package:creta00/creta_main.dart';
 import 'package:creta00/db/db_actions.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
 //import 'bloc.navigation_bloc/navigation_bloc.dart';
+import '../../common/buttons/basic_button.dart';
+import '../../common/util/textfileds.dart';
+import '../../constants/strings.dart';
 import 'menu_item.dart';
 import '../../common/util/logger.dart';
 import '../../constants/styles.dart';
@@ -29,6 +33,10 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
   Stream<bool>? isSidebarOpenedStream;
   StreamSink<bool>? isSidebarOpenedSink;
   final _animationDuration = const Duration(milliseconds: 500);
+
+  bool _saveAsMode = false;
+  bool _aleadyExist = false;
+  final TextEditingController _saveAsController = TextEditingController();
 
   //sbool _isEditMode = false;
 
@@ -204,7 +212,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
     return [
       MenuItem(
         icon: Icons.create_new_folder,
-        title: "새로만들기",
+        title: MyStrings.newBook,
         onTap: () {
           onIconPressed();
           //BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.homePageClickedEvent);
@@ -212,7 +220,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
       ),
       MenuItem(
         icon: Icons.folder_open,
-        title: "열기",
+        title: MyStrings.open,
         onTap: () {
           onIconPressed();
           //BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.myAccountClickedEvent);
@@ -221,12 +229,12 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
       MenuItem(
         onTap: () {},
         icon: Icons.last_page,
-        title: "최근 파일 열기",
+        title: MyStrings.recent,
       ),
       MenuItem(
         onTap: () {},
         icon: Icons.paste,
-        title: "다른 패키지에서 불러오기",
+        title: MyStrings.bring,
       ),
       Divider(
         height: 32,
@@ -240,17 +248,72 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
           DbActions.saveAll();
         },
         icon: Icons.save,
-        title: "저장",
+        title: MyStrings.save,
       ),
-      MenuItem(
-        onTap: () {},
-        icon: Icons.save_outlined,
-        title: "다른이름 저장",
+      Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          MenuItem(
+            onTap: () {
+              setState(() {
+                _saveAsMode = !_saveAsMode;
+              });
+            },
+            icon: Icons.save_outlined,
+            title: MyStrings.saveas,
+          ),
+          Visibility(
+              visible: _saveAsMode,
+              child: Column(
+                children: [
+                  myTextField(
+                    cretaMainHolder!.book.name.value,
+                    hasBorder: true,
+                    labelText: 'input new name',
+                    controller: _saveAsController,
+                    hasDeleteButton: false,
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    basicButton(
+                        name: MyStrings.apply,
+                        onPressed: () {
+                          _aleadyExist = saveAs();
+                          setState(() {
+                            if (!_aleadyExist) {
+                              _saveAsMode = !_saveAsMode;
+                            }
+                          });
+                        },
+                        iconData: Icons.done_outlined),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    basicButton(
+                        name: MyStrings.cancel,
+                        onPressed: () {
+                          setState(() {
+                            _saveAsMode = !_saveAsMode;
+                          });
+                        },
+                        iconData: Icons.close_outlined),
+                  ]),
+                  SizedBox(height: 10),
+                  _aleadyExist ? Text(MyStrings.alreadyExist) : SizedBox(height: 5),
+                  SizedBox(
+                    height: 20,
+                  ),
+                ],
+              ))
+        ],
       ),
       MenuItem(
         onTap: () {},
         icon: Icons.send,
-        title: "발행하기",
+        title: MyStrings.publish,
       ),
       Divider(
         height: 32,
@@ -262,9 +325,18 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
       MenuItem(
         onTap: () {},
         icon: Icons.book,
-        title: "콘텐츠북 속성 변경",
+        title: MyStrings.bookPropChange,
       ),
     ];
+  }
+
+  bool saveAs() {
+    if (cretaMainHolder!.book.name.value != _saveAsController.text) {
+      if (cretaMainHolder!.saveAs(_saveAsController.text)) {
+        return false; // not already exist
+      }
+    }
+    return true; // already exist
   }
 }
 

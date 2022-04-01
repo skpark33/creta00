@@ -55,6 +55,24 @@ class MyButtonStyle {
 
 class MyTextStyles {
   /// Declare a base style for each Family
+  ///
+  ///
+  static const body1 = TextStyle(
+      fontFamily: MyFonts.f1,
+      fontWeight: FontWeight.normal,
+      fontSize: 16,
+      height: 24 / 16,
+      letterSpacing: 0.5,
+      color: MyColors.primaryText);
+
+  static const body1Hover = TextStyle(
+      fontFamily: MyFonts.f1,
+      fontWeight: FontWeight.normal,
+      fontSize: 16,
+      height: 24 / 16,
+      letterSpacing: 0.5,
+      color: MyColors.secondaryText);
+
   static const TextStyle f1 = TextStyle(fontFamily: MyFonts.f1, fontWeight: FontWeight.normal);
   static const TextStyle f2 = TextStyle(fontFamily: MyFonts.f2, fontWeight: FontWeight.normal);
   static const TextStyle f3 = TextStyle(fontFamily: MyFonts.f3, fontWeight: FontWeight.normal);
@@ -105,6 +123,13 @@ class MyTextStyles {
       letterSpacing: 0,
       fontWeight: FontWeight.w500);
 
+  static TextStyle get h6 => myTextStyle.copyWith(
+      color: Colors.white,
+      fontSize: MyFontsSize.s20,
+      height: 1.5,
+      letterSpacing: 0,
+      fontWeight: FontWeight.w500);
+
   static TextStyle get symbol => myTextStyle.copyWith(
       color: MyColors.puple900,
       fontSize: MyFontsSize.s20,
@@ -115,15 +140,11 @@ class MyTextStyles {
   static TextStyle get h3Eng =>
       myTextStyle.copyWith(fontFamily: MyFonts.raleway, fontSize: MyFontsSize.s48, height: 72 / 48);
 
-  static TextStyle get h6 => myTextStyle.copyWith(
-      fontSize: MyFontsSize.s20, fontWeight: FontWeight.w500, height: 1.2, letterSpacing: 0.15);
   static TextStyle get subtitle1 =>
       myTextStyle.copyWith(fontSize: MyFontsSize.s16, height: 24 / 16, letterSpacing: 0.15);
   static TextStyle get subtitle2 =>
       myTextStyle.copyWith(fontSize: MyFontsSize.s14, height: 21 / 14, letterSpacing: 0.1);
 
-  static TextStyle get body1 =>
-      myTextStyle.copyWith(fontSize: MyFontsSize.s16, height: 24 / 16, letterSpacing: 0.5);
   static TextStyle get body2 =>
       myTextStyle.copyWith(fontSize: MyFontsSize.s14, height: 21 / 14, letterSpacing: 0.25);
   static TextStyle get deco1 => myTextStyle.copyWith(

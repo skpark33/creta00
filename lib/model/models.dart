@@ -5,8 +5,7 @@ import 'package:uuid/uuid.dart';
 //import '../common/util/logger.dart';
 import '../../constants/constants.dart';
 import '../common/undo/undo.dart';
-
-enum ModelType { none, book, page, acc, contents }
+import 'model_enums.dart';
 
 abstract class AbsModel {
   static int lastPageIndex = 0;
@@ -17,8 +16,8 @@ abstract class AbsModel {
   String get mid => _mid; // mid 는 변경할 수 없으므로 set 함수는 없다.
 
   final GlobalKey key = GlobalKey();
-  final ModelType type;
-  final DateTime updateTime = DateTime.now();
+  ModelType type;
+  DateTime updateTime = DateTime.now();
 
   late UndoAble<String> parentMid;
   late UndoAble<int> order;
@@ -43,28 +42,25 @@ abstract class AbsModel {
     isRemoved = UndoAble<bool>(false, mid);
   }
 
-  void deserialize(String str) {}
+  void changeMid(String newOne) {
+    _mid = newOne;
+  }
 
-  int typeToInt() {
-    switch (type) {
-      case ModelType.none:
-        return 0;
-      case ModelType.book:
-        return 1;
-      case ModelType.page:
-        return 2;
-      case ModelType.acc:
-        return 3;
-      case ModelType.contents:
-        return 4;
-    }
+  void deserialize(Map<String, dynamic> map) {
+    _mid = map["mid"];
+    parentMid.set(map["parentMid"], save: false);
+    type = intToType(map["type"]);
+    order.set(map["order"], save: false);
+    hashTag.set(map["hashTag"], save: false);
+    isRemoved.set(map["isRemoved"], save: false);
+    updateTime = map["updateTime"].toDate();
   }
 
   Map<String, dynamic> serialize() {
     return {
       "mid": mid,
       "parentMid": parentMid.value,
-      "type": typeToInt(),
+      "type": typeToInt(type),
       "order": order.value,
       "hashTag": hashTag.value,
       "isRemoved": isRemoved.value,

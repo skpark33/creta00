@@ -5,24 +5,7 @@ import 'dart:html';
 import '../common/util/logger.dart';
 import '../common/undo/undo.dart';
 import 'models.dart';
-
-enum ContentsType {
-  video,
-  image,
-  text,
-  sheet,
-  youtube,
-  free,
-}
-
-enum PlayState {
-  none,
-  init,
-  start,
-  pause,
-  end,
-  disposed,
-}
+import 'model_enums.dart';
 
 class ContentsModel extends AbsModel {
   final String name; // aaa.jpg

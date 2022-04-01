@@ -3,12 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../constants/constants.dart';
-
-enum UserType {
-  superAdmin,
-  customerAdmin,
-  siteAdimin,
-}
+import 'model_enums.dart';
 
 UserModel currentUser = UserModel(id: 'b49');
 

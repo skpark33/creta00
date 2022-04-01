@@ -26,12 +26,33 @@ class CretaDB {
           resultList.add(result);
         }
       } else {
-        await collectionRef.get().then((snapshot) {
+        //await collectionRef.get().then((snapshot) {
+        await collectionRef.orderBy('updateTime').get().then((snapshot) {
           for (var result in snapshot.docs) {
             resultList.add(result);
           }
         });
       }
+      return resultList;
+    } catch (e) {
+      logHolder.log("GET DB ERROR : $e", level: 7);
+      return resultList;
+    }
+  }
+
+  Future<List> simpleQueryData(
+      {required String orderBy, required String name, required String value}) async {
+    try {
+      //await collectionRef.get().then((snapshot) {
+      await collectionRef
+          .orderBy(orderBy, descending: true)
+          .where(name, isEqualTo: value)
+          .get()
+          .then((snapshot) {
+        for (var result in snapshot.docs) {
+          resultList.add(result);
+        }
+      });
       return resultList;
     } catch (e) {
       logHolder.log("GET DB ERROR : $e", level: 7);

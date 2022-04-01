@@ -3,6 +3,7 @@ import 'package:flutter_neumorphic_null_safety/flutter_neumorphic.dart';
 import '../common/undo/undo.dart';
 import '../constants/styles.dart';
 import '../model/models.dart';
+import '../model/model_enums.dart';
 
 enum CursorType {
   pointer,

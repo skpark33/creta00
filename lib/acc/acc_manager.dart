@@ -10,7 +10,7 @@ import 'package:flutter_treeview/flutter_treeview.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 //import 'package:creta00/constants/constants.dart';
 
-import '../model/contents.dart';
+import '../model/model_enums.dart';
 import '../model/pages.dart';
 import '../model/models.dart';
 
@@ -294,6 +294,13 @@ class ACCManager extends ChangeNotifier {
     //orderMap.clear();
     reorderMap();
     setState();
+  }
+
+  void destroyEntry(BuildContext context) {
+    for (ACC acc in accMap.values) {
+      acc.entry!.remove();
+    }
+    accMap.clear();
   }
 
   bool swapUp(String mid) {

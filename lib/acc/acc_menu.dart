@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:creta00/model/contents.dart';
+import 'package:creta00/model/model_enums.dart';
 import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/common/util/my_utils.dart';
 //import 'package:creta00/constants/styles.dart';
