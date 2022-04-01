@@ -29,7 +29,7 @@ StudioMainScreen? studioMainHolder;
 class StudioMainScreen extends StatefulWidget {
   StudioMainScreen({required this.mainScreenKey, required this.book, required this.user})
       : super(key: mainScreenKey) {
-    saveManagerHolder = SaveManager();
+    //saveManagerHolder = SaveManager();
   }
   final GlobalKey<MainScreenState> mainScreenKey;
 
@@ -110,12 +110,10 @@ class MainScreenState extends State<StudioMainScreen> {
               return selectedModelHolder!;
             },
           ),
-          ChangeNotifierProvider<SaveManager>(
-            create: (context) {
-              logHolder.log('ChangeNotifierProvider<SaveManager>', level: 5);
-              // 생성자에서 미리 만들었다.
-              return saveManagerHolder!;
-            },
+          // ChangeNotifierProvider<SaveManager>(
+          //   create: (context) {
+          ChangeNotifierProvider<SaveManager>.value(
+            value: saveManagerHolder!,
           ),
         ],
         child: RawKeyboardListener(

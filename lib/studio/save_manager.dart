@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:creta00/model/contents.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+//import 'package:flutter/cupertino.dart';
 import 'package:synchronized/synchronized.dart';
 
 import 'package:creta00/common/util/logger.dart';
@@ -16,6 +17,7 @@ enum InProgressType { done, saving, contentsUploading, thumbnailUploading }
 SaveManager? saveManagerHolder;
 
 //자동 저장 , 변경이 있을 때 마다 저장되게 된다.
+
 class SaveManager extends ChangeNotifier {
   static const int timeBlockSec = 2;
 
