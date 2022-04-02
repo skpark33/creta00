@@ -160,7 +160,7 @@ class PlayManager {
     bool state = false;
     await _lock.synchronized(() async {
       if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-        state = _playList.value[_currentIndex].model!.dynamicSize.value;
+        state = _playList.value[_currentIndex].model!.isDynamicSize.value;
       }
     });
     return state;
@@ -176,10 +176,10 @@ class PlayManager {
     return aspectRatio;
   }
 
-  Future<void> setCurrentDynmicSize(bool dynamicSize) async {
+  Future<void> setCurrentDynmicSize(bool isDynamicSize) async {
     await _lock.synchronized(() async {
       if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-        _playList.value[_currentIndex].model!.dynamicSize.set(dynamicSize);
+        _playList.value[_currentIndex].model!.isDynamicSize.set(isDynamicSize);
       }
     });
   }

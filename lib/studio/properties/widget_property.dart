@@ -10,7 +10,7 @@ import 'package:flutter_neumorphic_null_safety/flutter_neumorphic.dart';
 
 import 'package:creta00/acc/acc.dart';
 import 'package:creta00/acc/acc_manager.dart';
-import 'package:creta00/acc/acc_property.dart';
+import 'package:creta00/model/model_enums.dart';
 import 'package:creta00/model/pages.dart';
 import 'package:creta00/studio/properties/property_selector.dart';
 import 'package:creta00/studio/properties/contents_property.dart';

@@ -23,20 +23,6 @@ enum CursorType {
   swRadius,
 }
 
-enum AnimeType {
-  none,
-  carousel,
-  flip,
-}
-
-enum BoxType {
-  rect,
-  rountRect,
-  circle,
-  beveled,
-  stadium,
-}
-
 //class ACCProperty extends ChangeNotifier {
 class ACCProperty extends AbsModel {
   late UndoAble<bool> visible;
@@ -98,34 +84,105 @@ class ACCProperty extends AbsModel {
     save();
   }
 
-  Map<String, dynamic> serializeProperty() {
-    return {
-      "animeType": animeTypeToInt(),
-      "visible": visible.value,
-      "resizable": resizable.value,
-      "radiusAll": radiusAll.value,
-      "radiusTopLeft": radiusTopLeft.value,
-      "radiusTopRight": radiusTopRight.value,
-      "radiusBottomLeft": radiusBottomLeft.value,
-      "radiusBottomRight": radiusBottomRight.value,
-      "primary": primary.value,
-      "fullscreen": fullscreen.value,
-      "containerOffset": containerOffset.value.toString(),
-      "containerSize": containerSize.value.toString(),
-      "rotate": rotate.value,
-      "contentRotate": contentRotate.value,
-      "opacity": opacity.value,
-      "sourceRatio": sourceRatio.value,
-      "isFixedRatio": isFixedRatio.value,
-      "glass": glass.value,
-      "bgColor": bgColor.value.toString(),
-      "borderColor": borderColor.value.toString(),
-      "borderWidth": borderWidth.value,
-      "lightSource": lightSource.value.toString(),
-      "depth": depth.value,
-      "intensity": intensity.value,
-      "boxType": boxTypeToInt(),
-    };
+  ACCProperty.copy(ACCProperty src, String parentId) : super(parent: parentId, type: src.type) {
+    super.copy(src, parentId);
+    visible = UndoAble<bool>(src.visible.value, mid);
+    resizable = UndoAble<bool>(src.resizable.value, mid);
+    animeType = UndoAble<AnimeType>(src.animeType.value, mid);
+    radiusAll = UndoAble<double>(src.radiusAll.value, mid);
+    radiusTopLeft = UndoAble<double>(src.radiusTopLeft.value, mid);
+    radiusTopRight = UndoAble<double>(src.radiusTopRight.value, mid);
+    radiusBottomLeft = UndoAble<double>(src.radiusBottomLeft.value, mid);
+    radiusBottomRight = UndoAble<double>(src.radiusBottomRight.value, mid);
+
+    primary = UndoAble<bool>(src.primary.value, mid);
+    fullscreen = UndoAble<bool>(src.fullscreen.value, mid);
+    containerOffset = UndoAble<Offset>(src.containerOffset.value, mid);
+    containerSize = UndoAble<Size>(src.containerSize.value, mid);
+    rotate = UndoAble<double>(src.rotate.value, mid);
+    contentRotate = UndoAble<bool>(src.contentRotate.value, mid);
+    opacity = UndoAble<double>(src.opacity.value, mid);
+    sourceRatio = UndoAble<bool>(src.sourceRatio.value, mid);
+    isFixedRatio = UndoAble<bool>(src.isFixedRatio.value, mid);
+    glass = UndoAble<bool>(src.glass.value, mid);
+    bgColor = UndoAble<Color>(src.bgColor.value, mid);
+    borderColor = UndoAble<Color>(src.borderColor.value, mid);
+    borderWidth = UndoAble<double>(src.borderWidth.value, mid);
+    lightSource = UndoAble<LightSource>(src.lightSource.value, mid);
+    depth = UndoAble<double>(src.depth.value, mid);
+    intensity = UndoAble<double>(src.intensity.value, mid);
+    boxType = UndoAble<BoxType>(src.boxType.value, mid);
+  }
+
+  @override
+  void deserialize(Map<String, dynamic> map) {
+    super.deserialize(map);
+    animeType.set(intToAnimeType(map["animeType"]), save: false);
+
+    visible.set(map["visible"], save: false);
+    resizable.set(map["resizable"], save: false);
+    radiusAll.set(map["radiusAll"], save: false);
+    radiusTopLeft.set(map["radiusTopLeft"], save: false);
+    radiusTopRight.set(map["radiusTopRight"], save: false);
+    radiusBottomLeft.set(map["radiusBottomLeft"], save: false);
+    radiusBottomRight.set(map["radiusBottomRight"], save: false);
+    primary.set(map["primary"], save: false);
+    fullscreen.set(map["fullscreen"], save: false);
+
+    containerOffset.set(Offset(map["containerOffset_dx"], map["containerOffset_dy"]), save: false);
+    containerSize.set(Size(map["containerSize_width"], map["containerSize_height"]), save: false);
+    rotate.set(map["rotate"], save: false);
+    contentRotate.set(map["contentRotate"], save: false);
+    opacity.set(map["opacity"], save: false);
+    sourceRatio.set(map["sourceRatio"], save: false);
+    isFixedRatio.set(map["isFixedRatio"], save: false);
+    glass.set(map["glass"], save: false);
+    String? colorStr = map["bgColor"];
+    if (colorStr != null && colorStr.length > 16) {
+      // 'Color(0x000000ff)';
+      bgColor.set(Color(int.parse(colorStr.substring(8, 16), radix: 16)), save: false);
+    }
+    borderColor.set(map["borderColor"], save: false);
+    borderWidth.set(map["borderWidth"], save: false);
+    lightSource.set(LightSource(map["lightSource_dx"], map["lightSource_dy"]), save: false);
+    depth.set(map["depth"], save: false);
+    intensity.set(map["intensity"], save: false);
+    boxType.set(intToBoxType(map["boxType"]), save: false);
+  }
+
+  @override
+  Map<String, dynamic> serialize() {
+    return super.serialize()
+      ..addEntries({
+        "animeType": animeTypeToInt(),
+        "visible": visible.value,
+        "resizable": resizable.value,
+        "radiusAll": radiusAll.value,
+        "radiusTopLeft": radiusTopLeft.value,
+        "radiusTopRight": radiusTopRight.value,
+        "radiusBottomLeft": radiusBottomLeft.value,
+        "radiusBottomRight": radiusBottomRight.value,
+        "primary": primary.value,
+        "fullscreen": fullscreen.value,
+        "containerOffset_dx": containerOffset.value.dx,
+        "containerOffset_dy": containerOffset.value.dy,
+        "containerSize_width": containerSize.value.width,
+        "containerSize_height": containerSize.value.height,
+        "rotate": rotate.value,
+        "contentRotate": contentRotate.value,
+        "opacity": opacity.value,
+        "sourceRatio": sourceRatio.value,
+        "isFixedRatio": isFixedRatio.value,
+        "glass": glass.value,
+        "bgColor": bgColor.value.toString(),
+        "borderColor": borderColor.value.toString(),
+        "borderWidth": borderWidth.value,
+        "lightSource_dx": lightSource.value.dx,
+        "lightSource_dy": lightSource.value.dy,
+        "depth": depth.value,
+        "intensity": intensity.value,
+        "boxType": boxTypeToInt(),
+      }.entries);
   }
 
   int boxTypeToInt() {

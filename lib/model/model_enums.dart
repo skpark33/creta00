@@ -124,3 +124,73 @@ enum PlayState {
   end,
   disposed,
 }
+
+enum AnimeType {
+  none,
+  carousel,
+  flip,
+}
+
+int animeTypeToInt(AnimeType value) {
+  switch (value) {
+    case AnimeType.none:
+      return 0;
+    case AnimeType.carousel:
+      return 1;
+    case AnimeType.flip:
+      return 2;
+  }
+}
+
+AnimeType intToAnimeType(int t) {
+  switch (t) {
+    case 0:
+      return AnimeType.none;
+    case 1:
+      return AnimeType.carousel;
+    case 2:
+      return AnimeType.flip;
+    default:
+      return AnimeType.none;
+  }
+}
+
+enum BoxType {
+  rect,
+  rountRect,
+  circle,
+  beveled,
+  stadium,
+}
+
+int boxTypeToInt(BoxType value) {
+  switch (value) {
+    case BoxType.rect:
+      return 0;
+    case BoxType.rountRect:
+      return 1;
+    case BoxType.circle:
+      return 2;
+    case BoxType.beveled:
+      return 3;
+    case BoxType.stadium:
+      return 4;
+  }
+}
+
+BoxType intToBoxType(int t) {
+  switch (t) {
+    case 0:
+      return BoxType.rect;
+    case 1:
+      return BoxType.rountRect;
+    case 2:
+      return BoxType.circle;
+    case 3:
+      return BoxType.beveled;
+    case 4:
+      return BoxType.stadium;
+    default:
+      return BoxType.rect;
+  }
+}

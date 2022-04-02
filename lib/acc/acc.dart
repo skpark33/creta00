@@ -34,12 +34,23 @@ class ACC extends ACCProperty {
     order.set(idx);
   }
 
-  @override
-  Map<String, dynamic> serialize() {
-    return super.serialize()..addEntries(serializeProperty().entries);
+  ACC.copy(ACC src, String parentId) : super(parent: parentId, type: src.type) {
+    ACCProperty.copy(src, parentId);
   }
 
-  final BaseWidget accChild;
+  @override
+  void deserialize(Map<String, dynamic> map) {
+    logHolder.log('deserialize ACC');
+    super.deserialize(map);
+  }
+
+  @override
+  Map<String, dynamic> serialize() {
+    logHolder.log('serialize ACC');
+    return super.serialize();
+  }
+
+  late BaseWidget accChild;
   //final int index;
   PageModel? page;
   //bool isStart = false;

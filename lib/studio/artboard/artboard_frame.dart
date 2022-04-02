@@ -150,7 +150,7 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
                   accId: '',
                   onDroppedFile: (model) {
                     logHolder.log('contents added ${model.mid}', level: 6);
-                    model.dynamicSize.set(true); // 동영상에 맞게 frame size 를 조절하라는 뜻
+                    model.isDynamicSize.set(true); // 동영상에 맞게 frame size 를 조절하라는 뜻
                     MyMenuStickState.createACC(context, model);
                     //accChild.playManager!.push(this, model);
                   },

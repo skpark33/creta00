@@ -11,7 +11,7 @@ import 'package:creta00/player/play_manager.dart';
 import 'package:creta00/player/abs_player.dart';
 import 'package:creta00/widgets/carousel_widget.dart';
 import 'package:creta00/acc/acc.dart';
-import 'package:creta00/acc/acc_property.dart';
+import 'package:creta00/model/model_enums.dart';
 
 const int minCarouselCount = 3;
 

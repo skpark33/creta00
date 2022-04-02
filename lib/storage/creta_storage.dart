@@ -65,7 +65,7 @@ class CretaStorage {
         //     http.MultipartFile image =
         //         http.MultipartFile.fromBytes('image', value, filename: thumbNailFileName);
 
-        //     _uploadThumbNailToStorage(
+        //     uploadThumbNailToStorage(
         //         remotePath: "${studioMainHolder!.user.id}/${studioMainHolder!.book.mid}",
         //         fileName: thumbNailFileName,
         //         file: image,
@@ -121,7 +121,7 @@ class CretaStorage {
     }
   }
 
-  static void _uploadThumbNailToStorage(
+  static void uploadThumbNailToStorage(
       {required String remotePath,
       required String fileName,
       required http.MultipartFile? file,

@@ -21,7 +21,7 @@ class BookModel extends AbsModel {
   late UndoAble<ContentsType> thumbnailType;
   String userId;
 
-  BookModel.copyEmpty(String srcMid, this.userId) : super(type: ModelType.book, parent: '') {
+  BookModel.createEmptyModel(String srcMid, this.userId) : super(type: ModelType.book, parent: '') {
     super.changeMid(srcMid);
     name = UndoAble<String>('', srcMid);
     thumbnailUrl = UndoAble<String>('', srcMid);

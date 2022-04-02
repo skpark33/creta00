@@ -12,11 +12,11 @@ abstract class AbsModel {
   static int lastAccIndex = 0;
   static int lastContentsIndex = 0;
 
-  String _mid = '';
+  late String _mid = '';
   String get mid => _mid; // mid 는 변경할 수 없으므로 set 함수는 없다.
 
   final GlobalKey key = GlobalKey();
-  ModelType type;
+  ModelType type = ModelType.none;
   DateTime updateTime = DateTime.now();
 
   late UndoAble<String> parentMid;
@@ -24,7 +24,7 @@ abstract class AbsModel {
   late UndoAble<String> hashTag;
   late UndoAble<bool> isRemoved;
 
-  AbsModel({required this.type, required String parent}) {
+  void _genMid() {
     if (type == ModelType.page) {
       _mid = pagePrefix;
     } else if (type == ModelType.acc) {
@@ -35,11 +35,23 @@ abstract class AbsModel {
       _mid = bookPrefix;
     }
     _mid += const Uuid().v4();
+  }
 
+  AbsModel({required this.type, required String parent}) {
+    _genMid();
     parentMid = UndoAble<String>(parent, mid);
     order = UndoAble<int>(0, mid);
     hashTag = UndoAble<String>('', mid);
     isRemoved = UndoAble<bool>(false, mid);
+  }
+
+  void copy(AbsModel src, String pMid) {
+    _genMid();
+    type = src.type;
+    parentMid = UndoAble<String>(pMid, mid);
+    order = UndoAble<int>(src.order.value, mid);
+    hashTag = UndoAble<String>(src.hashTag.value, mid);
+    isRemoved = UndoAble<bool>(src.isRemoved.value, mid);
   }
 
   void changeMid(String newOne) {

@@ -18,6 +18,17 @@ class PageModel extends AbsModel {
   late UndoAble<bool> isUsed;
   late UndoAble<bool> isCircle;
 
+  PageModel.copy(PageModel src, String parentId) : super(parent: parentId, type: src.type) {
+    super.copy(src, parentId);
+    width = UndoAble<int>(src.width.value, mid);
+    height = UndoAble<int>(src.height.value, mid);
+    description = UndoAble<String>(src.description.value, mid);
+    shortCut = UndoAble<String>(src.shortCut.value, mid);
+    bgColor = UndoAble<Color>(src.bgColor.value, mid);
+    isUsed = UndoAble<bool>(src.isUsed.value, mid);
+    isCircle = UndoAble<bool>(src.isCircle.value, mid);
+  }
+
   PageModel(String bookId) : super(type: ModelType.page, parent: bookId) {
     width = UndoAble<int>(1920, mid);
     height = UndoAble<int>(1080, mid);

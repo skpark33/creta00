@@ -26,7 +26,7 @@ class DbActions {
       Map<String, dynamic> map = item.data()! as Map<String, dynamic>;
       String? mid = map["mid"];
       if (mid != null) {
-        BookModel book = BookModel.copyEmpty(mid, userId);
+        BookModel book = BookModel.createEmptyModel(mid, userId);
         book.deserialize(map);
         retval.add(book);
       }
