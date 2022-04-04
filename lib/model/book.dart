@@ -5,7 +5,8 @@
 //import '../constants/styles.dart';
 //import 'package:creta00/model/users.dart';
 
-import 'package:creta00/studio/pages/page_manager.dart';
+import 'package:creta00/common/util/logger.dart';
+
 import 'models.dart';
 import 'model_enums.dart';
 import '../common/undo/undo.dart';
@@ -19,6 +20,7 @@ class BookModel extends AbsModel {
   late UndoAble<bool> readOnly;
   late UndoAble<String> thumbnailUrl;
   late UndoAble<ContentsType> thumbnailType;
+  late UndoAble<double> thumbnailAspectRatio;
   String userId;
 
   BookModel.createEmptyModel(String srcMid, this.userId) : super(type: ModelType.book, parent: '') {
@@ -26,6 +28,7 @@ class BookModel extends AbsModel {
     name = UndoAble<String>('', srcMid);
     thumbnailUrl = UndoAble<String>('', srcMid);
     thumbnailType = UndoAble<ContentsType>(ContentsType.free, srcMid);
+    thumbnailAspectRatio = UndoAble<double>(1, srcMid);
     isPublic = UndoAble<bool>(false, srcMid);
     bookType = UndoAble<BookType>(BookType.signage, srcMid);
     readOnly = UndoAble<bool>(false, srcMid);
@@ -38,6 +41,7 @@ class BookModel extends AbsModel {
     name = UndoAble<String>(nameStr, mid);
     thumbnailUrl = UndoAble<String>('', mid);
     thumbnailType = UndoAble<ContentsType>(ContentsType.free, mid);
+    thumbnailAspectRatio = UndoAble<double>(1, mid);
     isPublic = UndoAble<bool>(false, mid);
     bookType = UndoAble<BookType>(BookType.signage, mid);
     readOnly = UndoAble<bool>(false, mid);
@@ -48,14 +52,15 @@ class BookModel extends AbsModel {
     save();
   }
 
-  BookModel saveAs(String newName) {
+  BookModel makeCopy(String newName) {
     BookModel newBook = BookModel(newName, userId, description.value, hashTag.value);
-    newBook.bookType = bookType;
-    newBook.isPublic = isPublic;
-    newBook.thumbnailUrl = thumbnailUrl;
-    newBook.thumbnailType = thumbnailType;
-    pageManagerHolder!.changeParent(mid, newBook.mid);
-    newBook.save();
+    newBook.bookType.set(bookType.value);
+    newBook.isPublic.set(isPublic.value);
+    newBook.thumbnailUrl.set(thumbnailUrl.value);
+    newBook.thumbnailType.set(thumbnailType.value);
+    newBook.thumbnailAspectRatio.set(thumbnailAspectRatio.value);
+    logHolder.log('BookCopied(${newBook.mid}', level: 6);
+    newBook.saveModel();
     return newBook;
   }
 
@@ -69,6 +74,7 @@ class BookModel extends AbsModel {
     description.set(map["description"], save: false);
     thumbnailUrl.set(map["thumbnailUrl"], save: false);
     thumbnailType.set(intToContentsType(map["thumbnailType"] ?? 99), save: false);
+    thumbnailAspectRatio.set((map["thumbnailAspectRatio"] ?? 1), save: false);
   }
 
   @override
@@ -82,6 +88,7 @@ class BookModel extends AbsModel {
         "description": description.value,
         "thumbnailUrl": thumbnailUrl.value,
         "thumbnailType": contentsTypeToInt(thumbnailType.value),
+        "thumbnailAspectRatio": thumbnailAspectRatio.value,
       }.entries);
   }
 }

@@ -24,7 +24,8 @@ class MySizes {
 class MyFonts {
   static const String raleway = "Raleway";
   static const String fraunces = "Fraunces";
-  static const f1 = 'Noto_Sans_KR';
+  //static const f1 = 'Noto_Sans_KR';
+  static const f1 = 'Pretendard';
   static const f2 = 'Nanum_Myeongjo';
   static const f3 = 'Nanum_Gothic';
   static const f4 = 'Jua';
@@ -72,6 +73,20 @@ class MyTextStyles {
       height: 24 / 16,
       letterSpacing: 0.5,
       color: MyColors.secondaryText);
+
+  static TextStyle get cardText1 => myTextStyle.copyWith(
+      color: Colors.black,
+      fontSize: MyFontsSize.s14,
+      height: 1.5,
+      letterSpacing: 0.05,
+      fontWeight: FontWeight.w400);
+
+  static TextStyle get cardText2 => myTextStyle.copyWith(
+      color: Colors.grey,
+      fontSize: MyFontsSize.s14,
+      height: 1.5,
+      letterSpacing: 0.05,
+      fontWeight: FontWeight.w400);
 
   static const TextStyle f1 = TextStyle(fontFamily: MyFonts.f1, fontWeight: FontWeight.normal);
   static const TextStyle f2 = TextStyle(fontFamily: MyFonts.f2, fontWeight: FontWeight.normal);

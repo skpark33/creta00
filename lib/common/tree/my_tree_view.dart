@@ -93,12 +93,12 @@ class _MyTreeViewState extends State<MyTreeView> {
       return pageModel.mid;
     }
 
-    String accKey = pageModel.mid + '/' + acc.mid;
+    String accKey = pageModel.mid + '/' + acc.accModel.mid;
     ContentsModel? conModel = await acc.accChild.playManager!.getCurrentModel();
     if (conModel == null || pageManagerHolder!.isAcc()) {
       return accKey;
     }
-    return pageModel.mid + '/' + acc.mid + '/' + conModel.mid;
+    return pageModel.mid + '/' + acc.accModel.mid + '/' + conModel.mid;
   }
 
   @override

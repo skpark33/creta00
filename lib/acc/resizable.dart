@@ -4,7 +4,7 @@
 import 'dart:math';
 //import 'package:creta00/common/util/logger.dart';
 import 'package:flutter/material.dart';
-import 'acc_property.dart';
+import '../model/acc_property.dart';
 import '../constants/styles.dart';
 import '../common/util/my_utils.dart';
 

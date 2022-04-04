@@ -255,14 +255,13 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           MenuItem(
-            onTap: () {
-              setState(() {
-                _saveAsMode = !_saveAsMode;
-              });
-            },
-            icon: Icons.save_outlined,
-            title: MyStrings.saveas,
-          ),
+              onTap: () {
+                setState(() {
+                  _saveAsMode = !_saveAsMode;
+                });
+              },
+              icon: Icons.save_outlined,
+              title: MyStrings.makeCopy),
           Visibility(
               visible: _saveAsMode,
               child: Column(
@@ -281,7 +280,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
                     basicButton(
                         name: MyStrings.apply,
                         onPressed: () {
-                          _aleadyExist = saveAs();
+                          _aleadyExist = makeCopy();
                           setState(() {
                             if (!_aleadyExist) {
                               _saveAsMode = !_saveAsMode;
@@ -330,9 +329,9 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
     ];
   }
 
-  bool saveAs() {
+  bool makeCopy() {
     if (cretaMainHolder!.book.name.value != _saveAsController.text) {
-      if (cretaMainHolder!.saveAs(_saveAsController.text)) {
+      if (cretaMainHolder!.makeCopy(_saveAsController.text)) {
         return false; // not already exist
       }
     }

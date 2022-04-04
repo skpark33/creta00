@@ -59,6 +59,19 @@ class SelectedModel extends ChangeNotifier {
 class PlayManager {
   PlayManager(this.baseWidget);
 
+  void makeCopy(String parentId) {
+    for (AbsPlayWidget ele in getPlayWidgetList()) {
+      if (ele.model == null) continue;
+      ContentsModel.copy(ele.model!, parentId,
+              name: ele.model!.name,
+              mime: ele.model!.mime,
+              bytes: ele.model!.bytes,
+              url: ele.model!.url,
+              file: ele.model!.file)
+          .saveModel();
+    }
+  }
+
   BaseWidget baseWidget;
   final UndoAbleList<AbsPlayWidget> _playList = UndoAbleList([]);
   int _currentIndex = -1;
@@ -114,6 +127,12 @@ class PlayManager {
 
   void clear() {
     _playList.value.clear();
+    if (_timer != null) {
+      _timer!.cancel();
+    }
+  }
+
+  void cancelTimer() {
     if (_timer != null) {
       _timer!.cancel();
     }
@@ -444,7 +463,7 @@ class PlayManager {
         } // skpark carousel problem
         accManagerHolder!.resizeMenu(_playList.value[_currentIndex].model!.contentsType);
         if (pageManagerHolder!.isContents() &&
-            accManagerHolder!.isCurrentIndex(baseWidget.acc!.mid)) {
+            accManagerHolder!.isCurrentIndex(baseWidget.acc!.accModel.mid)) {
           selectedModelHolder!.setModel(_playList.value[_currentIndex].model!);
         }
       }
@@ -480,7 +499,7 @@ class PlayManager {
         } // skpark carousel problem
         accManagerHolder!.resizeMenu(_playList.value[_currentIndex].model!.contentsType);
         if (pageManagerHolder!.isContents() &&
-            accManagerHolder!.isCurrentIndex(baseWidget.acc!.mid)) {
+            accManagerHolder!.isCurrentIndex(baseWidget.acc!.accModel.mid)) {
           selectedModelHolder!.setModel(_playList.value[_currentIndex].model!);
         }
       }
@@ -563,7 +582,7 @@ class PlayManager {
     for (AbsPlayWidget playWidget in _playList.value) {
       playWidget.model!.order.set(idx);
       conNodes.add(Node<AbsModel>(
-          key: '${model.mid}/${baseWidget.acc!.mid}/${playWidget.model!.mid}',
+          key: '${model.mid}/${baseWidget.acc!.accModel.mid}/${playWidget.model!.mid}',
           label: playWidget.model!.name,
           expanded: playWidget.model!.expanded || (currentIndex == idx),
           data: playWidget.model!));

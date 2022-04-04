@@ -1,11 +1,11 @@
 import 'package:creta00/common/util/logger.dart';
-import 'package:creta00/studio/studio_main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_treeview/flutter_treeview.dart';
 import 'package:sortedmap/sortedmap.dart';
 
 import 'package:creta00/acc/acc_manager.dart';
 //import 'package:creta00/constants/strings.dart';
+import '../../creta_main.dart';
 import '../../model/pages.dart';
 import '../../model/models.dart';
 import '../../common/undo/undo.dart';
@@ -81,7 +81,7 @@ class PageManager extends ChangeNotifier {
   }
 
   String createPage() {
-    PageModel page = PageModel(studioMainHolder!.book.mid);
+    PageModel page = PageModel(cretaMainHolder!.book.mid);
     page.order.set(pageIndex);
     pageMap[page.mid] = page;
     orderMap[page.order.value] = page;
@@ -89,10 +89,11 @@ class PageManager extends ChangeNotifier {
     return page.mid;
   }
 
-  void changeParent(String oldMid, String newMid) {
+  void makeCopy(String oldBookMid, String newBookMid) {
     for (PageModel page in pageMap.values) {
-      if (page.parentMid.value == oldMid) {
-        page.parentMid.set(newMid);
+      if (page.parentMid.value == oldBookMid) {
+        PageModel newPage = page.makeCopy(newBookMid);
+        accManagerHolder!.makeCopy(page.mid, newPage.mid);
       }
     }
   }

@@ -24,7 +24,7 @@ abstract class AbsModel {
   late UndoAble<String> hashTag;
   late UndoAble<bool> isRemoved;
 
-  void _genMid() {
+  void genMid() {
     if (type == ModelType.page) {
       _mid = pagePrefix;
     } else if (type == ModelType.acc) {
@@ -38,7 +38,7 @@ abstract class AbsModel {
   }
 
   AbsModel({required this.type, required String parent}) {
-    _genMid();
+    genMid();
     parentMid = UndoAble<String>(parent, mid);
     order = UndoAble<int>(0, mid);
     hashTag = UndoAble<String>('', mid);
@@ -46,7 +46,7 @@ abstract class AbsModel {
   }
 
   void copy(AbsModel src, String pMid) {
-    _genMid();
+    genMid();
     type = src.type;
     parentMid = UndoAble<String>(pMid, mid);
     order = UndoAble<int>(src.order.value, mid);
@@ -108,6 +108,13 @@ abstract class AbsModel {
     // 객체가 Create 된것은 모두 Save 대상이다.
     if (saveManagerHolder != null) {
       saveManagerHolder!.pushChanged(mid);
+    }
+  }
+
+  void saveModel() {
+    // 객체가 Create 된것은 모두 Save 대상이다.
+    if (saveManagerHolder != null) {
+      saveManagerHolder!.pushCreated(this);
     }
   }
 }

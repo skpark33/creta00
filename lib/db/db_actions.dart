@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:creta00/constants/constants.dart';
 import 'package:creta00/common/util/logger.dart';
-import 'package:creta00/studio/studio_main_screen.dart';
 import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/acc/acc.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
@@ -13,6 +12,7 @@ import 'package:creta00/model/models.dart';
 import 'package:creta00/db/creta_db.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../creta_main.dart';
 import '../model/book.dart';
 
 class DbActions {
@@ -36,7 +36,7 @@ class DbActions {
   }
 
   static Future<void> saveAll() async {
-    _storeChangedDataOnly(studioMainHolder!.book, "creta_book", studioMainHolder!.book.serialize());
+    _storeChangedDataOnly(cretaMainHolder!.book, "creta_book", cretaMainHolder!.book.serialize());
 
     for (PageModel page in pageManagerHolder!.orderMap.values) {
       if (page.isRemoved.value == false) {
@@ -44,8 +44,8 @@ class DbActions {
       }
     }
     for (ACC acc in accManagerHolder!.orderMap.values) {
-      if (acc.isRemoved.value == false) {
-        _storeChangedDataOnly(acc, "creta_acc", acc.serialize());
+      if (acc.accModel.isRemoved.value == false) {
+        _storeChangedDataOnly(acc.accModel, "creta_acc", acc.serialize());
       }
 
       for (ContentsModel contents in acc.accChild.playManager!.getModelList()) {
@@ -77,9 +77,11 @@ class DbActions {
 
   static Future<bool> save(String mid) async {
     int retval = 1;
-    if (isBook(mid)) {
+    if (mid == cretaMainHolder!.book.mid) {
+      logHolder.log("save mid($mid)", level: 6);
       retval = await _storeChangedDataOnly(
-          studioMainHolder!.book, "creta_book", studioMainHolder!.book.serialize());
+          cretaMainHolder!.book, "creta_book", cretaMainHolder!.book.serialize());
+      logHolder.log("save mid($mid)=$retval", level: 6);
       return (retval == 1);
     }
     if (isPage(mid)) {
@@ -92,8 +94,8 @@ class DbActions {
     }
     if (isACC(mid)) {
       for (ACC acc in accManagerHolder!.orderMap.values) {
-        if (acc.mid == mid) {
-          retval = await _storeChangedDataOnly(acc, "creta_acc", acc.serialize());
+        if (acc.accModel.mid == mid) {
+          retval = await _storeChangedDataOnly(acc.accModel, "creta_acc", acc.serialize());
         }
       }
       return (retval == 1);
@@ -116,12 +118,33 @@ class DbActions {
         }
       }
     }
+
+    return (retval == 1);
+  }
+
+  static Future<bool> saveModel(AbsModel model) async {
+    int retval = 1;
+    String tableName = '';
+    if (isBook(model.mid)) {
+      tableName = "creta_book";
+    } else if (isPage(model.mid)) {
+      tableName = "creta_page";
+    } else if (isACC(model.mid)) {
+      tableName = "creta_acc";
+    } else if (isContents(model.mid)) {
+      tableName = "creta_contents";
+    }
+    if (tableName.isNotEmpty) {
+      retval = await _storeChangedDataOnly(model, tableName, model.serialize());
+      logHolder.log("create mid($model.mid)=$retval", level: 6);
+    }
     return (retval == 1);
   }
 
   static Future<int> _storeChangedDataOnly(
       AbsModel model, String tableName, Map<String, dynamic> data) async {
     if (model.checkDirty(data)) {
+      data["updateTime"] = DateTime.now();
       bool succeed = await CretaDB(tableName).setData(model.mid, data);
       model.clearDirty(succeed);
       if (succeed) {

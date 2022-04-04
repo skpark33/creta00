@@ -150,6 +150,10 @@ class ACCProperty extends AbsModel {
     boxType.set(intToBoxType(map["boxType"]), save: false);
   }
 
+  ACCProperty makeCopy(String newParentId) {
+    return ACCProperty.copy(this, newParentId)..saveModel();
+  }
+
   @override
   Map<String, dynamic> serialize() {
     return super.serialize()

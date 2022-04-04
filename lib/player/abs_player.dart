@@ -22,6 +22,18 @@ abstract class AbsPlayWidget extends StatefulWidget {
       {Key? key, required this.onAfterEvent, required this.acc, this.model, this.autoStart = true})
       : super(key: key);
 
+  AbsPlayWidget.copy(AbsPlayWidget old, this.acc)
+      : super(key: old.key) // 화면에서만 쓰이기 때문에  key 를 복사한다.
+  {
+    autoStart = old.autoStart;
+    model = ContentsModel.copy(old.model!, acc.accModel.mid,
+        name: old.model!.name,
+        mime: old.model!.mime,
+        bytes: old.model!.bytes,
+        url: old.model!.url,
+        file: old.model!.file);
+  }
+
   void Function()? onAfterEvent;
 
   Future<void> init() async {}
@@ -64,7 +76,7 @@ abstract class AbsPlayWidget extends StatefulWidget {
     double outerWidth = realSize.width;
     double outerHeight = realSize.height;
 
-    if (!acc.sourceRatio.value) {
+    if (!acc.accModel.sourceRatio.value) {
       if (srcRatio >= 1.0) {
         outerWidth = srcRatio * outerWidth;
         outerHeight = outerWidth * (1.0 / srcRatio);
@@ -80,10 +92,10 @@ abstract class AbsPlayWidget extends StatefulWidget {
     return ClipRRect(
       //clipper: MyContentsClipper(),
       borderRadius: BorderRadius.only(
-        topRight: Radius.circular(acc.radiusTopRight.value),
-        topLeft: Radius.circular(acc.radiusTopLeft.value),
-        bottomRight: Radius.circular(acc.radiusBottomRight.value),
-        bottomLeft: Radius.circular(acc.radiusBottomLeft.value),
+        topRight: Radius.circular(acc.accModel.radiusTopRight.value),
+        topLeft: Radius.circular(acc.accModel.radiusTopLeft.value),
+        bottomRight: Radius.circular(acc.accModel.radiusBottomRight.value),
+        bottomLeft: Radius.circular(acc.accModel.radiusBottomLeft.value),
       ),
       child: SizedBox.expand(
           child: FittedBox(

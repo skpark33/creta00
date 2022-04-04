@@ -10,6 +10,7 @@ import 'package:flutter_treeview/flutter_treeview.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 //import 'package:creta00/constants/constants.dart';
 
+import '../model/acc_property.dart';
 import '../model/model_enums.dart';
 import '../model/pages.dart';
 import '../model/models.dart';
@@ -59,35 +60,44 @@ class ACCManager extends ChangeNotifier {
     ACC acc = ACC(page: page, accChild: widget, idx: order);
     acc.initSizeAndPosition();
     acc.registerOverlay(context);
-    accMap[acc.mid] = acc;
-    setCurrentMid(acc.mid);
-    orderMap[acc.order.value] = acc;
+    accMap[acc.accModel.mid] = acc;
+    setCurrentMid(acc.accModel.mid);
+    orderMap[acc.accModel.order.value] = acc;
 
     widget.setParentAcc(acc);
     return acc;
+  }
+
+  void makeCopy(String oldPageMid, String newPageMid) {
+    for (ACC acc in accMap.values) {
+      if (acc.accModel.parentMid.value == oldPageMid) {
+        ACCProperty accModel = acc.accModel.makeCopy(newPageMid);
+        acc.accChild.playManager!.makeCopy(accModel.mid);
+      }
+    }
   }
 
   void setPrimary() {
     if (_currentAccMid.isEmpty) return;
 
     ACC acc = accMap[_currentAccMid]!;
-    bool primary = !acc.primary.value;
+    bool primary = !acc.accModel.primary.value;
     if (primary == true) {
       for (String key in accMap.keys) {
-        if (accMap[key]!.primary.value) {
-          accMap[key]!.primary.set(false);
+        if (accMap[key]!.accModel.primary.value) {
+          accMap[key]!.accModel.primary.set(false);
           accMap[key]!.setState();
         }
       }
     }
-    acc.primary.set(primary);
+    acc.accModel.primary.set(primary);
     acc.setState();
   }
 
   bool isPrimary() {
     if (_currentAccMid.isEmpty) return false;
     ACC acc = accMap[_currentAccMid]!;
-    return acc.primary.value;
+    return acc.accModel.primary.value;
   }
 
   Future<void> unshowMenu(BuildContext context) async {
@@ -151,9 +161,9 @@ class ACCManager extends ChangeNotifier {
   void reorderMap() {
     orderMap.clear();
     for (ACC acc in accMap.values) {
-      if (acc.isRemoved.value == false) {
-        orderMap[acc.order.value] = acc;
-        logHolder.log('oderMap[${acc.order.value}]');
+      if (acc.accModel.isRemoved.value == false) {
+        orderMap[acc.accModel.order.value] = acc;
+        logHolder.log('oderMap[${acc.accModel.order.value}]');
       }
     }
   }
@@ -255,15 +265,15 @@ class ACCManager extends ChangeNotifier {
     }
 
     mychangeStack.startTrans();
-    acc.isRemoved.set(true);
-    int removedOrder = acc.order.value;
+    acc.accModel.isRemoved.set(true);
+    int removedOrder = acc.accModel.order.value;
     for (ACC ele in accMap.values) {
-      if (ele.isRemoved.value == true) {
+      if (ele.accModel.isRemoved.value == true) {
         continue;
       }
 
-      if (ele.order.value > removedOrder) {
-        ele.order.set(ele.order.value - 1);
+      if (ele.accModel.order.value > removedOrder) {
+        ele.accModel.order.set(ele.accModel.order.value - 1);
       }
     }
     reorderMap();
@@ -311,7 +321,7 @@ class ACCManager extends ChangeNotifier {
     }
     ACC target = accMap[mid]!;
 
-    int oldOrder = target.order.value;
+    int oldOrder = target.accModel.order.value;
     int newOrder = -1;
 
     for (int order in orderMap.keys) {
@@ -333,9 +343,9 @@ class ACCManager extends ChangeNotifier {
     ACC? friend = orderMap[newOrder];
     if (friend != null) {
       mychangeStack.startTrans();
-      friend.order.set(oldOrder);
+      friend.accModel.order.set(oldOrder);
       //friend.setDirty(true);
-      target.order.set(newOrder);
+      target.accModel.order.set(newOrder);
       //target.setDirty(true);
       mychangeStack.endTrans();
       return true;
@@ -353,7 +363,7 @@ class ACCManager extends ChangeNotifier {
 
     ACC target = accMap[mid]!;
 
-    int oldOrder = target.order.value;
+    int oldOrder = target.accModel.order.value;
     if (oldOrder == 0) {
       return false;
     }
@@ -377,9 +387,9 @@ class ACCManager extends ChangeNotifier {
     ACC? friend = orderMap[newOrder];
     if (friend != null) {
       mychangeStack.startTrans();
-      friend.order.set(oldOrder);
+      friend.accModel.order.set(oldOrder);
       //friend.setDirty(true);
-      target.order.set(newOrder);
+      target.accModel.order.set(newOrder);
       //target.setDirty(true);
       mychangeStack.endTrans();
       return true;
@@ -424,12 +434,12 @@ class ACCManager extends ChangeNotifier {
 
     int nextOrder = 0;
     for (int order in orderMap.keys) {
-      if (order > acc.order.value) {
+      if (order > acc.accModel.order.value) {
         nextOrder = order;
         break;
       }
     }
-    _currentAccMid = orderMap[nextOrder]!.mid;
+    _currentAccMid = orderMap[nextOrder]!.accModel.mid;
 
     accManagerHolder!.unshowMenu(context);
     setState();
@@ -455,17 +465,17 @@ class ACCManager extends ChangeNotifier {
 
   void showPages(BuildContext context, String modelId) {
     for (ACC acc in accMap.values) {
-      if (acc.isRemoved.value == true) {
+      if (acc.accModel.isRemoved.value == true) {
         continue;
       }
       if (acc.page!.mid == modelId) {
-        if (!acc.visible.value) {
-          acc.visible.set(true);
+        if (!acc.accModel.visible.value) {
+          acc.accModel.visible.set(true);
           acc.setState();
         }
       } else {
-        if (acc.visible.value) {
-          acc.visible.set(false);
+        if (acc.accModel.visible.value) {
+          acc.accModel.visible.set(false);
           acc.setState();
         }
       }
@@ -510,11 +520,11 @@ List<ACC> accList = accManagerHolder!.getAccList(model.id);
       if (acc.page!.mid == model.mid) {
         List<Node> conNodes = acc.accChild.playManager!.toNodes(model);
         accNodes.add(Node<AbsModel>(
-            key: model.mid + '/' + acc.mid,
-            label: 'Frame ${acc.mid.substring(acc.mid.length - 4)}',
-            data: acc,
-            expanded: acc.expanded ||
-                (accManagerHolder != null && accManagerHolder!.isCurrentIndex(acc.mid)),
+            key: model.mid + '/' + acc.accModel.mid,
+            label: 'Frame ${acc.accModel.mid.substring(acc.accModel.mid.length - 4)}',
+            data: acc.accModel,
+            expanded: acc.accModel.expanded ||
+                (accManagerHolder != null && accManagerHolder!.isCurrentIndex(acc.accModel.mid)),
             children: conNodes));
       }
     }

@@ -52,7 +52,7 @@ class ACCMenu {
     _visible = true;
     entry = OverlayEntry(builder: (context) {
       if (acc != null) {
-        accMid = acc.mid;
+        accMid = acc.accModel.mid;
       }
       overlayWidget = showOverlay(context, acc);
       return overlayWidget!;
@@ -69,7 +69,7 @@ class ACCMenu {
   String getOrder() {
     ACC? acc = accManagerHolder!.getCurrentACC();
     if (acc != null) {
-      return '[${acc.order.value}]';
+      return '[${acc.accModel.order.value}]';
     }
     return '[]';
   }

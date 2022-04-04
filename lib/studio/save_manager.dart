@@ -10,6 +10,7 @@ import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/db/db_actions.dart';
 
 import '../constants/strings.dart';
+import '../model/models.dart';
 import '../storage/creta_storage.dart';
 
 enum InProgressType { done, saving, contentsUploading, thumbnailUploading }
@@ -23,6 +24,7 @@ class SaveManager extends ChangeNotifier {
 
   final Lock _lock = Lock();
   final Lock _datalock = Lock();
+  final Lock _dataCreatedlock = Lock();
   final Lock _contentslock = Lock();
   final Lock _thumbnaillock = Lock();
   bool _autoSaveFlag = true;
@@ -35,6 +37,7 @@ class SaveManager extends ChangeNotifier {
   final Queue<ContentsModel> _contentsChangedQue = Queue<ContentsModel>();
   final Queue<ContentsModel> _thumbnailChangedQue = Queue<ContentsModel>();
   final Queue<String> _dataChangedQue = Queue<String>();
+  final Queue<AbsModel> _dataCreatedQue = Queue<AbsModel>();
 
   Timer? _timer;
 
@@ -42,6 +45,14 @@ class SaveManager extends ChangeNotifier {
     if (_timer != null) {
       _timer!.cancel();
     }
+  }
+
+  Future<void> pushCreated(AbsModel model) async {
+    await _dataCreatedlock.synchronized(() async {
+      logHolder.log('changed:${model.mid}', level: 6);
+      _dataCreatedQue.add(model);
+      notifyListeners();
+    });
   }
 
   Future<void> pushChanged(String mid) async {
@@ -74,6 +85,12 @@ class SaveManager extends ChangeNotifier {
     });
   }
 
+  Future<bool> isInSavingCreated() async {
+    return await _dataCreatedlock.synchronized(() async {
+      return _dataCreatedQue.isNotEmpty;
+    });
+  }
+
   Future<bool> isInContentsUploding() async {
     return await _contentslock.synchronized(() async {
       return _contentsChangedQue.isNotEmpty;
@@ -88,6 +105,9 @@ class SaveManager extends ChangeNotifier {
 
   Future<InProgressType> isInProgress() async {
     if (await isInSaving()) {
+      return InProgressType.saving;
+    }
+    if (await isInSavingCreated()) {
       return InProgressType.saving;
     }
     if (await isInContentsUploding()) {
@@ -109,16 +129,30 @@ class SaveManager extends ChangeNotifier {
       }
       await _datalock.synchronized(() async {
         if (_dataChangedQue.isNotEmpty) {
-          logHolder.log('autoSave------------start', level: 6);
+          logHolder.log('autoSave------------start(${_dataChangedQue.length})', level: 6);
           while (_dataChangedQue.isNotEmpty) {
             final mid = _dataChangedQue.first;
             if (!await DbActions.save(mid)) {
-              _errMsg = MyStrings.uploadError;
+              _errMsg = MyStrings.saveError;
             }
             _dataChangedQue.removeFirst();
           }
           notifyListeners();
           logHolder.log('autoSave------------end', level: 6);
+        }
+      });
+      await _dataCreatedlock.synchronized(() async {
+        if (_dataCreatedQue.isNotEmpty) {
+          logHolder.log('autoSaveCreated------------start(${_dataCreatedQue.length})', level: 6);
+          while (_dataCreatedQue.isNotEmpty) {
+            final model = _dataCreatedQue.first;
+            if (!await DbActions.saveModel(model)) {
+              _errMsg = MyStrings.saveError;
+            }
+            _dataCreatedQue.removeFirst();
+          }
+          notifyListeners();
+          logHolder.log('autoSaveCreated------------end', level: 6);
         }
       });
       if (_isContentsUploading == false) {

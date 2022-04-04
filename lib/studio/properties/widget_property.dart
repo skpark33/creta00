@@ -250,7 +250,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                 },
                 titleSize: 100,
                 titleLineWidget: Text(
-                  '${acc.containerOffset.value.dx.roundToDouble()},${acc.containerOffset.value.dy.roundToDouble()},${acc.containerSize.value.width.roundToDouble()} x ${acc.containerSize.value.height.roundToDouble()}',
+                  '${acc.accModel.containerOffset.value.dx.roundToDouble()},${acc.accModel.containerOffset.value.dy.roundToDouble()},${acc.accModel.containerSize.value.width.roundToDouble()} x ${acc.accModel.containerSize.value.height.roundToDouble()}',
                   style: MyTextStyles.subtitle1,
                 )),
             divider(),
@@ -268,7 +268,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                   children: [
                     glassIcon(
                       acc,
-                      acc.bgColor.value,
+                      acc.accModel.bgColor.value,
                       () {
                         setState(() {
                           unexpendAll(bgColorModel.title);
@@ -286,7 +286,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                 child: _opacityRow(context, acc),
                 titleLineWidget: Row(children: [
                   Text(
-                    '${((1 - acc.opacity.value) * 100).round()} %',
+                    '${((1 - acc.accModel.opacity.value) * 100).round()} %',
                     style: MyTextStyles.subtitle1,
                   ),
                 ]),
@@ -300,7 +300,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
             rotateModel.expandArea(
                 child: _rotateRow(context, acc),
                 titleLineWidget: Text(
-                  '${acc.rotate.value} °',
+                  '${acc.accModel.rotate.value} °',
                   style: MyTextStyles.subtitle1,
                 ),
                 setStateFunction: () {
@@ -312,16 +312,16 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
             divider(),
             animeModel.expandArea(
                 child: _animeRow(context, acc),
-                titleLineWidget: acc.animeType.value != AnimeType.none
+                titleLineWidget: acc.accModel.animeType.value != AnimeType.none
                     ? Row(children: [
-                        Text(_getAnimeName(acc.animeType.value)),
+                        Text(_getAnimeName(acc.accModel.animeType.value)),
                         SizedBox(
                           width: 10,
                         ),
                         IconButton(
                             padding: EdgeInsets.zero,
                             icon: AnimatedIcon(
-                              icon: _getAnimeIcon(acc.animeType.value),
+                              icon: _getAnimeIcon(acc.accModel.animeType.value),
                               progress: _aniIconController,
                               size: 30,
                               color: MyColors.primaryColor,
@@ -351,15 +351,15 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
             divider(),
             borderModel.expandArea(
                 child: _borderRow(context, acc),
-                titleLineWidget: colorPickerIcon(acc.borderColor.value, () {
+                titleLineWidget: colorPickerIcon(acc.accModel.borderColor.value, () {
                   setState(() {
-                    if (acc.borderColor.value != Colors.transparent) {
-                      _prevBorderColor = acc.borderColor.value;
-                      acc.borderColor.set(Colors.transparent);
+                    if (acc.accModel.borderColor.value != Colors.transparent) {
+                      _prevBorderColor = acc.accModel.borderColor.value;
+                      acc.accModel.borderColor.set(Colors.transparent);
                       acc.setState();
                     } else {
                       if (_prevBorderColor != Colors.transparent) {
-                        acc.borderColor.set(_prevBorderColor);
+                        acc.accModel.borderColor.set(_prevBorderColor);
                         acc.setState();
                       }
                     }
@@ -380,7 +380,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                 },
                 child: _cornerRow(context, acc),
                 titleLineWidget: Text(
-                  '${acc.radiusTopLeft.value.round()},${acc.radiusTopRight.value.round()},${acc.radiusBottomLeft.value.round()},${acc.radiusBottomRight.value.round()}',
+                  '${acc.accModel.radiusTopLeft.value.round()},${acc.accModel.radiusTopRight.value.round()},${acc.accModel.radiusBottomLeft.value.round()},${acc.accModel.radiusBottomRight.value.round()}',
                   style: MyTextStyles.subtitle1,
                 ),
                 setStateFunction: () {
@@ -423,8 +423,10 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
             padding: EdgeInsets.fromLTRB(18, 2, 8, 2),
             iconSize: 32.0,
             icon: Icon(
-              acc.primary.value != true ? Icons.star_outline_outlined : Icons.star_outlined,
-              color: acc.primary.value != true ? Colors.grey : MyColors.mainColor,
+              acc.accModel.primary.value != true
+                  ? Icons.star_outline_outlined
+                  : Icons.star_outlined,
+              color: acc.accModel.primary.value != true ? Colors.grey : MyColors.mainColor,
             ),
             onPressed: () {
               accManagerHolder!.setPrimary();
@@ -442,20 +444,22 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
       child: Row(
         children: [
           Text(
-            acc.sourceRatio.value == true ? MyStrings.sourceRatio : MyStrings.sourceRatioToggle,
+            acc.accModel.sourceRatio.value == true
+                ? MyStrings.sourceRatio
+                : MyStrings.sourceRatioToggle,
             style: MyTextStyles.subtitle2,
           ),
           IconButton(
             padding: EdgeInsets.fromLTRB(18, 2, 8, 2),
             iconSize: 32.0,
             icon: Icon(
-              acc.sourceRatio.value == true
+              acc.accModel.sourceRatio.value == true
                   ? Icons.image_aspect_ratio_outlined
                   : Icons.aspect_ratio_outlined,
-              color: acc.sourceRatio.value == true ? Colors.grey : MyColors.mainColor,
+              color: acc.accModel.sourceRatio.value == true ? Colors.grey : MyColors.mainColor,
             ),
             onPressed: () {
-              acc.sourceRatio.set(!acc.sourceRatio.value);
+              acc.accModel.sourceRatio.set(!acc.accModel.sourceRatio.value);
               //acc.setState();
               acc.invalidateContents();
               setState(() {});
@@ -479,13 +483,13 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
         ),
         myNumberTextField(
           // x 좌표
-          defaultValue: acc.containerOffset.value.dx.roundToDouble(),
+          defaultValue: acc.accModel.containerOffset.value.dx.roundToDouble(),
           controller: xCon,
           onEditingComplete: () {
             logHolder.log("textval = ${xCon.text}");
             setState(() {
-              acc.containerOffset
-                  .set(Offset(double.parse(xCon.text), acc.containerOffset.value.dy));
+              acc.accModel.containerOffset
+                  .set(Offset(double.parse(xCon.text), acc.accModel.containerOffset.value.dy));
               acc.setState();
             });
           },
@@ -502,13 +506,13 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
         ),
         myNumberTextField(
           // y 좌표
-          defaultValue: acc.containerOffset.value.dy.roundToDouble(),
+          defaultValue: acc.accModel.containerOffset.value.dy.roundToDouble(),
           controller: yCon,
           onEditingComplete: () {
             logHolder.log("textval = ${yCon.text}");
             setState(() {
-              acc.containerOffset
-                  .set(Offset(acc.containerOffset.value.dx, double.parse(yCon.text)));
+              acc.accModel.containerOffset
+                  .set(Offset(acc.accModel.containerOffset.value.dx, double.parse(yCon.text)));
               acc.setState();
             });
           },
@@ -517,7 +521,8 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
           // x,y 좌표를  Write 하는 icon
           onPressed: () {
             mychangeStack.startTrans();
-            acc.containerOffset.set(Offset(double.parse(xCon.text), double.parse(yCon.text)));
+            acc.accModel.containerOffset
+                .set(Offset(double.parse(xCon.text), double.parse(yCon.text)));
             mychangeStack.endTrans();
             acc.setState();
             setState(() {});
@@ -540,13 +545,13 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
         ),
         myNumberTextField(
           // 너비
-          defaultValue: acc.containerSize.value.width.roundToDouble(),
+          defaultValue: acc.accModel.containerSize.value.width.roundToDouble(),
           controller: widthCon,
           onEditingComplete: () {
             logHolder.log("textval = ${widthCon.text}");
             setState(() {
-              acc.containerSize
-                  .set(Size(double.parse(widthCon.text), acc.containerSize.value.height));
+              acc.accModel.containerSize
+                  .set(Size(double.parse(widthCon.text), acc.accModel.containerSize.value.height));
               acc.setState();
             });
           },
@@ -563,12 +568,12 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
         ),
         myNumberTextField(
           // 높이
-          defaultValue: acc.containerSize.value.height.roundToDouble(),
+          defaultValue: acc.accModel.containerSize.value.height.roundToDouble(),
           controller: heightCon,
           onEditingComplete: () {
             setState(() {
-              acc.containerSize
-                  .set(Size(acc.containerSize.value.width, double.parse(heightCon.text)));
+              acc.accModel.containerSize
+                  .set(Size(acc.accModel.containerSize.value.width, double.parse(heightCon.text)));
               acc.setState();
             });
             logHolder.log("textval = ${heightCon.text}");
@@ -578,7 +583,8 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
           // width,height를  Write 하는 icon
           onPressed: () {
             mychangeStack.startTrans();
-            acc.containerSize.set(Size(double.parse(widthCon.text), double.parse(heightCon.text)));
+            acc.accModel.containerSize
+                .set(Size(double.parse(widthCon.text), double.parse(heightCon.text)));
             mychangeStack.endTrans();
             acc.setState();
             setState(() {});
@@ -595,10 +601,10 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
         children: [
           OpacitySlider(
             selectedColor: MyColors.secondaryColor,
-            opacity: acc.opacity.value,
+            opacity: acc.accModel.opacity.value,
             onChange: (value) {
               //logHolder.log('onValueChanged: $value');
-              acc.opacity.set(value);
+              acc.accModel.opacity.set(value);
               acc.setState();
               setState(() {});
             },
@@ -616,17 +622,17 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
       Container(
           alignment: Alignment.center,
           child: DialView(
-            angle: acc.rotate.value,
+            angle: acc.accModel.rotate.value,
             size: Size(190, 190),
             onValueChanged: (value) {
               //logHolder.log('onValueChanged: $value');
-              acc.rotate.set(value);
+              acc.accModel.rotate.set(value);
               acc.setState();
               setState(() {});
             },
           )),
-      myCheckBox(MyStrings.contentsRotate, acc.contentRotate.value, () {
-        acc.contentRotate.set(!acc.contentRotate.value);
+      myCheckBox(MyStrings.contentsRotate, acc.accModel.contentRotate.value, () {
+        acc.accModel.contentRotate.set(!acc.accModel.contentRotate.value);
         acc.setState();
         //acc.invalidateContents();
         setState(() {});
@@ -654,7 +660,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
         acc.setBgColor(hexToColor(newVal));
       }
     }
-    widget.setUserColorList(acc.bgColor.value);
+    widget.setUserColorList(acc.accModel.bgColor.value);
   }
 
   Widget _bgColorRow(BuildContext context, ACC acc) {
@@ -669,7 +675,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
             ),
             colorRow(
               context: context,
-              value: acc.bgColor.value,
+              value: acc.accModel.bgColor.value,
               list: [
                 for (int i = 0; i < currentUser.maxBgColor; i++) currentUser.bgColorList1[i],
               ],
@@ -696,7 +702,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                 ColorPickerType.accent: MyStrings.accentColor,
                 ColorPickerType.wheel: MyStrings.customColor
               },
-              color: acc.bgColor.value,
+              color: acc.accModel.bgColor.value,
               onColorChanged: (bg) {},
               onColorChangeEnd: (bg) {
                 acc.setBgColor(bg);
@@ -724,7 +730,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                   width: 100,
                   height: 30,
                   child: myTextField(
-                    '#${acc.bgColor.value.toString().substring(10, 16)}',
+                    '#${acc.accModel.bgColor.value.toString().substring(10, 16)}',
                     limit: 9,
                     controller: colorCon,
                     style: MyTextStyles.body2,
@@ -750,12 +756,12 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                 style: MyTextStyles.subtitle2,
               ),
               SizedBox(width: 32),
-              glassIcon(acc, acc.bgColor.value, () {
-                acc.glass.set(!acc.glass.value);
-                if (acc.glass.value == true) {
-                  if (acc.bgColor.value == Colors.transparent) {
+              glassIcon(acc, acc.accModel.bgColor.value, () {
+                acc.accModel.glass.set(!acc.accModel.glass.value);
+                if (acc.accModel.glass.value == true) {
+                  if (acc.accModel.bgColor.value == Colors.transparent) {
                     // 바탕색이 투명일때, 유리질을 선택하면, 바탕색을 힌색으로 잡아준다.
-                    acc.bgColor.set(Colors.white);
+                    acc.accModel.bgColor.set(Colors.white);
                   }
                 }
                 acc.setState();
@@ -788,7 +794,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                       child: basicButton(
                         onPressed: () {
                           //acc.setCurrentDynamicSize(true);
-                          acc.isFixedRatio.set(true);
+                          acc.accModel.isFixedRatio.set(true);
                           acc.resizeCurrent();
                           accManagerHolder!.unshowMenu(context);
                           setState(() {});
@@ -799,8 +805,8 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                       ),
                     )
                   : Container(),
-              myCheckBox(MyStrings.isFixedRatio, acc.isFixedRatio.value, () {
-                acc.isFixedRatio.set(!acc.isFixedRatio.value);
+              myCheckBox(MyStrings.isFixedRatio, acc.accModel.isFixedRatio.value, () {
+                acc.accModel.isFixedRatio.set(!acc.accModel.isFixedRatio.value);
                 accManagerHolder!.unshowMenu(context);
                 acc.setState();
                 setState(() {});
@@ -832,14 +838,14 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
               ColorPickerType.bw: MyStrings.bwColor,
               //ColorPickerType.wheel: MyStrings.customColor
             },
-            color: acc.borderColor.value,
+            color: acc.accModel.borderColor.value,
             onColorChanged: (bg) {},
             onColorChangeEnd: (bg) {
-              acc.borderColor.set(bg);
+              acc.accModel.borderColor.set(bg);
               acc.setState();
               setState(() {
-                if (acc.borderWidth.value == 0) {
-                  acc.borderWidth.set(1);
+                if (acc.accModel.borderWidth.value == 0) {
+                  acc.accModel.borderWidth.set(1);
                 }
                 //_borderColorVisible = false;
               });
@@ -856,11 +862,11 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
             //},
           ),
           borderWidthSelector(
-              borderWidth: acc.borderWidth.value,
+              borderWidth: acc.accModel.borderWidth.value,
               onChanged: (value) {
                 setState(() {
                   //autoChangeBgColor(acc);
-                  acc.borderWidth.set(value);
+                  acc.accModel.borderWidth.set(value);
                   acc.setState();
                 });
               },
@@ -868,11 +874,11 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                 accManagerHolder!.unshowMenu(context);
               }),
           depthSelector(
-              depth: acc.depth.value,
+              depth: acc.accModel.depth.value,
               onChanged: (value) {
                 setState(() {
                   autoChangeBgColor(acc);
-                  acc.depth.set(value);
+                  acc.accModel.depth.set(value);
                   acc.setState();
                 });
               },
@@ -880,11 +886,11 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                 accManagerHolder!.unshowMenu(context);
               }),
           intensitySelector(
-              intensity: acc.intensity.value,
+              intensity: acc.accModel.intensity.value,
               onChanged: (value) {
                 setState(() {
                   autoChangeBgColor(acc);
-                  acc.intensity.set(value);
+                  acc.accModel.intensity.set(value);
                   acc.setState();
                 });
               },
@@ -893,11 +899,11 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
               }),
 
           lightSourceDxWidgets(
-              lightSourceDx: acc.lightSource.value.dx,
+              lightSourceDx: acc.accModel.lightSource.value.dx,
               onChanged: (value) {
                 setState(() {
                   autoChangeBgColor(acc);
-                  acc.lightSource.set(acc.lightSource.value.copyWith(dx: value));
+                  acc.accModel.lightSource.set(acc.accModel.lightSource.value.copyWith(dx: value));
                   acc.setState();
                 });
               },
@@ -905,11 +911,11 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                 accManagerHolder!.unshowMenu(context);
               }),
           lightSourceDyWidgets(
-              lightSourceDy: acc.lightSource.value.dy,
+              lightSourceDy: acc.accModel.lightSource.value.dy,
               onChanged: (value) {
                 setState(() {
                   autoChangeBgColor(acc);
-                  acc.lightSource.set(acc.lightSource.value.copyWith(dy: value));
+                  acc.accModel.lightSource.set(acc.accModel.lightSource.value.copyWith(dy: value));
                   acc.setState();
                 });
               },
@@ -923,14 +929,14 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
   void autoChangeBgColor(ACC acc) {
     // 투명하거나,  유리질이거나, bg에 opacity 같은 것들이 잡혀있으면,
     // 보더 값이 먹지 않으므로, 자동으로 해제해 준다.
-    if (acc.bgColor.value == Colors.transparent) {
-      acc.bgColor.set(MyColors.bgColor);
+    if (acc.accModel.bgColor.value == Colors.transparent) {
+      acc.accModel.bgColor.set(MyColors.bgColor);
     } else {
       // if (acc.bgColor.value.opacity > 0) {
       //   acc.bgColor.value.withOpacity(0);
       // }
     }
-    acc.glass.set(false);
+    acc.accModel.glass.set(false);
   }
 
   Widget _cornerRow(BuildContext context, ACC acc) {
@@ -941,59 +947,59 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
           child: Column(
             children: [
               radiusWidget(
-                  radius: acc.radiusAll.value,
+                  radius: acc.accModel.radiusAll.value,
                   title: MyStrings.radiusAll,
                   onChanged: (val) {
                     setState(() {
-                      acc.radiusAll.set(val);
-                      acc.radiusTopLeft.set(val);
-                      acc.radiusTopRight.set(val);
-                      acc.radiusBottomLeft.set(val);
-                      acc.radiusBottomRight.set(val);
+                      acc.accModel.radiusAll.set(val);
+                      acc.accModel.radiusTopLeft.set(val);
+                      acc.accModel.radiusTopRight.set(val);
+                      acc.accModel.radiusBottomLeft.set(val);
+                      acc.accModel.radiusBottomRight.set(val);
                       acc.setState();
                     });
                   },
                   onChangeStart: (val) {}),
               radiusWidget(
-                  radius: acc.radiusTopLeft.value,
+                  radius: acc.accModel.radiusTopLeft.value,
                   title: MyStrings.radiusTopLeft,
                   onChanged: (val) {
                     setState(() {
-                      acc.radiusAll.set(0);
-                      acc.radiusTopLeft.set(val);
+                      acc.accModel.radiusAll.set(0);
+                      acc.accModel.radiusTopLeft.set(val);
                       acc.setState();
                     });
                   },
                   onChangeStart: (val) {}),
               radiusWidget(
-                  radius: acc.radiusTopRight.value,
+                  radius: acc.accModel.radiusTopRight.value,
                   title: MyStrings.radiusTopRight,
                   onChanged: (val) {
                     setState(() {
-                      acc.radiusAll.set(0);
-                      acc.radiusTopRight.set(val);
+                      acc.accModel.radiusAll.set(0);
+                      acc.accModel.radiusTopRight.set(val);
                       acc.setState();
                     });
                   },
                   onChangeStart: (val) {}),
               radiusWidget(
-                  radius: acc.radiusBottomLeft.value,
+                  radius: acc.accModel.radiusBottomLeft.value,
                   title: MyStrings.radiusBottomLeft,
                   onChanged: (val) {
                     setState(() {
-                      acc.radiusAll.set(0);
-                      acc.radiusBottomLeft.set(val);
+                      acc.accModel.radiusAll.set(0);
+                      acc.accModel.radiusBottomLeft.set(val);
                       acc.setState();
                     });
                   },
                   onChangeStart: (val) {}),
               radiusWidget(
-                  radius: acc.radiusBottomRight.value,
+                  radius: acc.accModel.radiusBottomRight.value,
                   title: MyStrings.radiusBottomRight,
                   onChanged: (val) {
                     setState(() {
-                      acc.radiusAll.set(0);
-                      acc.radiusBottomRight.set(val);
+                      acc.accModel.radiusAll.set(0);
+                      acc.accModel.radiusBottomRight.set(val);
                       acc.setState();
                     });
                   },
@@ -1012,13 +1018,13 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
               children: [
                 IconButton(
                   onPressed: () {
-                    acc.animeType.set(AnimeType.none);
+                    acc.accModel.animeType.set(AnimeType.none);
                     acc.invalidateContents();
                     setState(() {});
                   },
                   icon: Icon(Icons.not_interested),
-                  iconSize: acc.animeType.value == AnimeType.none ? 36 : 24,
-                  color: acc.animeType.value == AnimeType.none
+                  iconSize: acc.accModel.animeType.value == AnimeType.none ? 36 : 24,
+                  color: acc.accModel.animeType.value == AnimeType.none
                       ? MyColors.primaryColor
                       : MyColors.secondaryColor,
                 ),
@@ -1028,11 +1034,11 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                       await Future.delayed(Duration(seconds: 1));
                       _aniIconController.reverse();
                     });
-                    acc.animeType.set(AnimeType.carousel);
+                    acc.accModel.animeType.set(AnimeType.carousel);
                     acc.invalidateContents();
                     setState(() {});
                   },
-                  iconSize: acc.animeType.value == AnimeType.carousel ? 36 : 24,
+                  iconSize: acc.accModel.animeType.value == AnimeType.carousel ? 36 : 24,
                   icon: Icon(Icons.view_carousel_outlined),
                   //icon: AnimatedIcon(
                   //icon: AnimatedIcons.view_list,
@@ -1044,11 +1050,11 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                       await Future.delayed(Duration(seconds: 1));
                       _aniIconController.reverse();
                     });
-                    acc.animeType.set(AnimeType.flip);
+                    acc.accModel.animeType.set(AnimeType.flip);
                     acc.invalidateContents();
                     setState(() {});
                   },
-                  iconSize: acc.animeType.value == AnimeType.flip ? 36 : 24,
+                  iconSize: acc.accModel.animeType.value == AnimeType.flip ? 36 : 24,
                   icon: Icon(Icons.flip_outlined),
                   //icon: AnimatedIcon(
                   //icon: AnimatedIcons.view_list,
@@ -1093,7 +1099,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
       hasBorder: true,
       borderColor: bg == Color(0x00000000) ? Colors.black : MyColors.primaryColor,
       elevation: 5,
-      selectedIcon: acc.glass.value
+      selectedIcon: acc.accModel.glass.value
           ? Icons.blur_on_rounded
           : bg == Colors.transparent
               ? Icons.clear_outlined

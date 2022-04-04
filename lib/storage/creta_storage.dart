@@ -32,7 +32,7 @@ class CretaStorage {
   static Future<void> upload(
       ContentsModel contents, void Function() onComplete, void Function() onError) async {
     _uploadToStorage(
-        remotePath: "${studioMainHolder!.user.id}/${studioMainHolder!.book.mid}",
+        remotePath: "${studioMainHolder!.user.id}/${cretaMainHolder!.book.mid}",
         content: contents,
         onComplete: (path) async {
           contents.remoteUrl = path;
@@ -90,7 +90,8 @@ class CretaStorage {
     }
     if (contents.thumbnail != null) {
       saveManagerHolder!.pushChanged(contents.mid);
-      cretaMainHolder!.setBookThumbnail(contents.thumbnail!, contents.contentsType);
+      cretaMainHolder!
+          .setBookThumbnail(contents.thumbnail!, contents.contentsType, contents.aspectRatio.value);
       onComplete();
     }
   }

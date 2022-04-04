@@ -3,19 +3,20 @@
 import 'package:creta00/constants/styles.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:creta00/studio/save_manager.dart';
-import 'package:creta00/studio/studio_main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/model/users.dart';
 
+import 'book_grid_card.dart';
 import 'common/buttons/basic_button.dart';
 import 'common/buttons/hover_buttons.dart';
 import 'common/undo/undo.dart';
 import 'common/util/my_utils.dart';
 import 'db/db_actions.dart';
+import 'main_util.dart';
 import 'model/book.dart';
 import 'model/model_enums.dart';
-import 'player/video/simple_video_player.dart';
+import 'constants/strings.dart';
 
 CretaMainScreen? cretaMainHolder;
 
@@ -36,17 +37,18 @@ class CretaMainScreen extends StatefulWidget {
   @override
   State<CretaMainScreen> createState() => CretaMainScreenState();
 
-  void setBookThumbnail(String path, ContentsType contentsType) {
+  void setBookThumbnail(String path, ContentsType contentsType, double aspectRatio) {
     mychangeStack.startTrans();
     logHolder.log("setBookThumbnail $path, $contentsType", level: 6);
     book.thumbnailUrl.set(path);
     book.thumbnailType.set(contentsType);
+    book.thumbnailAspectRatio.set(aspectRatio);
     mychangeStack.endTrans();
     //DbActions.save(book.mid);
     saveManagerHolder!.pushChanged(book.mid);
   }
 
-  bool saveAs(String newName) {
+  bool makeCopy(String newName) {
     // 중복체크
     for (BookModel ele in bookList) {
       if (ele.name.value == newName) {
@@ -55,15 +57,22 @@ class CretaMainScreen extends StatefulWidget {
         return false;
       }
     }
-    book = book.saveAs(newName);
-    studioMainHolder!.book = book;
-    studioMainHolder!.invalidate();
-    pageManagerHolder!.setState();
+    // 사본을 만들기만 할뿐, 현재의 book 을 체인지하는 것은 아니다.
+    BookModel newBook = book.makeCopy(newName);
+    // 사본 page 를 만들기만 할뿐, 현재의 page 를 대체하는 것은 아니다.
+    pageManagerHolder!.makeCopy(book.mid, newBook.mid);
+    //studioMainHolder!.invalidate();
+    //pageManagerHolder!.setState();
     return true;
   }
 }
 
 class CretaMainScreenState extends State<CretaMainScreen> {
+  final double titleHeight = 150;
+  final double gridWidth = 328;
+  final double gridTitle = 70;
+  final double gridHeight = 140 + 70;
+
   void invalidate() {
     setState(() {});
   }
@@ -121,77 +130,39 @@ class CretaMainScreenState extends State<CretaMainScreen> {
     );
   }
 
-  SliverGrid renderSliverGrid(double gridWidth, double gridHeight, int count) {
+  SliverGrid renderSliverGrid() {
     return SliverGrid(
         delegate: SliverChildBuilderDelegate((context, index) {
-          return Container(
-              color: Colors.transparent, //getColor(index),
-              padding: EdgeInsets.all(10),
-              child: //Container(color: getColor(index)),
-                  Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(children: [
-                  Text(widget.bookList[index].name.value),
-                  Text(widget.bookList[index].updateTime.toString()),
-                ]),
-                //height: 200,
-              ));
-          // );
-        }, childCount: count),
+          BookModel book = widget.bookList[index];
+          Duration duration = DateTime.now().difference(book.updateTime);
+          String durStr = '';
+          if (duration.inDays >= 365) {
+            durStr = '${((duration.inDays / 365) * 10).round()} ${MyStrings.yearBefore}';
+          } else if (duration.inDays >= 30) {
+            durStr = '${((duration.inDays / 30) * 10).round()} ${MyStrings.monthBefore}';
+          } else if (duration.inDays >= 1) {
+            durStr = '${duration.inDays} ${MyStrings.dayBefore}';
+          } else if (duration.inHours >= 1) {
+            durStr = '${duration.inHours} ${MyStrings.hourBefore}';
+          } else {
+            durStr = '${duration.inMinutes} ${MyStrings.minBefore}';
+          }
+          return BookGridCard(
+              index: index,
+              book: book,
+              durationStr: durStr,
+              onTapdown: () {
+                widget.book = book;
+                MainUtil.goToStudio(context, widget.user);
+              });
+        }, childCount: widget.bookList.length),
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: gridWidth,
-          mainAxisExtent: gridHeight,
+          maxCrossAxisExtent: gridWidth + 8,
+          mainAxisExtent: gridHeight + 8,
           //mainAxisSpacing: 15,
           //crossAxisSpacing: 15
         ));
   }
-
-  Widget drawBackground(double width, double height) {
-    if (widget.book.thumbnailUrl.value.isEmpty) {
-      return defaultBGImage();
-    }
-    if (widget.book.thumbnailType.value == ContentsType.image) {
-      return Image.network(widget.book.thumbnailUrl.value, fit: BoxFit.cover);
-    }
-    if (widget.book.thumbnailType.value == ContentsType.video) {
-      return SimpleVideoPlayer(
-        globalKey: GlobalKey<SimpleVideoPlayerState>(),
-        url: widget.book.thumbnailUrl.value,
-        realSize: Size(width, height),
-        onAfterEvent: () {},
-      );
-      // return FutureBuilder(
-      //     future: _waitVideo(width, height),
-      //     builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
-      //       if (snapshot.hasData == false) {
-      //         //해당 부분은 data를 아직 받아 오지 못했을때 실행되는 부분을 의미한다.
-      //         return emptyImage();
-      //       }
-      //       if (snapshot.hasError) {
-      //         //error가 발생하게 될 경우 반환하게 되는 부분
-      //         return defaultBGImage();
-      //       }
-      //       if (snapshot.connectionState == ConnectionState.done) {
-      //         return snapshot.data!;
-      //       }
-      //       return defaultBGImage();
-      //     });
-    }
-    return defaultBGImage();
-  }
-
-  // Future<Widget> _waitVideo(double width, double height) async {
-  //   SimpleVideoPlayer player = SimpleVideoPlayer(
-  //     globalKey: GlobalKey<SimpleVideoPlayerState>(),
-  //     url: widget.book.thumbnailUrl.value,
-  //     realSize: Size(width, height),
-  //     onAfterEvent: () {},
-  //   );
-  //   await player.init();
-  //   return player;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -207,12 +178,9 @@ class CretaMainScreenState extends State<CretaMainScreen> {
         //return SafeArea(
         //return
         //int count = 48;
-        double gridWidth = 1920 / 6;
-        double gridHeight = 1080 / 6;
-        double listHeight = constraints.maxHeight * (4 / 5) - 180;
-        double titleHeight = 150;
 
         //double viewHeight = ((count / gridWidth) + 1) * gridHeight + listHeight + titleHeight;
+        double marginHeight = constraints.maxHeight - titleHeight - (gridHeight * 1.2);
 
         return FutureBuilder(
             future: DbActions.getMyBookList(widget.user.id),
@@ -242,7 +210,8 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                     width: constraints.maxWidth,
                     height: constraints.maxHeight,
                     //child: Image.asset('assets/creta_default.png', fit: BoxFit.cover),
-                    child: drawBackground(constraints.maxWidth, constraints.maxHeight),
+                    child: MainUtil.drawBackground(
+                        constraints.maxWidth, constraints.maxHeight, widget.book),
                   ),
 
                   // 리스트
@@ -252,14 +221,14 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                     child: CustomScrollView(
                       slivers: [
                         //renderSliverAppbar(appHeight),
-                        renderSliverList(listHeight),
-                        renderSliverGrid(gridWidth, gridHeight, widget.bookList.length)
+                        renderSliverList(marginHeight), // 마진 부위
+                        renderSliverGrid(),
                       ],
                     ),
                   ),
                   // 상단 영역
-                  Container(
-                      color: Colors.white.withOpacity(0.1),
+                  SizedBox(
+                      //color: Colors.white.withOpacity(0.1),
                       width: constraints.maxWidth,
                       height: titleHeight,
                       child: Row(
@@ -283,11 +252,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                                   child: basicButton2(
                                     onPressed: () {
                                       logHolder.log("New button Pressed", level: 6);
-                                      studioMainHolder = StudioMainScreen(
-                                          mainScreenKey: GlobalKey<MainScreenState>(),
-                                          book: widget.book,
-                                          user: widget.user);
-                                      naviPush(context, studioMainHolder!);
+                                      MainUtil.goToStudio(context, widget.user);
                                     },
                                     name: '새 콘텐츠북 만들기',
                                     textStyle: MyTextStyles.buttonText2,
@@ -322,11 +287,12 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                   Positioned(
                       left: 90,
                       top: 242,
-                      width: 400,
+                      width: 450,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(widget.book.name.value, style: MyTextStyles.h3),
+                          Text(widget.book.name.value,
+                              style: MyTextStyles.h3, maxLines: 3, overflow: TextOverflow.ellipsis),
                           SizedBox(
                             height: 20,
                           ),
@@ -345,11 +311,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                               hoverSize: 32,
                               onPressed: () {
                                 logHolder.log("바로가기 clicked", level: 6);
-                                studioMainHolder = StudioMainScreen(
-                                    mainScreenKey: GlobalKey<MainScreenState>(),
-                                    book: widget.book,
-                                    user: widget.user);
-                                naviPush(context, studioMainHolder!);
+                                MainUtil.goToStudio(context, widget.user);
                               },
                               icon: Icon(
                                 Icons.east_outlined,

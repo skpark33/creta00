@@ -8,7 +8,7 @@ import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:creta00/studio/save_manager.dart';
 
 import 'resizable.dart';
-import 'acc_property.dart';
+import '../model/acc_property.dart';
 import 'acc_manager.dart';
 import '../common/drag_and_drop/drop_zone_widget.dart';
 import '../common/neumorphic/neumorphic.dart';
@@ -28,33 +28,12 @@ class RotateCorner {
   double dy = 0;
 }
 
-class ACC extends ACCProperty {
-  ACC({required this.page, required this.accChild, required int idx})
-      : super(type: ModelType.acc, parent: page!.mid) {
-    order.set(idx);
-  }
+class ACC {
+  // extends ACCProperty {
+  final BaseWidget accChild;
+  late ACCProperty accModel;
 
-  ACC.copy(ACC src, String parentId) : super(parent: parentId, type: src.type) {
-    ACCProperty.copy(src, parentId);
-  }
-
-  @override
-  void deserialize(Map<String, dynamic> map) {
-    logHolder.log('deserialize ACC');
-    super.deserialize(map);
-  }
-
-  @override
-  Map<String, dynamic> serialize() {
-    logHolder.log('serialize ACC');
-    return super.serialize();
-  }
-
-  late BaseWidget accChild;
-  //final int index;
   PageModel? page;
-  //bool isStart = false;
-
   OverlayEntry? entry;
 
   bool actionStart = false;
@@ -73,24 +52,44 @@ class ACC extends ACCProperty {
   Offset _prevOffset = Offset.zero;
   Size _prevSize = Size.zero;
 
+  ACC({required this.page, required this.accChild, required int idx}) {
+    accModel = ACCProperty(type: ModelType.acc, parent: page!.mid);
+    accModel.order.set(idx); // 이 시점에 자동으로 save 가 된다.
+  }
+
+  void saveAs(String newParentId) {
+    accModel = ACCProperty.copy(accModel, newParentId)..save();
+    // 여기서 playManger 를 saveAs 해주어야 한다.
+  }
+
+  void deserialize(Map<String, dynamic> map) {
+    logHolder.log('deserialize ACC');
+    accModel.deserialize(map);
+  }
+
+  Map<String, dynamic> serialize() {
+    logHolder.log('serialize ACC');
+    return accModel.serialize();
+  }
+
   void initSizeAndPosition() {
     Offset start = Offset(_lastOffsetX, _lastOffsetY);
-    containerOffset.init(start);
+    accModel.containerOffset.init(start);
 
     Size pageSize = page!.getRealSize();
 
-    if (_lastOffsetX + containerSize.value.width >= pageSize.width) {
+    if (_lastOffsetX + accModel.containerSize.value.width >= pageSize.width) {
       _lastOffsetX = 20;
     } else {
       _lastOffsetX += 10;
     }
-    if (_lastOffsetY + containerSize.value.height >= pageSize.height) {
+    if (_lastOffsetY + accModel.containerSize.value.height >= pageSize.height) {
       _lastOffsetY = 20;
     } else {
       _lastOffsetY += 10;
     }
     logHolder.log(
-        "pageSize.height=${pageSize.height},containerSize+ =${containerSize.value.height},_lastOffsetY=$_lastOffsetY");
+        "pageSize.height=${pageSize.height},containerSize+ =${accModel.containerSize.value.height},_lastOffsetY=$_lastOffsetY");
   }
 
   Widget registerOverlay(BuildContext context) {
@@ -104,7 +103,7 @@ class ACC extends ACCProperty {
       final overlay = Overlay.of(context)!;
       overlay.insert(entry!, below: menuStickEntry);
     } else {
-      visible.set(true);
+      accModel.visible.set(true);
     }
     if (overlayWidget != null) {
       return overlayWidget!;
@@ -116,11 +115,11 @@ class ACC extends ACCProperty {
     if (page != null) {
       Offset origin = page!.getPosition();
       Size ratio = page!.getRealRatio();
-      double dx = ratio.width * containerOffset.value.dx + origin.dx;
-      double dy = ratio.height * containerOffset.value.dy + origin.dy;
+      double dx = ratio.width * accModel.containerOffset.value.dx + origin.dx;
+      double dy = ratio.height * accModel.containerOffset.value.dy + origin.dy;
       return Offset(dx, dy);
     }
-    return containerOffset.value;
+    return accModel.containerOffset.value;
   }
 
   Size getRealRatio() {
@@ -133,21 +132,21 @@ class ACC extends ACCProperty {
   Offset getRealOffsetWithGivenRatio(Size ratio) {
     if (page != null) {
       Offset origin = page!.getPosition();
-      double dx = ratio.width * containerOffset.value.dx + origin.dx;
-      double dy = ratio.height * containerOffset.value.dy + origin.dy;
+      double dx = ratio.width * accModel.containerOffset.value.dx + origin.dx;
+      double dy = ratio.height * accModel.containerOffset.value.dy + origin.dy;
       return Offset(dx, dy);
     }
-    return containerOffset.value;
+    return accModel.containerOffset.value;
   }
 
   Size getRealSize() {
     if (page != null) {
       Size ratio = page!.getRealRatio();
-      double width = ratio.width * containerSize.value.width;
-      double height = ratio.height * containerSize.value.height;
+      double width = ratio.width * accModel.containerSize.value.width;
+      double height = ratio.height * accModel.containerSize.value.height;
       return Size(width, height);
     }
-    return containerSize.value;
+    return accModel.containerSize.value;
   }
 
   void _setContainerOffset(Offset offset) {
@@ -164,14 +163,14 @@ class ACC extends ACCProperty {
     double pw = page!.width.value.toDouble();
     double ph = page!.height.value.toDouble();
 
-    if (dx + containerSize.value.width > pw - magnetic) {
-      dx = pw - containerSize.value.width;
+    if (dx + accModel.containerSize.value.width > pw - magnetic) {
+      dx = pw - accModel.containerSize.value.width;
     }
-    if (dy + containerSize.value.height > ph - magnetic) {
-      dy = ph - containerSize.value.height;
+    if (dy + accModel.containerSize.value.height > ph - magnetic) {
+      dy = ph - accModel.containerSize.value.height;
     }
 
-    containerOffset.set(Offset(dx, dy));
+    accModel.containerOffset.set(Offset(dx, dy));
     //accManagerHolder!.notify();
   }
 
@@ -202,8 +201,8 @@ class ACC extends ACCProperty {
       h = ph - dy;
     }
 
-    containerOffset.set(Offset(dx, dy));
-    containerSize.set(Size(w, h));
+    accModel.containerOffset.set(Offset(dx, dy));
+    accModel.containerSize.set(Size(w, h));
     //accManagerHolder!.notify();
   }
 
@@ -223,12 +222,12 @@ class ACC extends ACCProperty {
     Size ratio = getRealRatio();
     Offset realOffset = getRealOffsetWithGivenRatio(ratio);
     Size realSize = getRealSize();
-    bool isAccSelected = accManagerHolder!.isCurrentIndex(mid);
+    bool isAccSelected = accManagerHolder!.isCurrentIndex(accModel.mid);
     double mouseMargin = resizeButtonSize / 2;
     Size marginSize = Size(realSize.width + resizeButtonSize, realSize.height + resizeButtonSize);
 
     return Visibility(
-        visible: (visible.value && !isRemoved.value),
+        visible: (accModel.visible.value && !accModel.isRemoved.value),
         child: Positioned(
           // left: realOffset.dx,
           // top: realOffset.dy,
@@ -245,10 +244,10 @@ class ACC extends ACCProperty {
               //saveManagerHolder!.blockAutoSave();
               if (isCorners(details.localPosition, marginSize, resizeButtonSize) ||
                   isRadius(details.localPosition, marginSize, resizeButtonSize / 2, realSize)) {
-                accManagerHolder!.setCurrentMid(mid);
+                accManagerHolder!.setCurrentMid(accModel.mid);
                 return;
               }
-              selectContents(context, mid);
+              selectContents(context, accModel.mid);
               //saveManagerHolder!.delayedReleaseAutoSave(500);
             },
             // onPanDown: (details) {
@@ -305,8 +304,8 @@ class ACC extends ACCProperty {
               double dy = (details.delta.dy / ratio.height);
               if (!resizeWidget(dx, dy, realSize, ratio, isAccSelected)) {
                 if (_validationCheck(false, dx, dy, cursor, isAccSelected, ratio)) {
-                  _setContainerOffset(
-                      Offset((containerOffset.value.dx + dx), (containerOffset.value.dy + dy)));
+                  _setContainerOffset(Offset((accModel.containerOffset.value.dx + dx),
+                      (accModel.containerOffset.value.dy + dy)));
                   accManagerHolder!.notifyAsync();
                 }
               }
@@ -328,23 +327,27 @@ class ACC extends ACCProperty {
                 Padding(
                   padding: EdgeInsets.all(mouseMargin),
                   child: Transform.rotate(
-                    angle: contentRotate.value ? 0 : rotate.value * (pi / 180),
+                    angle: accModel.contentRotate.value ? 0 : accModel.rotate.value * (pi / 180),
                     child: Opacity(
-                      opacity: opacity.value,
+                      opacity: accModel.opacity.value,
                       child: Stack(children: [
                         glassMorphic(
-                          isGlass: glass.value,
+                          isGlass: accModel.glass.value,
                           child: myNeumorphicButton(
                             boxShape: _getBoxShape(realSize),
-                            borderColor: borderColor.value,
-                            borderWidth: borderWidth.value,
-                            intensity: intensity.value,
-                            lightSource: lightSource.value,
-                            depth: depth.value,
-                            bgColor: glass.value ? bgColor.value.withOpacity(0.5) : bgColor.value,
+                            borderColor: accModel.borderColor.value,
+                            borderWidth: accModel.borderWidth.value,
+                            intensity: accModel.intensity.value,
+                            lightSource: accModel.lightSource.value,
+                            depth: accModel.depth.value,
+                            bgColor: accModel.glass.value
+                                ? accModel.bgColor.value.withOpacity(0.5)
+                                : accModel.bgColor.value,
                             onPressed: () {},
                             child: Transform.rotate(
-                              angle: contentRotate.value ? rotate.value * (pi / 180) : 0,
+                              angle: accModel.contentRotate.value
+                                  ? accModel.rotate.value * (pi / 180)
+                                  : 0,
                               child: accChild,
                             ),
                           ),
@@ -359,12 +362,12 @@ class ACC extends ACCProperty {
                                   color: Colors.white.withOpacity(0.5),
                                   child: Center(
                                       child: Text(
-                                    '${order.value}',
+                                    '${accModel.order.value}',
                                     style: MyTextStyles.h3Eng,
                                   )))),
                         ),
                         Visibility(
-                          visible: primary.value,
+                          visible: accModel.primary.value,
                           child: const Icon(
                             Icons.star,
                             color: MyColors.mainColor,
@@ -379,21 +382,21 @@ class ACC extends ACCProperty {
                   painter: ResiablePainter(
                       cursor,
                       isAccSelected, //accManagerHolder!.isCurrentIndex(index),
-                      isFixedRatio.value,
+                      accModel.isFixedRatio.value,
                       isInvisibleColorACC(),
-                      bgColor.value,
+                      accModel.bgColor.value,
                       //borderColor.value,
-                      resizable.value,
+                      accModel.resizable.value,
                       realSize,
                       isCornered,
                       isRadiused,
                       isHover,
                       isCornerHover,
                       isRadiusHover,
-                      radiusTopLeft.value,
-                      radiusTopRight.value,
-                      radiusBottomLeft.value,
-                      radiusBottomRight.value),
+                      accModel.radiusTopLeft.value,
+                      accModel.radiusTopRight.value,
+                      accModel.radiusBottomLeft.value,
+                      accModel.radiusBottomRight.value),
                   child: MouseRegion(
                     onHover: (details) {
                       //logHolder.log('Hover ${details.localPosition}',
@@ -437,7 +440,7 @@ class ACC extends ACCProperty {
                       }
                     },
                     child: DropZoneWidget(
-                      accId: mid,
+                      accId: accModel.mid,
                       onDroppedFile: (model) {
                         logHolder.log('contents added  ${model.mid}');
                         accChild.playManager!.push(this, model);
@@ -481,16 +484,18 @@ class ACC extends ACCProperty {
   }
 
   NeumorphicBoxShape _getBoxShape(Size realSize) {
-    switch (boxType.value) {
+    switch (accModel.boxType.value) {
       case BoxType.rountRect:
-        return radiusAll.value == 0
+        return accModel.radiusAll.value == 0
             ? NeumorphicBoxShape.roundRect(BorderRadius.only(
-                topLeft: Radius.circular(percentToRadius(radiusTopLeft.value, realSize)),
-                topRight: Radius.circular(percentToRadius(radiusTopRight.value, realSize)),
-                bottomLeft: Radius.circular(percentToRadius(radiusBottomLeft.value, realSize)),
-                bottomRight: Radius.circular(percentToRadius(radiusBottomRight.value, realSize))))
+                topLeft: Radius.circular(percentToRadius(accModel.radiusTopLeft.value, realSize)),
+                topRight: Radius.circular(percentToRadius(accModel.radiusTopRight.value, realSize)),
+                bottomLeft:
+                    Radius.circular(percentToRadius(accModel.radiusBottomLeft.value, realSize)),
+                bottomRight:
+                    Radius.circular(percentToRadius(accModel.radiusBottomRight.value, realSize))))
             : NeumorphicBoxShape.roundRect(
-                BorderRadius.circular(percentToRadius(radiusAll.value, realSize)));
+                BorderRadius.circular(percentToRadius(accModel.radiusAll.value, realSize)));
       case BoxType.circle:
         return const NeumorphicBoxShape.circle();
       case BoxType.rect:
@@ -499,10 +504,11 @@ class ACC extends ACCProperty {
         return const NeumorphicBoxShape.stadium();
       case BoxType.beveled:
         return NeumorphicBoxShape.beveled(BorderRadius.only(
-            topLeft: Radius.circular(percentToRadius(radiusTopLeft.value, realSize)),
-            topRight: Radius.circular(percentToRadius(radiusTopRight.value, realSize)),
-            bottomLeft: Radius.circular(percentToRadius(radiusBottomLeft.value, realSize)),
-            bottomRight: Radius.circular(percentToRadius(radiusBottomRight.value, realSize))));
+            topLeft: Radius.circular(percentToRadius(accModel.radiusTopLeft.value, realSize)),
+            topRight: Radius.circular(percentToRadius(accModel.radiusTopRight.value, realSize)),
+            bottomLeft: Radius.circular(percentToRadius(accModel.radiusBottomLeft.value, realSize)),
+            bottomRight:
+                Radius.circular(percentToRadius(accModel.radiusBottomRight.value, realSize))));
       default:
         break;
     }
@@ -546,14 +552,14 @@ class ACC extends ACCProperty {
   }
 
   bool _sizeChanged(double dx, double dy, Size ratio, bool isAccSelected, double fixedDirection) {
-    double w = containerSize.value.width;
-    double h = containerSize.value.height;
-    double cx = containerOffset.value.dx;
-    double cy = containerOffset.value.dy;
+    double w = accModel.containerSize.value.width;
+    double h = accModel.containerSize.value.height;
+    double cx = accModel.containerOffset.value.dx;
+    double cy = accModel.containerOffset.value.dy;
 
     bool isLimitW = false;
     bool isLimitH = false;
-    if (isFixedRatio.value == true) {
+    if (accModel.isFixedRatio.value == true) {
       // dx,dy 중 크게 움직인 것에 따라 작게 움직인것의 비율이 결정된다.
       double ratio = w / h;
       double pageH = page!.height.value.toDouble();
@@ -615,10 +621,10 @@ class ACC extends ACCProperty {
       i++;
     }
 
-    if (isLimitH && afterSize.height > containerSize.value.height) {
+    if (isLimitH && afterSize.height > accModel.containerSize.value.height) {
       return true;
     }
-    if (isLimitW && afterSize.width > containerSize.value.width) {
+    if (isLimitW && afterSize.width > accModel.containerSize.value.width) {
       return true;
     }
     if (afterSize.width * ratio.width > minAccSize &&
@@ -636,23 +642,23 @@ class ACC extends ACCProperty {
     switch (cursor) {
       case CursorType.neRadius:
         direction = (dx >= 0 && dy >= 0) ? 1 : -1;
-        newRadius = radiusTopLeft.value;
-        radiusAll.set(0);
+        newRadius = accModel.radiusTopLeft.value;
+        accModel.radiusAll.set(0);
         break;
       case CursorType.seRadius:
         direction = (dx >= 0 && dy <= 0) ? 1 : -1;
-        newRadius = radiusBottomLeft.value;
-        radiusAll.set(0);
+        newRadius = accModel.radiusBottomLeft.value;
+        accModel.radiusAll.set(0);
         break;
       case CursorType.nwRadius:
         direction = (dx <= 0 && dy >= 0) ? 1 : -1;
-        newRadius = radiusTopRight.value;
-        radiusAll.set(0);
+        newRadius = accModel.radiusTopRight.value;
+        accModel.radiusAll.set(0);
         break;
       case CursorType.swRadius:
         direction = (dx <= 0 && dy <= 0) ? 1 : -1;
-        newRadius = radiusBottomRight.value;
-        radiusAll.set(0);
+        newRadius = accModel.radiusBottomRight.value;
+        accModel.radiusAll.set(0);
         break;
       default:
         return false;
@@ -668,19 +674,19 @@ class ACC extends ACCProperty {
 
     switch (cursor) {
       case CursorType.neRadius:
-        radiusTopLeft.set(newRadius);
+        accModel.radiusTopLeft.set(newRadius);
         accManagerHolder!.notifyAsync();
         return true;
       case CursorType.seRadius:
-        radiusBottomLeft.set(newRadius);
+        accModel.radiusBottomLeft.set(newRadius);
         accManagerHolder!.notifyAsync();
         return true;
       case CursorType.nwRadius:
-        radiusTopRight.set(newRadius);
+        accModel.radiusTopRight.set(newRadius);
         accManagerHolder!.notifyAsync();
         return true;
       case CursorType.swRadius:
-        radiusBottomRight.set(newRadius);
+        accModel.radiusBottomRight.set(newRadius);
         accManagerHolder!.notifyAsync();
         return true;
       default:
@@ -710,8 +716,13 @@ class ACC extends ACCProperty {
     for (int i = 0; i < 4; i++) {
       isRadiusHover[i] = false;
     }
-    List<Rect> rectList = ResiablePainter.getRadiusRect(widgetSize, radiusTopLeft.value,
-        radiusTopRight.value, radiusBottomRight.value, radiusBottomLeft.value, realSize);
+    List<Rect> rectList = ResiablePainter.getRadiusRect(
+        widgetSize,
+        accModel.radiusTopLeft.value,
+        accModel.radiusTopRight.value,
+        accModel.radiusBottomRight.value,
+        accModel.radiusBottomLeft.value,
+        realSize);
 
     int i = 0;
     for (Rect rect in rectList) {
@@ -813,7 +824,7 @@ class ACC extends ACCProperty {
   }
 
   void setBgColor(Color color) {
-    bgColor.set(color);
+    accModel.bgColor.set(color);
     setState();
     accManagerHolder!.notify();
   }
@@ -838,7 +849,7 @@ class ACC extends ACCProperty {
     double pageRight = pageLeft + page!.realSize.width;
     double pageBottom = pageTop + page!.realSize.height;
 
-    double border = borderWidth.value;
+    double border = accModel.borderWidth.value;
     double borderW = border * ratio.width;
     double borderH = border * ratio.height;
 
@@ -916,13 +927,13 @@ class ACC extends ACCProperty {
   }
 
   void toggleFullscreen() {
-    fullscreen.set(!fullscreen.value);
+    accModel.fullscreen.set(!accModel.fullscreen.value);
 
-    if (fullscreen.value) {
+    if (accModel.fullscreen.value) {
       Size pageSize = page!.getSize();
 
-      _prevOffset = containerOffset.value;
-      _prevSize = containerSize.value;
+      _prevOffset = accModel.containerOffset.value;
+      _prevSize = accModel.containerSize.value;
       _setContainerOffsetAndSize(const Offset(0, 0), pageSize);
       //containerOffset.set(start);
       //containerSize.set(pageSize);
@@ -935,14 +946,14 @@ class ACC extends ACCProperty {
 
   bool isFullscreen() {
     if (page != null) {
-      if (containerSize.value.width.floor() == page!.width.value &&
-          containerSize.value.height.floor() == page!.height.value) {
-        fullscreen.set(true);
+      if (accModel.containerSize.value.width.floor() == page!.width.value &&
+          accModel.containerSize.value.height.floor() == page!.height.value) {
+        accModel.fullscreen.set(true);
       } else {
-        fullscreen.set(false);
+        accModel.fullscreen.set(false);
       }
     }
-    return fullscreen.value;
+    return accModel.fullscreen.value;
   }
 
   bool isInvisibleColorACC() {
@@ -955,12 +966,12 @@ class ACC extends ACCProperty {
     if (hasContents) {
       return false;
     }
-    if (bgColor.value != Colors.transparent && bgColor.value != MyColors.pageBg) {
+    if (accModel.bgColor.value != Colors.transparent && accModel.bgColor.value != MyColors.pageBg) {
       return false;
     }
-    if (borderWidth.value > 0 &&
-        borderColor.value != Colors.transparent &&
-        borderColor.value != MyColors.pageBg) {
+    if (accModel.borderWidth.value > 0 &&
+        accModel.borderColor.value != Colors.transparent &&
+        accModel.borderColor.value != MyColors.pageBg) {
       return false;
     }
     return true;
@@ -973,14 +984,14 @@ class ACC extends ACCProperty {
     // 반대편을 ratio 만큼 늘린다.
     if (ratio == 0) return;
 
-    double w = containerSize.value.width;
-    double h = containerSize.value.height;
+    double w = accModel.containerSize.value.width;
+    double h = accModel.containerSize.value.height;
 
     double pageHeight = page!.height.value.toDouble();
     double pageWidth = page!.width.value.toDouble();
 
-    double dx = containerOffset.value.dx;
-    double dy = containerOffset.value.dy;
+    double dx = accModel.containerOffset.value.dx;
+    double dy = accModel.containerOffset.value.dy;
 
     // ratio = w / h 이다.
     if (ratio >= 1) {
@@ -1015,8 +1026,8 @@ class ACC extends ACCProperty {
     }
 
     mychangeStack.startTrans();
-    containerOffset.set(Offset(dx, dy));
-    containerSize.set(Size(w, h));
+    accModel.containerOffset.set(Offset(dx, dy));
+    accModel.containerSize.set(Size(w, h));
     mychangeStack.endTrans();
 
     if (invalidate) {

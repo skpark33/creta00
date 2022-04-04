@@ -28,7 +28,6 @@ class BaseWidget extends StatefulWidget {
 
   BaseWidget({required this.baseWidgetKey}) : super(key: baseWidgetKey) {
     playManager = PlayManager(this);
-    playManager!.initTimer();
   }
   final GlobalKey<BaseWidgetState> baseWidgetKey;
 
@@ -45,7 +44,7 @@ class BaseWidget extends StatefulWidget {
 
   AnimeType getAnimeType() {
     if (acc != null) {
-      return acc!.animeType.value;
+      return acc!.accModel.animeType.value;
     }
     return AnimeType.none;
   }
@@ -81,6 +80,7 @@ class BaseWidgetState extends State<BaseWidget> {
 
   @override
   void initState() {
+    widget.playManager!.initTimer();
     super.initState();
     //carousel = AnimeCarousel.create();
   }
@@ -124,7 +124,7 @@ class BaseWidgetState extends State<BaseWidget> {
                 //return carousel!.carouselWidget(
                 return carouselWidget(
                     context,
-                    widget.acc!.containerSize.value.height,
+                    widget.acc!.accModel.containerSize.value.height,
                     widget.playManager!.getPlayWidgetList(),
                     (index, reason) {}, // onPageChanged
                     widget.playManager!.animePageChanger,
@@ -148,7 +148,7 @@ class BaseWidgetState extends State<BaseWidget> {
   @override
   void dispose() {
     logHolder.log("BaseWidgetState dispose");
-    //widget.playManager!.clear();
+    widget.playManager!.cancelTimer();
     super.dispose();
   }
 

@@ -9,7 +9,6 @@ import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/common/buttons/basic_button.dart';
 import 'package:creta00/model/users.dart';
-import 'package:creta00/model/book.dart';
 import 'package:creta00/constants/styles.dart';
 import 'package:creta00/studio/sidebar/sidebar.dart';
 import 'package:creta00/studio/artboard/artboard_frame.dart';
@@ -27,13 +26,11 @@ StudioMainScreen? studioMainHolder;
 
 // ignore: must_be_immutable
 class StudioMainScreen extends StatefulWidget {
-  StudioMainScreen({required this.mainScreenKey, required this.book, required this.user})
-      : super(key: mainScreenKey) {
+  StudioMainScreen({required this.mainScreenKey, required this.user}) : super(key: mainScreenKey) {
     //saveManagerHolder = SaveManager();
   }
   final GlobalKey<MainScreenState> mainScreenKey;
 
-  BookModel book;
   final UserModel user;
 
   @override
@@ -265,7 +262,7 @@ class MainScreenState extends State<StudioMainScreen> {
     return AppBar(
       backgroundColor: MyColors.appbar,
       title: Text(
-        widget.book.name.value,
+        cretaMainHolder!.book.name.value,
         style: MyTextStyles.h5,
       ),
       leadingWidth: isNarrow ? 200 : 400,

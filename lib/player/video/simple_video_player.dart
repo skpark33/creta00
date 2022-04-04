@@ -13,15 +13,25 @@ class SimpleVideoPlayer extends StatefulWidget {
     required this.globalKey,
     required this.url,
     required this.realSize,
+    required this.aspectRatio,
     required this.onAfterEvent,
     this.autoStart = false,
+    this.radiusTopRight = 8,
+    this.radiusTopLeft = 8,
+    this.radiusBottomRight = 0,
+    this.radiusBottomLeft = 0,
   }) : super(key: globalKey);
 
   final String url;
   final bool autoStart;
   final void Function() onAfterEvent;
   final Size realSize;
+  final double aspectRatio;
   final GlobalKey<SimpleVideoPlayerState> globalKey;
+  final double radiusTopRight;
+  final double radiusTopLeft;
+  final double radiusBottomRight;
+  final double radiusBottomLeft;
 
   VideoPlayerController? wcontroller;
   VideoEventType prevEvent = VideoEventType.unknown;
@@ -31,6 +41,7 @@ class SimpleVideoPlayer extends StatefulWidget {
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
       ..initialize().then((_) {
         wcontroller!.setLooping(false);
+        wcontroller!.setVolume(0.0);
         wcontroller!.onAfterVideoEvent = (event) {
           if (event.eventType == VideoEventType.completed) {
             // bufferingEnd and completed 가 시간이 다 되서 종료한 것임.
@@ -121,11 +132,12 @@ class SimpleVideoPlayerState extends State<SimpleVideoPlayer> {
 
   Future<bool> waitInit() async {
     await widget.init();
-    return true;
+
     // bool isReady = widget.wcontroller!.value.isInitialized;
     // while (!isReady) {
     //   await Future.delayed(const Duration(milliseconds: 100));
     // }
+    return true;
     // if (widget.autoStart) {
     //   logHolder.log('initState play', level: 5);
     //   await widget.play();
@@ -137,7 +149,6 @@ class SimpleVideoPlayerState extends State<SimpleVideoPlayer> {
   Widget build(BuildContext context) {
     logHolder.log('SimpleVideoPlayerState', level: 5);
     // aspectorRatio 는 실제 비디오의  넓이/높이 이다.
-
     return FutureBuilder(
         future: waitInit(),
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
@@ -149,8 +160,14 @@ class SimpleVideoPlayerState extends State<SimpleVideoPlayer> {
             //error가 발생하게 될 경우 반환하게 되는 부분
             return defaultBGImage();
           }
-          Size outSize = widget.getOuterSize(widget.wcontroller!.value.aspectRatio);
+          Size outSize = widget.getOuterSize(widget.aspectRatio);
           return ClipRRect(
+            borderRadius: BorderRadius.only(
+              topRight: Radius.circular(widget.radiusTopRight),
+              topLeft: Radius.circular(widget.radiusTopLeft),
+              bottomRight: Radius.circular(widget.radiusBottomRight),
+              bottomLeft: Radius.circular(widget.radiusBottomLeft),
+            ),
             child: SizedBox.expand(
                 child: FittedBox(
               alignment: Alignment.center,

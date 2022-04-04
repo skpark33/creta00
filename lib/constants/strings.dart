@@ -27,7 +27,7 @@ class MyStrings {
   static String recent = Locale.isKr() ? "최근 파일 열기" : 'Open Recently Edited';
   static String bring = Locale.isKr() ? "다른 패키지에서 불러오기" : 'Bring from Another Book';
   static String save = Locale.isKr() ? "저장" : 'Save';
-  static String saveas = Locale.isKr() ? "다른 이름으로 저장" : 'Save as';
+  static String makeCopy = Locale.isKr() ? "사본 만들기" : 'Make copy';
   static String publish = Locale.isKr() ? "발행하기" : 'Publish';
   static String bookPropChange = Locale.isKr() ? "콘텐츠북 속성 변경" : 'Contents Book Properties';
   static String pageAdd = Locale.isKr() ? "페이지 추가" : 'Add Page';
@@ -125,4 +125,9 @@ class MyStrings {
   static String thumbnailError = Locale.isKr() ? '썸네일 업로드에 실패하였습니다.' : "fail to upload thumbnail";
   static String alreadyExist =
       Locale.isKr() ? '실패 : 같은 이름의 데이터가 이미 있습니다.' : "Fail : Same name already exist";
+  static String yearBefore = Locale.isKr() ? '년 전' : "Year before";
+  static String monthBefore = Locale.isKr() ? '달 전' : "Month before";
+  static String dayBefore = Locale.isKr() ? '일 전' : "Day before";
+  static String hourBefore = Locale.isKr() ? '시간 전' : "Hour before";
+  static String minBefore = Locale.isKr() ? '분 전' : "Min before";
 }

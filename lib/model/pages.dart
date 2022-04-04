@@ -41,6 +41,10 @@ class PageModel extends AbsModel {
     save();
   }
 
+  PageModel makeCopy(String newParendId) {
+    return PageModel.copy(this, newParendId)..saveModel();
+  }
+
   @override
   void deserialize(Map<String, dynamic> map) {
     super.deserialize(map);

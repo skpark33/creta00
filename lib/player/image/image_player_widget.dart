@@ -112,10 +112,10 @@ class ImagePlayerWidgetState extends State<ImagePlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    double topLeft = widget.acc.radiusTopLeft.value;
-    double topRight = widget.acc.radiusTopRight.value;
-    double bottomLeft = widget.acc.radiusBottomLeft.value;
-    double bottomRight = widget.acc.radiusBottomRight.value;
+    double topLeft = widget.acc.accModel.radiusTopLeft.value;
+    double topRight = widget.acc.accModel.radiusTopRight.value;
+    double bottomLeft = widget.acc.accModel.radiusBottomLeft.value;
+    double bottomRight = widget.acc.accModel.radiusBottomRight.value;
     return Container(
       decoration: BoxDecoration(
           //shape: BoxShape.circle,
