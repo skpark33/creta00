@@ -141,7 +141,7 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
                   if (pageManagerHolder != null) {
                     accManagerHolder!.setCurrentMid('');
                     accManagerHolder!.setState();
-                    logHolder.log('artboard onPanDown : ${details.localPosition}', level: 6);
+                    logHolder.log('artboard onPanDown : ${details.localPosition}', level: 5);
                     accManagerHolder!.unshowMenu(context);
                     pageManagerHolder!.setAsPage();
                   }
@@ -149,7 +149,7 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
                 child: DropZoneWidget(
                   accId: '',
                   onDroppedFile: (model) {
-                    logHolder.log('contents added ${model.mid}', level: 6);
+                    logHolder.log('contents added ${model.mid}', level: 5);
                     model.isDynamicSize.set(true); // 동영상에 맞게 frame size 를 조절하라는 뜻
                     MyMenuStickState.createACC(context, model);
                     //accChild.playManager!.push(this, model);

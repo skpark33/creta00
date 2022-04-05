@@ -37,7 +37,7 @@ class PageSwipListState extends State<PageSwipList> {
         controller: _scrollController,
         child: Consumer<PageManager>(
           builder: (context, pageManager, child) {
-            logHolder.log('Consumer build PageSwipListState ${pageManager.pageIndex}', level: 6);
+            logHolder.log('Consumer build PageSwipListState ${pageManager.pageIndex}', level: 5);
 
             pageManager.reorderMap();
             logHolder.log('after reorderMap');
@@ -55,7 +55,7 @@ class PageSwipListState extends State<PageSwipList> {
                 for (int i = 0; i < items.length; i++) eachCard(i, items[i], pageManager),
               ],
               onReorder: (oldIndex, newIndex) => setState(() {
-                logHolder.log('old=$oldIndex,new=$newIndex', level: 6);
+                logHolder.log('old=$oldIndex,new=$newIndex', level: 5);
                 final index = newIndex > oldIndex ? newIndex - 1 : newIndex;
                 pageManager.changeOrder(index, oldIndex);
               }),

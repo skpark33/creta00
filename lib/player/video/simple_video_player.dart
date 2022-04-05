@@ -132,17 +132,15 @@ class SimpleVideoPlayerState extends State<SimpleVideoPlayer> {
 
   Future<bool> waitInit() async {
     await widget.init();
-
     // bool isReady = widget.wcontroller!.value.isInitialized;
     // while (!isReady) {
     //   await Future.delayed(const Duration(milliseconds: 100));
     // }
+    if (widget.autoStart) {
+      logHolder.log('initState play', level: 5);
+      await widget.play();
+    }
     return true;
-    // if (widget.autoStart) {
-    //   logHolder.log('initState play', level: 5);
-    //   await widget.play();
-    // }
-    // return true;
   }
 
   @override

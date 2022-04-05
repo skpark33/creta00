@@ -435,7 +435,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   @override
   Future<void> dispose() async {
-    logHolder.log('controller disposed $dataSource', level: 6);
+    logHolder.log('controller disposed $dataSource', level: 5);
     if (_creatingCompleter != null) {
       await _creatingCompleter!.future;
       if (!_isDisposed) {
@@ -490,7 +490,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   Future<void> _applyLooping() async {
     if (_isDisposedOrNotInitialized) {
-      logHolder.log('_isDisposedOrNotInitialized', level: 6);
+      logHolder.log('_isDisposedOrNotInitialized', level: 5);
       return;
     }
     await _videoPlayerPlatform.setLooping(_textureId, value.isLooping);
@@ -498,7 +498,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   Future<void> _applyPlayPause() async {
     if (_isDisposedOrNotInitialized) {
-      logHolder.log('_isDisposedOrNotInitialized', level: 6);
+      logHolder.log('_isDisposedOrNotInitialized', level: 5);
       return;
     }
     if (value.isPlaying) {
@@ -694,13 +694,13 @@ class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.paused:
-        logHolder.log('AppLifecycleState.paused', level: 6);
+        logHolder.log('AppLifecycleState.paused', level: 5);
         _wasPlayingBeforePause = _controller.value.isPlaying;
         _controller.pause();
         break;
       case AppLifecycleState.resumed:
         if (_wasPlayingBeforePause) {
-          logHolder.log('AppLifecycleState.played', level: 6);
+          logHolder.log('AppLifecycleState.played', level: 5);
           _controller.play();
         }
         break;

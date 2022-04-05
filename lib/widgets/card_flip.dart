@@ -35,7 +35,7 @@ class _TwinCardFlipState extends State<TwinCardFlip> {
         child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0), child: child));
   }
   // void _flip() {
-  //   logHolder.log('card fliped--------------------------------------', level: 6);
+  //   logHolder.log('card fliped--------------------------------------', level: 5);
   //   setState(() {
   //     angle = (angle + pi) % (2 * pi);
   //   });
@@ -49,7 +49,7 @@ class _TwinCardFlipState extends State<TwinCardFlip> {
       widget.angle = (widget.angle + pi) % (2 * pi);
     }
     logHolder.log('angle=${widget.flip}, ${widget.angle}-------------------------------------',
-        level: 6);
+        level: 5);
     return SafeArea(
       child: Center(
         child: Column(

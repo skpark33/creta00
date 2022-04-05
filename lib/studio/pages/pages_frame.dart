@@ -34,7 +34,7 @@ class _PageScreenState extends State<PagesFrame> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    logHolder.log('width=$width, height=$height', level: 6);
+    logHolder.log('width=$width, height=$height', level: 5);
 
     return SafeArea(
       child: Container(
@@ -205,13 +205,13 @@ class _PageScreenState extends State<PagesFrame> {
 //     ];
 
     if (pageManagerHolder != null) {
-      logHolder.log('pageManagerHolder is inited', level: 6);
+      logHolder.log('pageManagerHolder is inited', level: 5);
       if (_nodes != null) {
         _nodes!.clear();
       }
       _nodes = pageManagerHolder!.toNodes(selectedModel);
     } else {
-      logHolder.log('pageManagerHolder is not inited', level: 6);
+      logHolder.log('pageManagerHolder is not inited', level: 5);
       _nodes = [
         Node(
             label: 'samples',

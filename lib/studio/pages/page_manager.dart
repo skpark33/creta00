@@ -23,9 +23,6 @@ class PageManager extends ChangeNotifier {
   // factory PageManager.singleton() {
   //   return PageManager();
   // }
-  PageManager() {
-    load();
-  }
 
   int pageIndex = 0;
   Map<String, PageModel> pageMap = <String, PageModel>{};
@@ -71,13 +68,9 @@ class PageManager extends ChangeNotifier {
   String _selectedMid = '';
 
   void load() {
-    if (loadBook() == 0) {
+    if (pageMap.isEmpty) {
       _selectedMid = createPage();
     }
-  }
-
-  int loadBook() {
-    return 0;
   }
 
   String createPage() {
@@ -87,6 +80,18 @@ class PageManager extends ChangeNotifier {
     orderMap[page.order.value] = page;
     pageIndex++;
     return page.mid;
+  }
+
+  void pushPages(List<PageModel> list) {
+    pageIndex = 0;
+    pageMap.clear();
+    orderMap.clear();
+    for (PageModel page in list) {
+      page.order.set(pageIndex, save: false);
+      pageMap[page.mid] = page;
+      orderMap[page.order.value] = page;
+      pageIndex++;
+    }
   }
 
   void makeCopy(String oldBookMid, String newBookMid) {
@@ -100,10 +105,10 @@ class PageManager extends ChangeNotifier {
 
   void removePage(String mid) {
     if (pageMap[mid] == null) {
-      logHolder.log('removePage($mid) is null', level: 6);
+      logHolder.log('removePage($mid) is null', level: 5);
       return;
     }
-    logHolder.log('removePage($mid)', level: 6);
+    logHolder.log('removePage($mid)', level: 5);
 
     mychangeStack.startTrans();
     for (PageModel model in pageMap.values) {
@@ -136,7 +141,7 @@ class PageManager extends ChangeNotifier {
 
   void setSelectedIndex(BuildContext context, String val) {
     _selectedMid = val;
-    logHolder.log('pageId=$val', level: 6);
+    logHolder.log('pageId=$val', level: 5);
     accManagerHolder!.showPages(context, val);
     pageManagerHolder!.setAsPage(); //setAsPage contain setState()
   }

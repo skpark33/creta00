@@ -9,7 +9,7 @@ import 'player/video/simple_video_player.dart';
 
 class MainUtil {
   static Widget drawBackground(double width, double height, BookModel book) {
-    logHolder.log("drawBackground $width, $height", level: 6);
+    logHolder.log("drawBackground $width, $height", level: 5);
     if (book.thumbnailUrl.value.isEmpty) {
       return defaultBGImage();
     }

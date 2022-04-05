@@ -4,6 +4,7 @@ import '../common/undo/undo.dart';
 import '../constants/styles.dart';
 import '../model/models.dart';
 import '../model/model_enums.dart';
+import 'contents.dart';
 
 enum CursorType {
   pointer,
@@ -51,6 +52,8 @@ class ACCProperty extends AbsModel {
   late UndoAble<double> depth;
   late UndoAble<double> intensity;
   late UndoAble<BoxType> boxType;
+
+  List<ContentsModel> contentsList = []; // db get 전용
 
   ACCProperty({required ModelType type, required String parent})
       : super(type: type, parent: parent) {
@@ -114,6 +117,37 @@ class ACCProperty extends AbsModel {
     boxType = UndoAble<BoxType>(src.boxType.value, mid);
   }
 
+  ACCProperty.createEmptyModel(String srcMid, String pMid)
+      : super(type: ModelType.acc, parent: pMid) {
+    super.changeMid(srcMid);
+    visible = UndoAble<bool>(true, srcMid);
+    resizable = UndoAble<bool>(true, srcMid);
+    animeType = UndoAble<AnimeType>(AnimeType.none, srcMid);
+    radiusAll = UndoAble<double>(0, srcMid);
+    radiusTopLeft = UndoAble<double>(0, srcMid);
+    radiusTopRight = UndoAble<double>(0, srcMid);
+    radiusBottomLeft = UndoAble<double>(0, srcMid);
+    radiusBottomRight = UndoAble<double>(0, srcMid);
+
+    primary = UndoAble<bool>(false, srcMid);
+    fullscreen = UndoAble<bool>(false, srcMid);
+    containerOffset = UndoAble<Offset>(const Offset(100, 100), srcMid);
+    containerSize = UndoAble<Size>(const Size(640, 480), srcMid);
+    rotate = UndoAble<double>(0, srcMid);
+    contentRotate = UndoAble<bool>(false, srcMid);
+    opacity = UndoAble<double>(1, srcMid);
+    sourceRatio = UndoAble<bool>(false, srcMid);
+    isFixedRatio = UndoAble<bool>(false, srcMid);
+    glass = UndoAble<bool>(false, srcMid);
+    bgColor = UndoAble<Color>(MyColors.accBg, srcMid);
+    borderColor = UndoAble<Color>(Colors.transparent, srcMid);
+    borderWidth = UndoAble<double>(0, srcMid);
+    lightSource = UndoAble<LightSource>(LightSource.topLeft, srcMid);
+    depth = UndoAble<double>(0, srcMid);
+    intensity = UndoAble<double>(0.8, srcMid);
+    boxType = UndoAble<BoxType>(BoxType.rountRect, srcMid);
+  }
+
   @override
   void deserialize(Map<String, dynamic> map) {
     super.deserialize(map);
@@ -142,7 +176,11 @@ class ACCProperty extends AbsModel {
       // 'Color(0x000000ff)';
       bgColor.set(Color(int.parse(colorStr.substring(8, 16), radix: 16)), save: false);
     }
-    borderColor.set(map["borderColor"], save: false);
+    String? borderColorStr = map["borderColor"];
+    if (borderColorStr != null && borderColorStr.length > 16) {
+      // 'Color(0x000000ff)';
+      borderColor.set(Color(int.parse(borderColorStr.substring(8, 16), radix: 16)), save: false);
+    }
     borderWidth.set(map["borderWidth"], save: false);
     lightSource.set(LightSource(map["lightSource_dx"], map["lightSource_dy"]), save: false);
     depth.set(map["depth"], save: false);
@@ -158,7 +196,7 @@ class ACCProperty extends AbsModel {
   Map<String, dynamic> serialize() {
     return super.serialize()
       ..addEntries({
-        "animeType": animeTypeToInt(),
+        "animeType": animeTypeToInt(animeType.value),
         "visible": visible.value,
         "resizable": resizable.value,
         "radiusAll": radiusAll.value,
@@ -185,33 +223,7 @@ class ACCProperty extends AbsModel {
         "lightSource_dy": lightSource.value.dy,
         "depth": depth.value,
         "intensity": intensity.value,
-        "boxType": boxTypeToInt(),
+        "boxType": boxTypeToInt(boxType.value),
       }.entries);
-  }
-
-  int boxTypeToInt() {
-    switch (boxType.value) {
-      case BoxType.rect:
-        return 0;
-      case BoxType.rountRect:
-        return 1;
-      case BoxType.circle:
-        return 2;
-      case BoxType.beveled:
-        return 3;
-      case BoxType.stadium:
-        return 4;
-    }
-  }
-
-  int animeTypeToInt() {
-    switch (animeType.value) {
-      case AnimeType.none:
-        return 0;
-      case AnimeType.carousel:
-        return 1;
-      case AnimeType.flip:
-        return 2;
-    }
   }
 }

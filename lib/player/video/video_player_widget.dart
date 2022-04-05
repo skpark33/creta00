@@ -88,7 +88,7 @@ class VideoPlayerWidget extends AbsPlayWidget {
     // while (model!.state == PlayState.disposed) {
     //   await Future.delayed(const Duration(milliseconds: 100));
     // }
-    logHolder.log('pause', level: 6);
+    logHolder.log('pause', level: 5);
     model!.setState(PlayState.pause);
     await wcontroller!.pause();
   }
@@ -136,7 +136,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   Future<void> afterBuild() async {
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      logHolder.log('afterBuild video', level: 6);
+      logHolder.log('afterBuild video', level: 5);
       widget.model!.aspectRatio.set(widget.wcontroller!.value.aspectRatio);
       widget.afterBuild();
     });
@@ -150,7 +150,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   @override
   void dispose() {
-    logHolder.log("video widget dispose,${widget.model!.name}", level: 6);
+    logHolder.log("video widget dispose,${widget.model!.name}", level: 5);
     //widget.wcontroller!.dispose();
     super.dispose();
     widget.model!.setState(PlayState.disposed);
@@ -227,7 +227,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 class MyContentsClipper extends CustomClipper<RRect> {
   @override
   RRect getClip(Size size) {
-    logHolder.log('MyContentsClipper=$size', level: 6);
+    logHolder.log('MyContentsClipper=$size', level: 5);
     return RRect.fromLTRBR(50, 50, 200, 200, const Radius.circular(20));
   }
 

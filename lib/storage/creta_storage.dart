@@ -36,7 +36,7 @@ class CretaStorage {
         content: contents,
         onComplete: (path) async {
           contents.remoteUrl = path;
-          logHolder.log('Upload complete ${contents.remoteUrl!}', level: 6);
+          logHolder.log('Upload complete ${contents.remoteUrl!}', level: 5);
           if (contents.thumbnail == null || contents.thumbnail!.isEmpty) {
             saveManagerHolder!.pushUploadThumbnail(contents);
           }
@@ -52,11 +52,11 @@ class CretaStorage {
       if (contents.contentsType == ContentsType.video) {
         // Thumbnail 기능이 될 때까지 임시로 블록조치함.
         // String srcPath = await CretaStorage.downloadUrlStr(contents.remoteUrl!);
-        // logHolder.log('get Thumbnail Source $srcPath', level: 6);
+        // logHolder.log('get Thumbnail Source $srcPath', level: 5);
         // try {
         //   VideoThumbnail.getBytes(srcPath).then((value) {
         //     if (value.isEmpty) {
-        //       logHolder.log('get thumbnail failed', level: 6);
+        //       logHolder.log('get thumbnail failed', level: 5);
         //       onError();
         //       return;
         //     }
@@ -71,16 +71,16 @@ class CretaStorage {
         //         file: image,
         //         onComplete: (path) {
         //           contents.thumbnail = path;
-        //           logHolder.log('Upload complete ${contents.thumbnail!}', level: 6);
+        //           logHolder.log('Upload complete ${contents.thumbnail!}', level: 5);
         //           saveManagerHolder!.pushChanged(contents.mid);
         //           onComplete();
         //         });
         //   });
         // } on Exception catch (e) {
-        //   logHolder.log('get Thumbnail failed ${e.toString()}', level: 6);
+        //   logHolder.log('get Thumbnail failed ${e.toString()}', level: 5);
         //   onError();
         // } catch (error) {
-        //   logHolder.log('get Thumbnail failed ${error.toString()}', level: 6);
+        //   logHolder.log('get Thumbnail failed ${error.toString()}', level: 5);
         //   onError();
         // }
         contents.thumbnail = await CretaStorage.downloadUrlStr(contents.remoteUrl!);
@@ -104,17 +104,16 @@ class CretaStorage {
     try {
       String fullpath = '$remotePath/${content.file!.name}';
       fb.StorageReference ref = fb.storage().refFromURL(fbServerUrl).child(fullpath);
-
       final reader = html.FileReader();
       reader.readAsDataUrl(content.file!);
       reader.onLoadEnd.listen((event) {
-        logHolder.log('Upload ${content.file!.name}', level: 6);
+        logHolder.log('Upload ${content.file!.name}', level: 5);
         ref.put(content.file!).future.then((value) {
           onComplete(fullpath);
         });
       });
     } on Exception catch (e) {
-      logHolder.log('UPLOAD failed ${e.toString()}', level: 6);
+      logHolder.log('UPLOAD failed ${e.toString()}', level: 5);
       onError();
     } catch (e) {
       logHolder.log("UPLOAD ERROR : $e", level: 7);
@@ -132,7 +131,7 @@ class CretaStorage {
 
       fb.StorageReference ref = fb.storage().refFromURL(fbServerUrl).child(fullpath);
 
-      logHolder.log('Upload $fileName', level: 6);
+      logHolder.log('Upload $fileName', level: 5);
       ref.put(file!).future.then((value) {
         onComplete(fullpath);
       });

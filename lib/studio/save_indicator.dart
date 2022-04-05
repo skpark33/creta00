@@ -47,7 +47,7 @@ class SaveIndicatorState extends State<SaveIndicator> {
               logHolder.log('FutureBuilder InProgressType error ', level: 7);
               return Container();
             }
-            logHolder.log('SaveIndicatorState...${snapshot.data!.toString()}', level: 6);
+            logHolder.log('SaveIndicatorState...${snapshot.data!.toString()}', level: 5);
             switch (snapshot.data!) {
               case InProgressType.done:
                 return Container(
@@ -55,13 +55,13 @@ class SaveIndicatorState extends State<SaveIndicator> {
                   color: color,
                 );
               case InProgressType.saving:
-                logHolder.log('Saving...', level: 6);
+                logHolder.log('Saving...', level: 5);
                 return aniIndicator(MyStrings.saving);
               case InProgressType.contentsUploading:
-                logHolder.log('ContentsUploding...', level: 6);
+                logHolder.log('ContentsUploding...', level: 5);
                 return aniIndicator(MyStrings.contentsUploading);
               case InProgressType.thumbnailUploading:
-                logHolder.log('ThumbnailUploding...', level: 6);
+                logHolder.log('ThumbnailUploding...', level: 5);
                 return aniIndicator(MyStrings.thumbnailUploading);
             }
           });

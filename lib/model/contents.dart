@@ -52,6 +52,17 @@ class ContentsModel extends AbsModel {
     isDynamicSize = UndoAble<bool>(src.isDynamicSize.value, mid); //
   }
 
+  ContentsModel.createEmptyModel(String srcMid, String pMid)
+      : super(type: ModelType.contents, parent: pMid) {
+    super.changeMid(srcMid);
+    playTime = UndoAble<double>(5000, srcMid); // 1000 분의 1초 milliseconds
+    videoPlayTime = UndoAble<double>(5000, srcMid); // 1000 분의 1초 milliseconds
+    mute = UndoAble<bool>(false, srcMid);
+    volume = UndoAble<double>(100, srcMid);
+    aspectRatio = UndoAble<double>(1, srcMid);
+    isDynamicSize = UndoAble<bool>(false, srcMid); //
+  }
+
   // ignore: prefer_final_fields
   PlayState _state = PlayState.none;
   // ignore: prefer_final_fields
@@ -63,6 +74,8 @@ class ContentsModel extends AbsModel {
     _state = s;
   }
 
+  double progress = 0.0;
+
   //  playTime 이전 값, 영구히 에서 되돌릴때를 대비해서 가지고 있다.
   double prevPlayTime = 5000;
   void reservPlayTime() {
@@ -71,23 +84,6 @@ class ContentsModel extends AbsModel {
 
   void resetPlayTime() {
     playTime.set(prevPlayTime);
-  }
-
-  int contentsTypeToInt() {
-    switch (contentsType) {
-      case ContentsType.video:
-        return 0;
-      case ContentsType.image:
-        return 1;
-      case ContentsType.text:
-        return 2;
-      case ContentsType.sheet:
-        return 3;
-      case ContentsType.youtube:
-        return 4;
-      case ContentsType.free:
-        return 99;
-    }
   }
 
   @override
@@ -123,7 +119,7 @@ class ContentsModel extends AbsModel {
         "videoPlayTime": videoPlayTime.value,
         "mute": mute.value,
         "volume": volume.value,
-        "contentsType": contentsTypeToInt(),
+        "contentsType": contentsTypeToInt(contentsType),
         "aspectRatio": aspectRatio.value,
         "isDynamicSize": isDynamicSize.value,
         "prevPlayTime": prevPlayTime,

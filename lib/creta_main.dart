@@ -39,7 +39,7 @@ class CretaMainScreen extends StatefulWidget {
 
   void setBookThumbnail(String path, ContentsType contentsType, double aspectRatio) {
     mychangeStack.startTrans();
-    logHolder.log("setBookThumbnail $path, $contentsType", level: 6);
+    logHolder.log("setBookThumbnail $path, $contentsType", level: 5);
     book.thumbnailUrl.set(path);
     book.thumbnailType.set(contentsType);
     book.thumbnailAspectRatio.set(aspectRatio);
@@ -87,7 +87,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
     super.initState();
 
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      logHolder.log('afterBuild CretaMainScreen', level: 6);
+      logHolder.log('afterBuild CretaMainScreen', level: 5);
     });
   }
 
@@ -199,7 +199,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                   widget.bookList.add(widget.book);
                 }
                 for (BookModel model in widget.bookList) {
-                  logHolder.log("mybook=${model.name.value}, ${model.updateTime}", level: 6);
+                  logHolder.log("mybook=${model.name.value}, ${model.updateTime}", level: 5);
                 }
                 widget.book = widget.bookList[0];
               }
@@ -210,8 +210,55 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                     width: constraints.maxWidth,
                     height: constraints.maxHeight,
                     //child: Image.asset('assets/creta_default.png', fit: BoxFit.cover),
-                    child: MainUtil.drawBackground(
-                        constraints.maxWidth, constraints.maxHeight, widget.book),
+                    child: Stack(
+                      children: [
+                        MainUtil.drawBackground(
+                            constraints.maxWidth, constraints.maxHeight, widget.book),
+                        Container(
+                          decoration: BoxDecoration(
+                            //color: Colors.black.withOpacity(0.4),
+                            gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.topRight,
+                                colors: [
+                                  Colors.black.withOpacity(0.8),
+                                  Colors.black.withOpacity(0.7),
+                                  Colors.black.withOpacity(0.6),
+                                  Colors.black.withOpacity(0.5),
+                                  Colors.black.withOpacity(0.3),
+                                  Colors.black.withOpacity(0.2),
+                                  Colors.black.withOpacity(0.1),
+                                  Colors.black.withOpacity(0.0),
+                                  Colors.black.withOpacity(0.0),
+                                  Colors.black.withOpacity(0.0),
+                                  Colors.black.withOpacity(0.0),
+                                  Colors.black.withOpacity(0.0),
+                                ]),
+                          ),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            //color: Colors.black.withOpacity(0.4),
+                            gradient: LinearGradient(
+                                begin: Alignment.topRight,
+                                end: Alignment.center,
+                                colors: [
+                                  Colors.black.withOpacity(0.9),
+                                  Colors.black.withOpacity(0.8),
+                                  Colors.black.withOpacity(0.7),
+                                  Colors.black.withOpacity(0.4),
+                                  Colors.black.withOpacity(0.3),
+                                  Colors.black.withOpacity(0.2),
+                                  Colors.black.withOpacity(0.1),
+                                  Colors.black.withOpacity(0.0),
+                                  Colors.black.withOpacity(0.0),
+                                  Colors.black.withOpacity(0.0),
+                                  Colors.black.withOpacity(0.0),
+                                ]),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
 
                   // 리스트
@@ -251,7 +298,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                                 Container(
                                   child: basicButton2(
                                     onPressed: () {
-                                      logHolder.log("New button Pressed", level: 6);
+                                      logHolder.log("New button Pressed", level: 5);
                                       MainUtil.goToStudio(context, widget.user);
                                     },
                                     name: '새 콘텐츠북 만들기',
@@ -310,7 +357,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                               normalSize: 20,
                               hoverSize: 32,
                               onPressed: () {
-                                logHolder.log("바로가기 clicked", level: 6);
+                                logHolder.log("바로가기 clicked", level: 5);
                                 MainUtil.goToStudio(context, widget.user);
                               },
                               icon: Icon(
@@ -331,7 +378,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                           ),
                           BasicButton3(
                             onPressed: () {
-                              logHolder.log('edit pressed', level: 6);
+                              logHolder.log('edit pressed', level: 5);
                             },
                             name: '콘텐츠북 편집',
                             iconData: Icons.edit,

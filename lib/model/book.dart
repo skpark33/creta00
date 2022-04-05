@@ -59,7 +59,7 @@ class BookModel extends AbsModel {
     newBook.thumbnailUrl.set(thumbnailUrl.value);
     newBook.thumbnailType.set(thumbnailType.value);
     newBook.thumbnailAspectRatio.set(thumbnailAspectRatio.value);
-    logHolder.log('BookCopied(${newBook.mid}', level: 6);
+    logHolder.log('BookCopied(${newBook.mid}', level: 5);
     newBook.saveModel();
     return newBook;
   }

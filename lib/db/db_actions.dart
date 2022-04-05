@@ -4,6 +4,7 @@ import 'package:creta00/constants/constants.dart';
 import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/acc/acc.dart';
+import 'package:creta00/model/acc_property.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:creta00/studio/save_manager.dart';
 import 'package:creta00/model/pages.dart';
@@ -17,6 +18,8 @@ import '../model/book.dart';
 
 class DbActions {
   static Future<List<BookModel>> getMyBookList(String userId) async {
+    logHolder.log('getMyBookList', level: 6);
+
     List<dynamic> list = await CretaDB('creta_book')
         .simpleQueryData(orderBy: 'updateTime', name: 'userId', value: userId);
 
@@ -31,7 +34,69 @@ class DbActions {
         retval.add(book);
       }
     }
+    return retval;
+  }
 
+  static Future<List<PageModel>> getPages(BookModel book) async {
+    List<dynamic> list = await CretaDB('creta_page')
+        .simpleQueryData(orderBy: 'updateTime', name: 'parentMid', value: book.mid);
+
+    logHolder.log('getPages(${list.length})', level: 6);
+
+    List<PageModel> retval = [];
+    for (QueryDocumentSnapshot item in list) {
+      logHolder.log(item.data()!.toString(), level: 6);
+      Map<String, dynamic> map = item.data()! as Map<String, dynamic>;
+      String? mid = map["mid"];
+      if (mid == null) {
+        continue;
+      }
+      PageModel page = PageModel.createEmptyModel(mid, book.mid);
+      page.deserialize(map);
+      retval.add(page);
+      page.accPropertyList = await getACCProperties(page);
+    }
+    return retval;
+  }
+
+  static Future<List<ACCProperty>> getACCProperties(PageModel page) async {
+    List<dynamic> list = await CretaDB('creta_acc')
+        .simpleQueryData(orderBy: 'updateTime', name: 'parentMid', value: page.mid);
+    logHolder.log('getACCProperties(${list.length})', level: 6);
+
+    List<ACCProperty> retval = [];
+    for (QueryDocumentSnapshot item in list) {
+      logHolder.log(item.data()!.toString(), level: 6);
+      Map<String, dynamic> map = item.data()! as Map<String, dynamic>;
+      String? mid = map["mid"];
+      if (mid == null) {
+        continue;
+      }
+      ACCProperty accProperty = ACCProperty.createEmptyModel(mid, page.mid);
+      accProperty.deserialize(map);
+      retval.add(accProperty);
+      accProperty.contentsList = await getContents(accProperty);
+    }
+    return retval;
+  }
+
+  static Future<List<ContentsModel>> getContents(ACCProperty accProperty) async {
+    List<dynamic> list = await CretaDB('creta_contents')
+        .simpleQueryData(orderBy: 'updateTime', name: 'parentMid', value: accProperty.mid);
+    logHolder.log('getContents(${list.length})', level: 6);
+
+    List<ContentsModel> retval = [];
+    for (QueryDocumentSnapshot item in list) {
+      logHolder.log(item.data()!.toString(), level: 6);
+      Map<String, dynamic> map = item.data()! as Map<String, dynamic>;
+      String? mid = map["mid"];
+      if (mid == null) {
+        continue;
+      }
+      ContentsModel contents = ContentsModel.createEmptyModel(mid, accProperty.mid);
+      contents.deserialize(map);
+      retval.add(contents);
+    }
     return retval;
   }
 
@@ -78,10 +143,10 @@ class DbActions {
   static Future<bool> save(String mid) async {
     int retval = 1;
     if (mid == cretaMainHolder!.book.mid) {
-      logHolder.log("save mid($mid)", level: 6);
+      logHolder.log("save mid($mid)", level: 5);
       retval = await _storeChangedDataOnly(
           cretaMainHolder!.book, "creta_book", cretaMainHolder!.book.serialize());
-      logHolder.log("save mid($mid)=$retval", level: 6);
+      logHolder.log("save mid($mid)=$retval", level: 5);
       return (retval == 1);
     }
     if (isPage(mid)) {
@@ -136,7 +201,7 @@ class DbActions {
     }
     if (tableName.isNotEmpty) {
       retval = await _storeChangedDataOnly(model, tableName, model.serialize());
-      logHolder.log("create mid($model.mid)=$retval", level: 6);
+      logHolder.log("create mid($model.mid)=$retval", level: 5);
     }
     return (retval == 1);
   }
@@ -148,13 +213,13 @@ class DbActions {
       bool succeed = await CretaDB(tableName).setData(model.mid, data);
       model.clearDirty(succeed);
       if (succeed) {
-        logHolder.log('succeed $tableName(${model.mid}) save', level: 6);
+        logHolder.log('succeed $tableName(${model.mid}) save', level: 5);
         return 1;
       }
       logHolder.log('fail !! $tableName(${model.mid}) save', level: 7);
       return -1;
     }
-    logHolder.log('nothing changed !!! $tableName(${model.mid})', level: 6);
+    logHolder.log('nothing changed !!! $tableName(${model.mid})', level: 5);
     return 0;
   }
 }

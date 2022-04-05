@@ -49,7 +49,7 @@ class SaveManager extends ChangeNotifier {
 
   Future<void> pushCreated(AbsModel model) async {
     await _dataCreatedlock.synchronized(() async {
-      logHolder.log('changed:${model.mid}', level: 6);
+      logHolder.log('changed:${model.mid}', level: 5);
       _dataCreatedQue.add(model);
       notifyListeners();
     });
@@ -58,7 +58,7 @@ class SaveManager extends ChangeNotifier {
   Future<void> pushChanged(String mid) async {
     await _datalock.synchronized(() async {
       if (!_dataChangedQue.contains(mid)) {
-        logHolder.log('changed:$mid', level: 6);
+        logHolder.log('changed:$mid', level: 5);
         _dataChangedQue.add(mid);
         notifyListeners();
       }
@@ -129,7 +129,7 @@ class SaveManager extends ChangeNotifier {
       }
       await _datalock.synchronized(() async {
         if (_dataChangedQue.isNotEmpty) {
-          logHolder.log('autoSave------------start(${_dataChangedQue.length})', level: 6);
+          logHolder.log('autoSave------------start(${_dataChangedQue.length})', level: 5);
           while (_dataChangedQue.isNotEmpty) {
             final mid = _dataChangedQue.first;
             if (!await DbActions.save(mid)) {
@@ -138,12 +138,12 @@ class SaveManager extends ChangeNotifier {
             _dataChangedQue.removeFirst();
           }
           notifyListeners();
-          logHolder.log('autoSave------------end', level: 6);
+          logHolder.log('autoSave------------end', level: 5);
         }
       });
       await _dataCreatedlock.synchronized(() async {
         if (_dataCreatedQue.isNotEmpty) {
-          logHolder.log('autoSaveCreated------------start(${_dataCreatedQue.length})', level: 6);
+          logHolder.log('autoSaveCreated------------start(${_dataCreatedQue.length})', level: 5);
           while (_dataCreatedQue.isNotEmpty) {
             final model = _dataCreatedQue.first;
             if (!await DbActions.saveModel(model)) {
@@ -152,19 +152,19 @@ class SaveManager extends ChangeNotifier {
             _dataCreatedQue.removeFirst();
           }
           notifyListeners();
-          logHolder.log('autoSaveCreated------------end', level: 6);
+          logHolder.log('autoSaveCreated------------end', level: 5);
         }
       });
       if (_isContentsUploading == false) {
         await _contentslock.synchronized(() async {
           _errMsg = "";
           if (_contentsChangedQue.isNotEmpty) {
-            logHolder.log('autoUploadContents------------start', level: 6);
+            logHolder.log('autoUploadContents------------start', level: 5);
             if (_contentsChangedQue.isNotEmpty) {
               // 하나씩 업로드 해야 한다.
               notifyListeners();
               ContentsModel contents = _contentsChangedQue.first;
-              logHolder.log('autoUploadContents1------------start', level: 6);
+              logHolder.log('autoUploadContents1------------start', level: 5);
               _isContentsUploading = true;
               CretaStorage.upload(contents, () {
                 // onComplete
@@ -179,7 +179,7 @@ class SaveManager extends ChangeNotifier {
                 _errMsg = MyStrings.uploadError + "(${contents.name})";
               });
             }
-            logHolder.log('autoUploadContents------------end', level: 6);
+            logHolder.log('autoUploadContents------------end', level: 5);
           }
         });
       }
@@ -187,7 +187,7 @@ class SaveManager extends ChangeNotifier {
         await _thumbnaillock.synchronized(() async {
           _errMsg = "";
           if (_thumbnailChangedQue.isNotEmpty) {
-            logHolder.log('autoUploadThumbnail------------start', level: 6);
+            logHolder.log('autoUploadThumbnail------------start', level: 5);
             if (_thumbnailChangedQue.isNotEmpty) {
               // 하나씩 업로드 해야 한다.
               notifyListeners();
@@ -205,7 +205,7 @@ class SaveManager extends ChangeNotifier {
                 _isThumbnailUploading = false;
                 _errMsg = MyStrings.thumbnailError + "(${contents.name})";
               });
-              logHolder.log('autoUploadThumbmnail------------end', level: 6);
+              logHolder.log('autoUploadThumbmnail------------end', level: 5);
             }
           }
         });
@@ -215,14 +215,14 @@ class SaveManager extends ChangeNotifier {
 
   Future<void> blockAutoSave() async {
     await _lock.synchronized(() async {
-      logHolder.log('autoSave locked------------', level: 6);
+      logHolder.log('autoSave locked------------', level: 5);
       _autoSaveFlag = false;
     });
   }
 
   Future<void> releaseAutoSave() async {
     await _lock.synchronized(() async {
-      logHolder.log('autoSave released------------', level: 6);
+      logHolder.log('autoSave released------------', level: 5);
       _autoSaveFlag = true;
     });
   }
@@ -230,7 +230,7 @@ class SaveManager extends ChangeNotifier {
   Future<void> delayedReleaseAutoSave(int milliSec) async {
     await Future.delayed(Duration(microseconds: milliSec));
     await _lock.synchronized(() async {
-      logHolder.log('autoSave released------------', level: 6);
+      logHolder.log('autoSave released------------', level: 5);
       _autoSaveFlag = true;
     });
   }
@@ -238,7 +238,7 @@ class SaveManager extends ChangeNotifier {
   Future<void> autoSave() async {
     await _lock.synchronized(() async {
       if (_autoSaveFlag) {
-        logHolder.log('autoSave------------', level: 6);
+        logHolder.log('autoSave------------', level: 5);
         await DbActions.saveAll();
       }
     });

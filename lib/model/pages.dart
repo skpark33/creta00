@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:creta00/model/acc_property.dart';
 import 'package:flutter/material.dart';
 import 'package:creta00/constants/strings.dart';
 import 'package:creta00/common/util/logger.dart';
@@ -17,6 +18,8 @@ class PageModel extends AbsModel {
   late UndoAble<Color> bgColor;
   late UndoAble<bool> isUsed;
   late UndoAble<bool> isCircle;
+
+  List<ACCProperty> accPropertyList = []; // db get 전용
 
   PageModel.copy(PageModel src, String parentId) : super(parent: parentId, type: src.type) {
     super.copy(src, parentId);
@@ -39,6 +42,18 @@ class PageModel extends AbsModel {
     isCircle = UndoAble<bool>(true, mid);
 
     save();
+  }
+
+  PageModel.createEmptyModel(String srcMid, String pMid)
+      : super(type: ModelType.page, parent: pMid) {
+    super.changeMid(srcMid);
+    width = UndoAble<int>(1920, srcMid);
+    height = UndoAble<int>(1080, srcMid);
+    description = UndoAble<String>('', srcMid);
+    shortCut = UndoAble<String>('', srcMid);
+    bgColor = UndoAble<Color>(Colors.white, srcMid);
+    isUsed = UndoAble<bool>(true, srcMid);
+    isCircle = UndoAble<bool>(true, srcMid);
   }
 
   PageModel makeCopy(String newParendId) {

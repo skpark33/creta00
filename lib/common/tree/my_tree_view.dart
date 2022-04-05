@@ -150,7 +150,7 @@ class _MyTreeViewState extends State<MyTreeView> {
             return errMsgWidget(snapshot);
           }
           _selectedNode = snapshot.data!;
-          //logHolder.log('_getSelectedNode=$_selectedNode', level: 6);
+          //logHolder.log('_getSelectedNode=$_selectedNode', level: 5);
           _treeViewController = TreeViewController(
             children: widget.nodes,
             selectedKey: _selectedNode,
@@ -213,7 +213,7 @@ class _MyTreeViewState extends State<MyTreeView> {
                 });
               },
               // onNodeDoubleTap: (key) {
-              //   logHolder.log('onNodeDoubleTap', level: 6);
+              //   logHolder.log('onNodeDoubleTap', level: 5);
               // },
               // nodeBuilder: (context, node) {
               //   PageModel model = node.data;

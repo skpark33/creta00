@@ -26,7 +26,6 @@ class _BookGridCardState extends State<BookGridCard> {
   final double gridWidth = 328;
   final double gridHeight = 210;
   final double gridTitle = 48;
-  int hoverIndex = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -41,57 +40,126 @@ class _BookGridCardState extends State<BookGridCard> {
             borderRadius: BorderRadius.circular(8),
           ),
           elevation: 4,
-          child: GestureDetector(
-            onTapDown: (details) => widget.onTapdown(),
-            child: MouseRegion(
-              onEnter: (event) {},
-              onHover: (event) {
-                setState(() {
-                  hoverIndex = widget.index;
-                });
-              },
-              onExit: (event) {
-                setState(() {
-                  hoverIndex = -1;
-                });
-              },
-              child: Column(children: [
-                SizedBox(
-                  // background
-                  width: gridWidth,
-                  height: gridHeight - gridTitle,
-                  child: MainUtil.drawBackground(gridWidth + (hoverIndex == widget.index ? 10 : 0),
-                      gridHeight - gridTitle + (hoverIndex == widget.index ? 10 : 0), widget.book),
-                ),
-                SizedBox(
-                  height: gridTitle,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(flex: 1, child: Container()),
-                      Expanded(
-                        flex: 12,
-                        child: Text(widget.book.name.value,
-                            style: MyTextStyles.cardText1,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis),
-                      ),
-                      Expanded(flex: 1, child: Container()),
-                      Expanded(
-                        flex: 6,
-                        child: Text(
-                          widget.durationStr,
-                          style: MyTextStyles.cardText2,
-                          maxLines: 2,
-                        ),
-                      ),
-                    ],
+
+          child: Column(children: [
+            SizedBox(
+              // background
+              width: gridWidth,
+              height: gridHeight - gridTitle,
+              child: Stack(
+                children: [
+                  MainUtil.drawBackground(gridWidth, gridHeight - gridTitle, widget.book),
+                  HoverWidget(
+                    width: gridWidth,
+                    height: gridHeight - gridTitle,
+                    index: widget.index,
+                    book: widget.book,
+                    onTapdown: widget.onTapdown,
                   ),
-                ),
-              ]),
+                ],
+              ),
             ),
-          ),
+            SizedBox(
+              height: gridTitle,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(flex: 1, child: Container()),
+                  Expanded(
+                    flex: 12,
+                    child: Text(widget.book.name.value,
+                        style: MyTextStyles.cardText1,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis),
+                  ),
+                  Expanded(flex: 1, child: Container()),
+                  Expanded(
+                    flex: 6,
+                    child: Text(
+                      widget.durationStr,
+                      style: MyTextStyles.cardText2,
+                      maxLines: 2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ]),
+
           //height: 200,
         ));
+  }
+}
+
+class HoverWidget extends StatefulWidget {
+  final double width;
+  final double height;
+  final int index;
+  final BookModel book;
+  final void Function() onTapdown;
+
+  const HoverWidget({
+    Key? key,
+    required this.width,
+    required this.height,
+    required this.index,
+    required this.book,
+    required this.onTapdown,
+  }) : super(key: key);
+
+  @override
+  State<HoverWidget> createState() => _HoverWidgetState();
+}
+
+class _HoverWidgetState extends State<HoverWidget> {
+  int hoverIndex = -1;
+  // ignore: unused_field
+  static Map<int, bool> clickedMap = <int, bool>{};
+
+  bool _isClikcked() {
+    return clickedMap[widget.index] != null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (details) {
+        setState(() {
+          clickedMap.clear();
+          clickedMap[widget.index] = true;
+        });
+        widget.onTapdown();
+      },
+      child: MouseRegion(
+        onEnter: (event) {},
+        onHover: (event) {
+          setState(() {
+            hoverIndex = widget.index;
+          });
+        },
+        onExit: (event) {
+          setState(() {
+            hoverIndex = -1;
+          });
+        },
+        child: Container(
+          width: widget.width,
+          height: widget.height,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity((hoverIndex == widget.index) ? 0.4 : 0.0),
+            borderRadius: const BorderRadius.all(Radius.circular(8)),
+            border: Border.all(
+                width: _isClikcked() ? 6.0 : 0.0, color: MyColors.border, style: BorderStyle.solid),
+          ),
+          child: (hoverIndex == widget.index)
+              ? Text(
+                  widget.book.description.value,
+                  style: MyTextStyles.cardText1,
+                )
+              : Container(),
+        ),
+      ),
+    );
   }
 }
