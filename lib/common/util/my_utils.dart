@@ -6,6 +6,7 @@ import 'package:flutter_neumorphic_null_safety/flutter_neumorphic.dart';
 import 'package:creta00/constants/styles.dart';
 import 'package:creta00/common/util/logger.dart';
 //import 'package:creta00/constants/constants.dart';
+import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 
 double getDeltaRadiusPercent(Size realSize, double dx, double dy, double direction) {
   if (dx == 0 && dy == 0) return 0;
@@ -418,7 +419,7 @@ Widget errMsgWidget3(String msg) {
   );
 }
 
-Widget emptyImage() {
+Widget showWaitSign() {
   // return const Center(
   //   child: Icon(
   //     Icons.cloud_upload_outlined,
@@ -426,8 +427,11 @@ Widget emptyImage() {
   //     color: Colors.white,
   //   ),
   // );
-  return const Center(
-    child: CircularProgressIndicator(),
+  return Center(
+    child: SizedBox(
+        width: 100,
+        height: 100,
+        child: LiquidCircularProgressIndicator()), // CircularProgressIndicator(),
   );
 }
 

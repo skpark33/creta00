@@ -7,7 +7,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'creta_main.dart';
 //import 'studio/studio_main_screen.dart';
 import 'model/users.dart';
-import 'model/book.dart';
 import 'constants/styles.dart';
 import 'db/creta_db.dart';
 
@@ -32,10 +31,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     saveManagerHolder = SaveManager();
     cretaMainHolder = CretaMainScreen(
-        mainScreenKey: GlobalKey<CretaMainScreenState>(),
-        book: BookModel('나의 첫 콘텐츠북', 'skpark@sqisoft.com',
-            "'You could do it simple and plain'\nfrom [Sure thing] of Miguel.", ""),
-        user: UserModel(id: 'skpark@sqisoft.com'));
+        mainScreenKey: GlobalKey<CretaMainScreenState>(), user: UserModel(id: 'b49@sqisoft.com'));
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData.light().copyWith(

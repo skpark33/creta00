@@ -6,11 +6,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:sortedmap/sortedmap.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_treeview/flutter_treeview.dart';
+import 'package:uuid/uuid.dart';
 
 import 'package:creta00/studio/pages/page_manager.dart';
 //import 'package:creta00/constants/constants.dart';
 
 import '../model/acc_property.dart';
+import '../model/contents.dart';
 import '../model/model_enums.dart';
 import '../model/pages.dart';
 import '../model/models.dart';
@@ -36,6 +38,7 @@ class ACCManager extends ChangeNotifier {
   int accIndex = -1;
   // ignore: prefer_final_fields
   String _currentAccMid = '';
+  bool isInitOverlay = false;
 
   //static int get currentAccIndex => _currentAccMid;
   Future<void> setCurrentMid(String mid, {bool setAsAcc = true}) async {
@@ -68,11 +71,49 @@ class ACCManager extends ChangeNotifier {
     return acc;
   }
 
+  void pushACCs(PageModel page) {
+    for (ACCProperty accModel in page.accPropertyList) {
+      logHolder.log('pushACCs(${accModel.order.value}, ${accModel.parentMid.value})', level: 6);
+      const uuid = Uuid();
+      GlobalObjectKey<BaseWidgetState> baseWidgetKey = GlobalObjectKey<BaseWidgetState>(uuid.v1());
+      ACC acc = ACC.fromProperty(
+          page: page, accChild: BaseWidget(baseWidgetKey: baseWidgetKey), accModel: accModel);
+
+      // acc 를 여기서 등록하면 안되므로 주석으로 막는다.
+      // acc overay 에 등록은 StudioMainScreen 의 after build 에서 한다. registerOverayAll
+      // acc.registerOverlay(context);
+
+      accMap[acc.accModel.mid] = acc;
+      //setCurrentMid(acc.accModel.mid);
+      _currentAccMid = acc.accModel.mid;
+      orderMap[acc.accModel.order.value] = acc;
+      acc.accChild.setParentAcc(acc);
+
+      for (ContentsModel contents in accModel.contentsList) {
+        logHolder.log('pushACCs(${accModel.order})->push contents(${contents.name})', level: 6);
+        acc.accChild.playManager.push(acc, contents, invalidate: false);
+      }
+    }
+    logHolder.log('pushACCs end', level: 6);
+  }
+
+  bool registerOverayAll(BuildContext context) {
+    if (!isInitOverlay) {
+      logHolder.log('registerOverayAll', level: 6);
+      isInitOverlay = true;
+      for (ACC acc in orderMap.values) {
+        acc.registerOverlay(context);
+      }
+      return true;
+    }
+    return false;
+  }
+
   void makeCopy(String oldPageMid, String newPageMid) {
     for (ACC acc in accMap.values) {
       if (acc.accModel.parentMid.value == oldPageMid) {
         ACCProperty accModel = acc.accModel.makeCopy(newPageMid);
-        acc.accChild.playManager!.makeCopy(accModel.mid);
+        acc.accChild.playManager.makeCopy(accModel.mid);
       }
     }
   }
@@ -518,7 +559,7 @@ List<ACC> accList = accManagerHolder!.getAccList(model.id);
     List<Node> accNodes = [];
     for (ACC acc in orderMap.values) {
       if (acc.page!.mid == model.mid) {
-        List<Node> conNodes = acc.accChild.playManager!.toNodes(model);
+        List<Node> conNodes = acc.accChild.playManager.toNodes(model);
         accNodes.add(Node<AbsModel>(
             key: model.mid + '/' + acc.accModel.mid,
             label: 'Frame ${acc.accModel.mid.substring(acc.accModel.mid.length - 4)}',

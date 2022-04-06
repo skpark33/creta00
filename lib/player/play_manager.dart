@@ -42,10 +42,12 @@ class SelectedModel extends ChangeNotifier {
     });
   }
 
-  Future<void> setModel(ContentsModel m) async {
+  Future<void> setModel(ContentsModel m, {bool invalidate = true}) async {
     await _lock.synchronized(() async {
       _model = m;
-      notifyListeners();
+      if (invalidate) {
+        notifyListeners();
+      }
     });
   }
 
@@ -284,7 +286,7 @@ class PlayManager {
     });
   }
 
-  Future<void> push(ACC acc, ContentsModel model) async {
+  Future<void> push(ACC acc, ContentsModel model, {bool invalidate = true}) async {
     await _lock.synchronized(() async {
       AbsPlayWidget? aWidget;
       if (model.isVideo()) {
@@ -316,14 +318,16 @@ class PlayManager {
         return;
       }
       _playList.value.add(aWidget);
-      if (baseWidget.isAnime()) {
+      if (invalidate && baseWidget.isAnime()) {
         // 애니타입인 경우, 새로운 데이터를 이해시키기 위해
         baseWidget.invalidate();
       }
       logHolder.log('push(${model.mid})=${_playList.value.length}');
-      selectedModelHolder!.setModel(model);
-      accManagerHolder!.setState();
-      pageManagerHolder!.setState();
+      selectedModelHolder!.setModel(model, invalidate: invalidate);
+      if (invalidate) {
+        accManagerHolder!.setState();
+        pageManagerHolder!.setState();
+      }
     });
   }
 

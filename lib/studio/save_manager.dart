@@ -47,18 +47,18 @@ class SaveManager extends ChangeNotifier {
     }
   }
 
-  Future<void> pushCreated(AbsModel model) async {
+  Future<void> pushCreated(AbsModel model, String hint) async {
     await _dataCreatedlock.synchronized(() async {
-      logHolder.log('changed:${model.mid}', level: 5);
+      logHolder.log('created:${model.mid}, via $hint', level: 6);
       _dataCreatedQue.add(model);
       notifyListeners();
     });
   }
 
-  Future<void> pushChanged(String mid) async {
+  Future<void> pushChanged(String mid, String hint) async {
     await _datalock.synchronized(() async {
       if (!_dataChangedQue.contains(mid)) {
-        logHolder.log('changed:$mid', level: 5);
+        logHolder.log('changed:$mid, via $hint', level: 6);
         _dataChangedQue.add(mid);
         notifyListeners();
       }

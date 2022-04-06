@@ -107,14 +107,14 @@ abstract class AbsModel {
   void save() {
     // 객체가 Create 된것은 모두 Save 대상이다.
     if (saveManagerHolder != null) {
-      saveManagerHolder!.pushChanged(mid);
+      saveManagerHolder!.pushChanged(mid, 'AbsModel');
     }
   }
 
   void saveModel() {
     // 객체가 Create 된것은 모두 Save 대상이다.
     if (saveManagerHolder != null) {
-      saveManagerHolder!.pushCreated(this);
+      saveManagerHolder!.pushCreated(this, 'saveModel');
     }
   }
 }

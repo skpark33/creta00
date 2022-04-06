@@ -16,7 +16,7 @@ import 'package:creta00/model/model_enums.dart';
 const int minCarouselCount = 3;
 
 class BaseWidget extends StatefulWidget {
-  PlayManager? playManager;
+  late PlayManager playManager;
   ACC? _parentAcc;
   ACC? get acc => _parentAcc;
   void setParentAcc(ACC acc) {
@@ -39,7 +39,7 @@ class BaseWidget extends StatefulWidget {
       logHolder.log('BaseWidget::invalidate');
       baseWidgetKey.currentState!.invalidate();
     }
-    playManager!.invalidate();
+    playManager.invalidate();
   }
 
   AnimeType getAnimeType() {
@@ -54,7 +54,7 @@ class BaseWidget extends StatefulWidget {
       return false;
     }
     if (getAnimeType() == AnimeType.carousel) {
-      if (!playManager!.isValidCarousel()) {
+      if (!playManager.isValidCarousel()) {
         return false;
       }
     }
@@ -63,7 +63,7 @@ class BaseWidget extends StatefulWidget {
 
   bool isCarousel() {
     if (getAnimeType() == AnimeType.carousel) {
-      if (playManager!.isValidCarousel()) {
+      if (playManager.isValidCarousel()) {
         return true;
       }
     }
@@ -80,7 +80,7 @@ class BaseWidgetState extends State<BaseWidget> {
 
   @override
   void initState() {
-    widget.playManager!.initTimer();
+    widget.playManager.initTimer();
     super.initState();
     //carousel = AnimeCarousel.create();
   }
@@ -90,14 +90,14 @@ class BaseWidgetState extends State<BaseWidget> {
     logHolder.log('baseWidget build', level: 5);
 
     if (widget.isCarousel()) {
-      widget.playManager!.resetCarousel();
+      widget.playManager.resetCarousel();
     } else {
-      widget.playManager!.setAutoStart();
+      widget.playManager.setAutoStart();
     }
     return Container(
       color: Colors.transparent,
       child: FutureBuilder(
-          future: widget.playManager!.waitBuild(),
+          future: widget.playManager.waitBuild(),
           builder: (BuildContext context, AsyncSnapshot<AbsPlayWidget> snapshot) {
             if (snapshot.hasData == false) {
               //해당 부분은 data를 아직 받아 오지 못했을때 실행되는 부분을 의미한다.
@@ -120,16 +120,16 @@ class BaseWidgetState extends State<BaseWidget> {
 
             switch (widget.getAnimeType()) {
               case AnimeType.carousel:
-                logHolder.log('AnimeType.carousel start ${widget.playManager!.currentIndex}');
+                logHolder.log('AnimeType.carousel start ${widget.playManager.currentIndex}');
                 //return carousel!.carouselWidget(
                 return carouselWidget(
                     context,
                     widget.acc!.accModel.containerSize.value.height,
-                    widget.playManager!.getPlayWidgetList(),
+                    widget.playManager.getPlayWidgetList(),
                     (index, reason) {}, // onPageChanged
-                    widget.playManager!.animePageChanger,
+                    widget.playManager.animePageChanger,
                     maxInteger, // 가장 큰 수를 넣는다.
-                    widget.playManager!.currentIndex); // 0은 첫번째 index(즉 0번째)가 가운데로 들어오라는 뜻이다.
+                    widget.playManager.currentIndex); // 0은 첫번째 index(즉 0번째)가 가운데로 들어오라는 뜻이다.
 
               case AnimeType.flip:
                 logHolder.log('AnimeType.flip');
@@ -148,7 +148,7 @@ class BaseWidgetState extends State<BaseWidget> {
   @override
   void dispose() {
     logHolder.log("BaseWidgetState dispose");
-    widget.playManager!.cancelTimer();
+    widget.playManager.cancelTimer();
     super.dispose();
   }
 

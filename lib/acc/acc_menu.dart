@@ -184,7 +184,7 @@ class ACCMenu {
 
   Widget menuByContentType(BuildContext context, ACC? acc) {
     return FutureBuilder(
-        future: acc!.accChild.playManager!.getCurrentData(),
+        future: acc!.accChild.playManager.getCurrentData(),
         builder: (BuildContext context, AsyncSnapshot<CurrentData> snapshot) {
           if (snapshot.hasData == false) {
             //해당 부분은 data를 아직 받아 오지 못했을때 실행되는 부분을 의미한다.

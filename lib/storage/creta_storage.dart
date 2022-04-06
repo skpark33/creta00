@@ -31,16 +31,21 @@ class CretaStorage {
 
   static Future<void> upload(
       ContentsModel contents, void Function() onComplete, void Function() onError) async {
+    logHolder.log('upload', level: 6);
     _uploadToStorage(
-        remotePath: "${studioMainHolder!.user.id}/${cretaMainHolder!.book.mid}",
+        remotePath: "${studioMainHolder!.user.id}/${cretaMainHolder!.defaultBook!.mid}",
         content: contents,
         onComplete: (path) async {
-          contents.remoteUrl = path;
+          contents.remoteUrl = await CretaStorage.downloadUrlStr(path);
           logHolder.log('Upload complete ${contents.remoteUrl!}', level: 5);
           if (contents.thumbnail == null || contents.thumbnail!.isEmpty) {
-            saveManagerHolder!.pushUploadThumbnail(contents);
+            if (saveManagerHolder != null) {
+              saveManagerHolder!.pushUploadThumbnail(contents);
+            }
           }
-          saveManagerHolder!.pushChanged(contents.mid);
+          if (saveManagerHolder != null) {
+            saveManagerHolder!.pushChanged(contents.mid, 'upload');
+          }
           onComplete();
         },
         onError: onError);
@@ -48,6 +53,8 @@ class CretaStorage {
 
   static Future<void> uploadThumbnail(
       ContentsModel contents, void Function() onComplete, void Function() onError) async {
+    logHolder.log('uploadThumbnail', level: 6);
+
     if (contents.thumbnail == null) {
       if (contents.contentsType == ContentsType.video) {
         // Thumbnail 기능이 될 때까지 임시로 블록조치함.
@@ -83,13 +90,17 @@ class CretaStorage {
         //   logHolder.log('get Thumbnail failed ${error.toString()}', level: 5);
         //   onError();
         // }
-        contents.thumbnail = await CretaStorage.downloadUrlStr(contents.remoteUrl!);
+        //contents.thumbnail = await CretaStorage.downloadUrlStr(contents.remoteUrl!);
+        contents.thumbnail = contents.remoteUrl!;
       } else if (contents.contentsType == ContentsType.image) {
-        contents.thumbnail = await CretaStorage.downloadUrlStr(contents.remoteUrl!);
+        //contents.thumbnail = await CretaStorage.downloadUrlStr(contents.remoteUrl!);
+        contents.thumbnail = contents.remoteUrl!;
       }
     }
     if (contents.thumbnail != null) {
-      saveManagerHolder!.pushChanged(contents.mid);
+      if (saveManagerHolder != null) {
+        saveManagerHolder!.pushChanged(contents.mid, 'uploadThumbnail');
+      }
       cretaMainHolder!
           .setBookThumbnail(contents.thumbnail!, contents.contentsType, contents.aspectRatio.value);
       onComplete();

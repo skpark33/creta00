@@ -104,7 +104,7 @@ class ContentsModel extends AbsModel {
     lastModifiedTime = map["lastModifiedTime"];
     prevPlayTime = map["prevPlayTime"];
     remoteUrl = map["remoteUrl"];
-    thumbnail = map["thumbnail"];
+    thumbnail = map["thumbnail"] ?? '';
   }
 
   @override

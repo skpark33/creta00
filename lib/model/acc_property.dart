@@ -163,8 +163,10 @@ class ACCProperty extends AbsModel {
     primary.set(map["primary"], save: false);
     fullscreen.set(map["fullscreen"], save: false);
 
-    containerOffset.set(Offset(map["containerOffset_dx"], map["containerOffset_dy"]), save: false);
-    containerSize.set(Size(map["containerSize_width"], map["containerSize_height"]), save: false);
+    containerOffset.set(Offset(map["containerOffset_dx"] ?? 100, map["containerOffset_dy"] ?? 100),
+        save: false);
+    containerSize.set(Size(map["containerSize_width"] ?? 640, map["containerSize_height"] ?? 480),
+        save: false);
     rotate.set(map["rotate"], save: false);
     contentRotate.set(map["contentRotate"], save: false);
     opacity.set(map["opacity"], save: false);
@@ -182,7 +184,8 @@ class ACCProperty extends AbsModel {
       borderColor.set(Color(int.parse(borderColorStr.substring(8, 16), radix: 16)), save: false);
     }
     borderWidth.set(map["borderWidth"], save: false);
-    lightSource.set(LightSource(map["lightSource_dx"], map["lightSource_dy"]), save: false);
+    lightSource.set(LightSource(map["lightSource_dx"] ?? -1, map["lightSource_dy"] ?? -1),
+        save: false);
     depth.set(map["depth"], save: false);
     intensity.set(map["intensity"], save: false);
     boxType.set(intToBoxType(map["boxType"]), save: false);

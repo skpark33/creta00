@@ -2,7 +2,6 @@
 
 import 'package:creta00/constants/styles.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
-import 'package:creta00/studio/save_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/model/users.dart';
@@ -22,11 +21,10 @@ CretaMainScreen? cretaMainHolder;
 
 // ignore: must_be_immutable
 class CretaMainScreen extends StatefulWidget {
-  CretaMainScreen({required this.mainScreenKey, required this.book, required this.user})
-      : super(key: mainScreenKey);
+  CretaMainScreen({required this.mainScreenKey, required this.user}) : super(key: mainScreenKey);
 
   List<BookModel> bookList = [];
-  BookModel book;
+  BookModel? defaultBook;
   final UserModel user;
   final GlobalKey<CretaMainScreenState> mainScreenKey;
 
@@ -38,14 +36,16 @@ class CretaMainScreen extends StatefulWidget {
   State<CretaMainScreen> createState() => CretaMainScreenState();
 
   void setBookThumbnail(String path, ContentsType contentsType, double aspectRatio) {
+    if (defaultBook == null) return;
     mychangeStack.startTrans();
-    logHolder.log("setBookThumbnail $path, $contentsType", level: 5);
-    book.thumbnailUrl.set(path);
-    book.thumbnailType.set(contentsType);
-    book.thumbnailAspectRatio.set(aspectRatio);
+    logHolder.log("setBookThumbnail $path, $contentsType", level: 6);
+    defaultBook!.thumbnailUrl.set(path);
+    defaultBook!.thumbnailType.set(contentsType);
+    defaultBook!.thumbnailAspectRatio.set(aspectRatio);
     mychangeStack.endTrans();
     //DbActions.save(book.mid);
-    saveManagerHolder!.pushChanged(book.mid);
+    // set 에서 이미 pushChanged 를 하고 있으므로, pushChanged 를 할 필요가 없다.
+    // saveManagerHolder!.pushChanged(book.mid, 'setBookThumbnail');
   }
 
   bool makeCopy(String newName) {
@@ -57,13 +57,13 @@ class CretaMainScreen extends StatefulWidget {
         return false;
       }
     }
-    // 사본을 만들기만 할뿐, 현재의 book 을 체인지하는 것은 아니다.
-    BookModel newBook = book.makeCopy(newName);
-    // 사본 page 를 만들기만 할뿐, 현재의 page 를 대체하는 것은 아니다.
-    pageManagerHolder!.makeCopy(book.mid, newBook.mid);
-    //studioMainHolder!.invalidate();
-    //pageManagerHolder!.setState();
-    return true;
+    if (defaultBook != null) {
+      BookModel newBook = defaultBook!.makeCopy(newName);
+      // 사본 page 를 만들기만 할뿐, 현재의 page 를 대체하는 것은 아니다.
+      pageManagerHolder!.makeCopy(defaultBook!.mid, newBook.mid);
+      return true;
+    }
+    return false;
   }
 }
 
@@ -152,7 +152,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
               book: book,
               durationStr: durStr,
               onTapdown: () {
-                widget.book = book;
+                widget.defaultBook = book;
                 MainUtil.goToStudio(context, widget.user);
               });
         }, childCount: widget.bookList.length),
@@ -191,17 +191,19 @@ class CretaMainScreenState extends State<CretaMainScreen> {
               }
               if (snapshot.hasData == false) {
                 logHolder.log("No data founded , first customer(1)", level: 7);
-                widget.bookList.add(widget.book);
-              } else if (snapshot.connectionState == ConnectionState.done) {
+                return showWaitSign();
+              }
+              if (snapshot.connectionState == ConnectionState.done) {
                 widget.bookList = snapshot.data!;
                 if (widget.bookList.isEmpty) {
                   logHolder.log("No data founded , first customer(2)", level: 7);
-                  widget.bookList.add(widget.book);
+                  widget.defaultBook = MainUtil.createDefaultBook();
+                  widget.bookList.add(widget.defaultBook!);
                 }
                 for (BookModel model in widget.bookList) {
                   logHolder.log("mybook=${model.name.value}, ${model.updateTime}", level: 5);
                 }
-                widget.book = widget.bookList[0];
+                widget.defaultBook = widget.bookList[0];
               }
               return Stack(
                 children: [
@@ -213,7 +215,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                     child: Stack(
                       children: [
                         MainUtil.drawBackground(
-                            constraints.maxWidth, constraints.maxHeight, widget.book),
+                            constraints.maxWidth, constraints.maxHeight, widget.defaultBook!),
                         Container(
                           decoration: BoxDecoration(
                             //color: Colors.black.withOpacity(0.4),
@@ -299,6 +301,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                                   child: basicButton2(
                                     onPressed: () {
                                       logHolder.log("New button Pressed", level: 5);
+                                      widget.defaultBook = MainUtil.createDefaultBook();
                                       MainUtil.goToStudio(context, widget.user);
                                     },
                                     name: '새 콘텐츠북 만들기',
@@ -338,16 +341,17 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(widget.book.name.value,
+                          Text(widget.defaultBook!.name.value,
                               style: MyTextStyles.h3, maxLines: 3, overflow: TextOverflow.ellipsis),
                           SizedBox(
                             height: 20,
                           ),
-                          Text(widget.book.userId, style: MyTextStyles.h5),
+                          Text(widget.defaultBook!.userId, style: MyTextStyles.h5),
                           SizedBox(
                             height: 20,
                           ),
-                          Text(widget.book.description.value, style: MyTextStyles.h5, maxLines: 2),
+                          Text(widget.defaultBook!.description.value,
+                              style: MyTextStyles.h5, maxLines: 2),
                           SizedBox(
                             height: 20,
                           ),

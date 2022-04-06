@@ -89,7 +89,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
         builder: (context, snapshot) {
           if (snapshot.hasData == false) {
             //해당 부분은 data를 아직 받아 오지 못했을때 실행되는 부분을 의미한다.
-            return emptyImage();
+            return showWaitSign();
           }
           if (snapshot.hasError) {
             //error가 발생하게 될 경우 반환하게 되는 부분
@@ -267,7 +267,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
               child: Column(
                 children: [
                   myTextField(
-                    cretaMainHolder!.book.name.value,
+                    cretaMainHolder!.defaultBook!.name.value,
                     hasBorder: true,
                     labelText: 'input new name',
                     controller: _saveAsController,
@@ -330,7 +330,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
   }
 
   bool makeCopy() {
-    if (cretaMainHolder!.book.name.value != _saveAsController.text) {
+    if (cretaMainHolder!.defaultBook!.name.value != _saveAsController.text) {
       if (cretaMainHolder!.makeCopy(_saveAsController.text)) {
         return false; // not already exist
       }

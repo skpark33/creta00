@@ -67,15 +67,14 @@ class PageManager extends ChangeNotifier {
 
   String _selectedMid = '';
 
-  void load() {
-    if (pageMap.isEmpty) {
-      _selectedMid = createPage();
-    }
+  void createFirstPage() {
+    _selectedMid = createPage();
   }
 
   String createPage() {
-    PageModel page = PageModel(cretaMainHolder!.book.mid);
+    PageModel page = PageModel(cretaMainHolder!.defaultBook!.mid);
     page.order.set(pageIndex);
+    logHolder.log('createPage $pageIndex', level: 6);
     pageMap[page.mid] = page;
     orderMap[page.order.value] = page;
     pageIndex++;
@@ -83,15 +82,27 @@ class PageManager extends ChangeNotifier {
   }
 
   void pushPages(List<PageModel> list) {
-    pageIndex = 0;
+    logHolder.log('pushPages $pageIndex', level: 6);
     pageMap.clear();
     orderMap.clear();
+    int minOrder = 999999999;
+    int maxOrder = 0;
     for (PageModel page in list) {
-      page.order.set(pageIndex, save: false);
+      logHolder.log('page(${page.order.value}) added', level: 6);
       pageMap[page.mid] = page;
       orderMap[page.order.value] = page;
-      pageIndex++;
+      if (page.order.value <= minOrder) {
+        minOrder = page.order.value;
+      }
+      if (page.order.value > maxOrder) {
+        maxOrder = page.order.value;
+      }
+      if (page.accPropertyList.isNotEmpty) {
+        accManagerHolder!.pushACCs(page);
+      }
     }
+    pageIndex = maxOrder + 1;
+    _selectedMid = orderMap[minOrder] != null ? orderMap[minOrder]!.mid : '';
   }
 
   void makeCopy(String oldBookMid, String newBookMid) {
@@ -121,6 +132,7 @@ class PageManager extends ChangeNotifier {
   }
 
   changeOrder(int newIndex, int oldIndex) {
+    logHolder.log('changeOrder($oldIndex --> $newIndex)', level: 6);
     mychangeStack.startTrans();
     orderMap[newIndex]!.order.set(oldIndex);
     orderMap[oldIndex]!.order.set(newIndex);

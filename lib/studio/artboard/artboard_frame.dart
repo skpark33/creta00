@@ -121,7 +121,8 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
         logHolder.log("ab:width=$width, height=$height, ratio=$pageRatio");
         logHolder.log("ab:pageWidth=$pageWidth, pageHeight=$pageHeight");
 
-        PageModel model = pageManagerHolder!.getSelected()!;
+        PageModel? model = pageManagerHolder!.getSelected();
+        if (model == null) return Container();
 
         return SafeArea(
           child: Container(
@@ -152,7 +153,7 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
                     logHolder.log('contents added ${model.mid}', level: 5);
                     model.isDynamicSize.set(true); // 동영상에 맞게 frame size 를 조절하라는 뜻
                     MyMenuStickState.createACC(context, model);
-                    //accChild.playManager!.push(this, model);
+                    //accChild.playManager.push(this, model);
                   },
                 ),
               ),

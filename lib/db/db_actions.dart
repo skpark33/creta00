@@ -34,6 +34,7 @@ class DbActions {
         retval.add(book);
       }
     }
+    logHolder.log('getMyBookList end(${retval.length})', level: 6);
     return retval;
   }
 
@@ -101,7 +102,8 @@ class DbActions {
   }
 
   static Future<void> saveAll() async {
-    _storeChangedDataOnly(cretaMainHolder!.book, "creta_book", cretaMainHolder!.book.serialize());
+    _storeChangedDataOnly(
+        cretaMainHolder!.defaultBook!, "creta_book", cretaMainHolder!.defaultBook!.serialize());
 
     for (PageModel page in pageManagerHolder!.orderMap.values) {
       if (page.isRemoved.value == false) {
@@ -113,7 +115,7 @@ class DbActions {
         _storeChangedDataOnly(acc.accModel, "creta_acc", acc.serialize());
       }
 
-      for (ContentsModel contents in acc.accChild.playManager!.getModelList()) {
+      for (ContentsModel contents in acc.accChild.playManager.getModelList()) {
         if (contents.isRemoved.value == false) {
           if (1 == await _storeChangedDataOnly(contents, "creta_contents", contents.serialize())) {
             saveManagerHolder!.pushUploadContents(contents);
@@ -141,13 +143,19 @@ class DbActions {
   }
 
   static Future<bool> save(String mid) async {
+    logHolder.log('save($mid)', level: 6);
     int retval = 1;
-    if (mid == cretaMainHolder!.book.mid) {
+    if (mid == cretaMainHolder!.defaultBook!.mid) {
       logHolder.log("save mid($mid)", level: 5);
       retval = await _storeChangedDataOnly(
-          cretaMainHolder!.book, "creta_book", cretaMainHolder!.book.serialize());
+          cretaMainHolder!.defaultBook!, "creta_book", cretaMainHolder!.defaultBook!.serialize());
       logHolder.log("save mid($mid)=$retval", level: 5);
       return (retval == 1);
+    }
+
+    if (pageManagerHolder == null) {
+      logHolder.log("pageManagerHolder is not init", level: 7);
+      return false;
     }
     if (isPage(mid)) {
       for (PageModel page in pageManagerHolder!.orderMap.values) {
@@ -157,17 +165,26 @@ class DbActions {
       }
       return (retval == 1);
     }
+    if (accManagerHolder == null) {
+      logHolder.log("accManagerHolder is not init", level: 7);
+      return false;
+    }
     if (isACC(mid)) {
+      logHolder.log("before save mid($mid)", level: 6);
+
       for (ACC acc in accManagerHolder!.orderMap.values) {
         if (acc.accModel.mid == mid) {
+          logHolder.log("my mid($mid)", level: 6);
           retval = await _storeChangedDataOnly(acc.accModel, "creta_acc", acc.serialize());
         }
       }
+      logHolder.log("after save mid($mid)", level: 6);
       return (retval == 1);
     }
+
     if (isContents(mid)) {
       for (ACC acc in accManagerHolder!.orderMap.values) {
-        for (ContentsModel contents in acc.accChild.playManager!.getModelList()) {
+        for (ContentsModel contents in acc.accChild.playManager.getModelList()) {
           if (contents.mid != mid) {
             continue;
           }

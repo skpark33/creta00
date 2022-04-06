@@ -57,6 +57,8 @@ class ACC {
     accModel.order.set(idx); // 이 시점에 자동으로 save 가 된다.
   }
 
+  ACC.fromProperty({required this.page, required this.accChild, required this.accModel});
+
   void saveAs(String newParentId) {
     accModel = ACCProperty.copy(accModel, newParentId)..save();
     // 여기서 playManger 를 saveAs 해주어야 한다.
@@ -68,7 +70,7 @@ class ACC {
   }
 
   Map<String, dynamic> serialize() {
-    logHolder.log('serialize ACC');
+    logHolder.log('serialize ACC', level: 6);
     return accModel.serialize();
   }
 
@@ -93,7 +95,7 @@ class ACC {
   }
 
   Widget registerOverlay(BuildContext context) {
-    logHolder.log('ACCState build');
+    logHolder.log('registerOverlay', level: 6);
     Widget? overlayWidget;
     if (entry == null) {
       entry = OverlayEntry(builder: (context) {
@@ -257,7 +259,7 @@ class ACC {
             //   accManagerHolder!.setCurrentIndex(index);
             //   return;
             // }
-            // accChild.playManager!.getCurrentModel().then((model) {
+            // accChild.playManager.getCurrentModel().then((model) {
             //   if (model != null) {
             //     logHolder.log('Its contents click!!! ${model.key}', level: 5);
             //     selectedModelHolder!.setModel(model);
@@ -443,7 +445,7 @@ class ACC {
                       accId: accModel.mid,
                       onDroppedFile: (model) {
                         logHolder.log('contents added  ${model.mid}');
-                        accChild.playManager!.push(this, model);
+                        accChild.playManager.push(this, model);
                       },
                     ),
                   ),
@@ -456,20 +458,20 @@ class ACC {
 
   void selectContents(BuildContext context, String accMid, {int contentsIdx = -1}) {
     if (contentsIdx >= 0) {
-      accChild.playManager!.getModel(contentsIdx).then((model) {
+      accChild.playManager.getModel(contentsIdx).then((model) {
         if (model != null) {
           logHolder.log('Its contents click!!! ${model.mid}', level: 5);
           selectedModelHolder!.setModel(model);
           pageManagerHolder!.setAsContents();
           accManagerHolder!.setCurrentMid(accMid, setAsAcc: false);
-          accChild.playManager!.next(pause: true, until: contentsIdx);
+          accChild.playManager.next(pause: true, until: contentsIdx);
         } else {
           accManagerHolder!.setCurrentMid(accMid);
         }
         _showACCMenu(context);
       });
     } else {
-      accChild.playManager!.getCurrentModel().then((model) {
+      accChild.playManager.getCurrentModel().then((model) {
         if (model != null) {
           logHolder.log('Its contents click!!! ${model.mid}', level: 5);
           selectedModelHolder!.setModel(model);
@@ -522,7 +524,7 @@ class ACC {
 
   Future<void> pauseAllExceptCurrent() async {
     //logHolder.log('invalidateContents');
-    await accChild.playManager!.pauseAllExceptCurrent();
+    await accChild.playManager.pauseAllExceptCurrent();
   }
 
   bool resizeWidget(double dx, double dy, Size realSize, Size ratio, bool isAccSelected) {
@@ -780,47 +782,47 @@ class ACC {
   }
 
   Future<ContentsType> getCurrentContentsType() {
-    return accChild.playManager!.getCurrentContentsType();
+    return accChild.playManager.getCurrentContentsType();
   }
 
   Future<PlayState> getCurrentPlayState() {
-    return accChild.playManager!.getCurrentPlayState();
+    return accChild.playManager.getCurrentPlayState();
   }
 
   Future<bool> getCurrentMute() {
-    return accChild.playManager!.getCurrentMute();
+    return accChild.playManager.getCurrentMute();
   }
 
   Future<double> getCurrentAspectRatio() {
-    return accChild.playManager!.getCurrentAspectRatio();
+    return accChild.playManager.getCurrentAspectRatio();
   }
 
   Future<bool> getCurrentDynamicSize() {
-    return accChild.playManager!.getCurrentDynmicSize();
+    return accChild.playManager.getCurrentDynmicSize();
   }
 
   Future<void> setCurrentDynamicSize(bool dynamicSize) async {
-    await accChild.playManager!.setCurrentDynmicSize(dynamicSize);
+    await accChild.playManager.setCurrentDynmicSize(dynamicSize);
   }
 
   Future<void> next({bool pause = false}) async {
-    await accChild.playManager!.next(pause: pause);
+    await accChild.playManager.next(pause: pause);
   }
 
   Future<void> prev({bool pause = false}) async {
-    await accChild.playManager!.prev(pause: pause);
+    await accChild.playManager.prev(pause: pause);
   }
 
   Future<void> pause() async {
-    await accChild.playManager!.pause();
+    await accChild.playManager.pause();
   }
 
   Future<void> mute() async {
-    await accChild.playManager!.mute();
+    await accChild.playManager.mute();
   }
 
   Future<void> play() async {
-    await accChild.playManager!.play();
+    await accChild.playManager.play();
   }
 
   void setBgColor(Color color) {
@@ -958,10 +960,8 @@ class ACC {
 
   bool isInvisibleColorACC() {
     bool hasContents = false;
-    if (accChild.playManager != null) {
-      if (accChild.playManager!.isNotEmpty()) {
-        hasContents = true;
-      }
+    if (accChild.playManager.isNotEmpty()) {
+      hasContents = true;
     }
     if (hasContents) {
       return false;
@@ -1044,10 +1044,8 @@ class ACC {
 
   bool hasContents() {
     //bool hasContents = false;
-    if (accChild.playManager != null) {
-      if (accChild.playManager!.isNotEmpty()) {
-        return true;
-      }
+    if (accChild.playManager.isNotEmpty()) {
+      return true;
     }
     return false;
   }

@@ -9,7 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/model/users.dart';
-import 'package:creta00/studio/artboard/artboard_frame.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:creta00/studio/save_manager.dart';
 import 'package:creta00/player/play_manager.dart';
@@ -37,8 +36,6 @@ class StudioMainScreen extends StatefulWidget {
       mainScreenKey.currentState!.invalidate();
     }
   }
-
-  final GlobalKey<ArtBoardScreenState> artBoardKey = GlobalKey<ArtBoardScreenState>();
 }
 
 class MainScreenState extends State<StudioMainScreen> {
@@ -65,23 +62,23 @@ class MainScreenState extends State<StudioMainScreen> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      logHolder.log('afterBuild StudioMainScreen', level: 5);
-      saveManagerHolder!.initTimer();
-    });
+    // WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    //   logHolder.log('afterBuild StudioMainScreen', level: 5);
+    //   if (accManagerHolder!.registerOverayAll(widget.mainScreenKey.currentState!.context)) {
+    //     setState(() {});
+    //   }
+    //   saveManagerHolder!.initTimer();
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
     pageManagerHolder = PageManager();
+    accManagerHolder = ACCManager();
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<ACCManager>(
-          create: (context) {
-            accManagerHolder = ACCManager();
-            logHolder.log("accManagerHolder initiate");
-            return accManagerHolder!;
-          },
+        ChangeNotifierProvider<ACCManager>.value(
+          value: accManagerHolder!,
         ),
         ChangeNotifierProvider<PageManager>.value(
           value: pageManagerHolder!,
@@ -102,7 +99,7 @@ class MainScreenState extends State<StudioMainScreen> {
         focusNode: FocusNode(),
         onKey: keyEventHandler,
         child: FutureBuilder<List<PageModel>>(
-            future: DbActions.getPages(cretaMainHolder!.book),
+            future: DbActions.getPages(cretaMainHolder!.defaultBook!),
             builder: (context, AsyncSnapshot<List<PageModel>> snapshot) {
               if (snapshot.hasError) {
                 //error가 발생하게 될 경우 반환하게 되는 부분
@@ -114,11 +111,15 @@ class MainScreenState extends State<StudioMainScreen> {
                 return Container();
               } else if (snapshot.connectionState == ConnectionState.done) {
                 logHolder.log("page founded ${snapshot.data!.length}", level: 6);
-                pageManagerHolder!.pushPages(snapshot.data!);
-                pageManagerHolder!.load();
+                if (snapshot.data!.isEmpty) {
+                  pageManagerHolder!.createFirstPage();
+                } else {
+                  pageManagerHolder!.pushPages(snapshot.data!);
+                }
               }
 
-              return StudioSubScreen(artBoardKey: widget.artBoardKey, user: widget.user);
+              return StudioSubScreen(
+                  mainScreenKey: GlobalKey<StudioSubScreenState>(), user: widget.user);
             }),
       ),
     );

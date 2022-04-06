@@ -18,18 +18,30 @@ import 'properties/properties_frame.dart';
 import 'save_indicator.dart';
 
 class StudioSubScreen extends StatefulWidget {
-  final GlobalKey<ArtBoardScreenState> artBoardKey;
+  final GlobalKey<StudioSubScreenState> mainScreenKey;
   final UserModel user;
 
-  const StudioSubScreen({Key? key, required this.artBoardKey, required this.user})
-      : super(key: key);
+  const StudioSubScreen({required this.mainScreenKey, required this.user})
+      : super(key: mainScreenKey);
 
   @override
-  State<StudioSubScreen> createState() => _StudioSubScreenState();
+  State<StudioSubScreen> createState() => StudioSubScreenState();
 }
 
-class _StudioSubScreenState extends State<StudioSubScreen> {
+class StudioSubScreenState extends State<StudioSubScreen> {
   bool isPlayed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      logHolder.log('afterBuild StudioMainScreen', level: 5);
+      if (accManagerHolder!.registerOverayAll(context)) {
+        //setState(() {});
+      }
+      saveManagerHolder!.initTimer();
+    });
+  }
 
   @override
   void dispose() {
@@ -80,7 +92,7 @@ class _StudioSubScreenState extends State<StudioSubScreen> {
               Column(
             children: [
               const SaveIndicator(),
-              Expanded(child: ArtBoardScreen(key: widget.artBoardKey)),
+              Expanded(child: ArtBoardScreen(key: GlobalKey<ArtBoardScreenState>())),
             ],
           ),
         ),
@@ -120,7 +132,7 @@ class _StudioSubScreenState extends State<StudioSubScreen> {
     return AppBar(
       backgroundColor: MyColors.appbar,
       title: Text(
-        cretaMainHolder!.book.name.value,
+        cretaMainHolder!.defaultBook!.name.value,
         style: MyTextStyles.h5,
       ),
       leadingWidth: isNarrow ? 200 : 400,

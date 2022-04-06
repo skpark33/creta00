@@ -35,8 +35,14 @@ class VideoPlayerWidget extends AbsPlayWidget {
 
   @override
   Future<void> init() async {
-    logHolder.log('initVideo(${model!.name})');
-    wcontroller = VideoPlayerController.network(model!.url,
+    logHolder.log('initVideo(${model!.name},${model!.remoteUrl})', level: 6);
+
+    String uri = model!.url;
+    if (model!.remoteUrl != null && model!.remoteUrl!.isNotEmpty) {
+      uri = model!.remoteUrl!;
+    }
+
+    wcontroller = VideoPlayerController.network(uri,
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
       ..initialize().then((_) {
         logHolder.log('initialize complete(${model!.name})');
@@ -179,7 +185,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
           if (snapshot.hasData == false) {
             //해당 부분은 data를 아직 받아 오지 못했을때 실행되는 부분을 의미한다.
-            return emptyImage();
+            return showWaitSign();
           }
           if (snapshot.hasError) {
             //error가 발생하게 될 경우 반환하게 되는 부분

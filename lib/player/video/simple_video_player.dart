@@ -35,6 +35,7 @@ class SimpleVideoPlayer extends StatefulWidget {
 
   VideoPlayerController? wcontroller;
   VideoEventType prevEvent = VideoEventType.unknown;
+  bool isInitialize = false;
 
   Future<void> init() async {
     wcontroller = VideoPlayerController.network(url,
@@ -42,6 +43,7 @@ class SimpleVideoPlayer extends StatefulWidget {
       ..initialize().then((_) {
         wcontroller!.setLooping(false);
         wcontroller!.setVolume(0.0);
+        isInitialize = true;
         wcontroller!.onAfterVideoEvent = (event) {
           if (event.eventType == VideoEventType.completed) {
             // bufferingEnd and completed 가 시간이 다 되서 종료한 것임.
@@ -51,10 +53,6 @@ class SimpleVideoPlayer extends StatefulWidget {
         };
         //wcontroller!.play();
       });
-  }
-
-  bool isInit() {
-    return wcontroller!.value.isInitialized;
   }
 
   void invalidate() {
@@ -131,11 +129,11 @@ class SimpleVideoPlayerState extends State<SimpleVideoPlayer> {
   }
 
   Future<bool> waitInit() async {
-    await widget.init();
-    // bool isReady = widget.wcontroller!.value.isInitialized;
-    // while (!isReady) {
-    //   await Future.delayed(const Duration(milliseconds: 100));
-    // }
+    //await widget.init();
+    //bool isReady = widget.wcontroller!.value.isInitialized;
+    while (!widget.isInitialize) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
     if (widget.autoStart) {
       logHolder.log('initState play', level: 5);
       await widget.play();
@@ -152,7 +150,7 @@ class SimpleVideoPlayerState extends State<SimpleVideoPlayer> {
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
           if (snapshot.hasData == false) {
             //해당 부분은 data를 아직 받아 오지 못했을때 실행되는 부분을 의미한다.
-            return emptyImage();
+            return showWaitSign();
           }
           if (snapshot.hasError) {
             //error가 발생하게 될 경우 반환하게 되는 부분

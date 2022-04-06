@@ -41,48 +41,46 @@ class _BookGridCardState extends State<BookGridCard> {
           ),
           elevation: 4,
 
-          child: Column(children: [
-            SizedBox(
-              // background
-              width: gridWidth,
-              height: gridHeight - gridTitle,
-              child: Stack(
-                children: [
-                  MainUtil.drawBackground(gridWidth, gridHeight - gridTitle, widget.book),
-                  HoverWidget(
-                    width: gridWidth,
-                    height: gridHeight - gridTitle,
-                    index: widget.index,
-                    book: widget.book,
-                    onTapdown: widget.onTapdown,
-                  ),
-                ],
+          child: Stack(children: [
+            Column(children: [
+              SizedBox(
+                // background
+                width: gridWidth,
+                height: gridHeight - gridTitle,
+                child: MainUtil.drawBackground(gridWidth, gridHeight - gridTitle, widget.book),
               ),
-            ),
-            SizedBox(
-              height: gridTitle,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(flex: 1, child: Container()),
-                  Expanded(
-                    flex: 12,
-                    child: Text(widget.book.name.value,
-                        style: MyTextStyles.cardText1,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis),
-                  ),
-                  Expanded(flex: 1, child: Container()),
-                  Expanded(
-                    flex: 6,
-                    child: Text(
-                      widget.durationStr,
-                      style: MyTextStyles.cardText2,
-                      maxLines: 2,
+              SizedBox(
+                height: gridTitle,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(flex: 1, child: Container()),
+                    Expanded(
+                      flex: 12,
+                      child: Text(widget.book.name.value,
+                          style: MyTextStyles.cardText1,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis),
                     ),
-                  ),
-                ],
+                    Expanded(flex: 1, child: Container()),
+                    Expanded(
+                      flex: 6,
+                      child: Text(
+                        widget.durationStr,
+                        style: MyTextStyles.cardText2,
+                        maxLines: 2,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+            ]),
+            HoverWidget(
+              width: gridWidth,
+              height: gridHeight,
+              index: widget.index,
+              book: widget.book,
+              onTapdown: widget.onTapdown,
             ),
           ]),
 
@@ -153,9 +151,12 @@ class _HoverWidgetState extends State<HoverWidget> {
                 width: _isClikcked() ? 6.0 : 0.0, color: MyColors.border, style: BorderStyle.solid),
           ),
           child: (hoverIndex == widget.index)
-              ? Text(
-                  widget.book.description.value,
-                  style: MyTextStyles.cardText1,
+              ? Padding(
+                  padding: const EdgeInsets.only(bottom: 50.0),
+                  child: Text(
+                    widget.book.description.value,
+                    style: MyTextStyles.cardText1,
+                  ),
                 )
               : Container(),
         ),

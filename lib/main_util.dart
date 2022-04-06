@@ -10,10 +10,8 @@ import 'player/video/simple_video_player.dart';
 class MainUtil {
   static Widget drawBackground(double width, double height, BookModel book) {
     logHolder.log("drawBackground $width, $height", level: 5);
-    if (book.thumbnailUrl.value.isEmpty) {
-      return defaultBGImage();
-    }
-    if (book.thumbnailType.value == ContentsType.image) {
+
+    if (book.thumbnailUrl.value.isEmpty || book.thumbnailType.value == ContentsType.image) {
       return ClipRRect(
         borderRadius: const BorderRadius.only(
           topRight: Radius.circular(8),
@@ -28,7 +26,9 @@ class MainUtil {
             child: SizedBox(
               width: width,
               height: height,
-              child: Image.network(book.thumbnailUrl.value, fit: BoxFit.cover),
+              child: book.thumbnailUrl.value.isEmpty
+                  ? defaultBGImage()
+                  : Image.network(book.thumbnailUrl.value, fit: BoxFit.cover),
             ),
           ),
         ),
@@ -41,7 +41,7 @@ class MainUtil {
         realSize: Size(width, height),
         aspectRatio: book.thumbnailAspectRatio.value,
         onAfterEvent: () {},
-      );
+      )..init();
     }
     return defaultBGImage();
   }
@@ -49,5 +49,10 @@ class MainUtil {
   static void goToStudio(BuildContext context, UserModel user) {
     studioMainHolder = StudioMainScreen(mainScreenKey: GlobalKey<MainScreenState>(), user: user);
     naviPush(context, studioMainHolder!);
+  }
+
+  static BookModel createDefaultBook({String userId = 'b49@sqisoft.com'}) {
+    return BookModel('나의 첫 콘텐츠북', userId,
+        "'You could do it simple and plain'\nfrom [Sure thing] of Miguel.", "");
   }
 }
