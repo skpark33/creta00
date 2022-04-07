@@ -73,9 +73,9 @@ class ACCManager extends ChangeNotifier {
 
   void pushACCs(PageModel page) {
     for (ACCProperty accModel in page.accPropertyList) {
-      logHolder.log('pushACCs(${accModel.order.value}, ${accModel.parentMid.value})', level: 6);
+      logHolder.log('pushACCs(${accModel.order.value}, ${accModel.mid})', level: 6);
       const uuid = Uuid();
-      GlobalObjectKey<BaseWidgetState> baseWidgetKey = GlobalObjectKey<BaseWidgetState>(uuid.v1());
+      GlobalObjectKey<BaseWidgetState> baseWidgetKey = GlobalObjectKey<BaseWidgetState>(uuid.v4());
       ACC acc = ACC.fromProperty(
           page: page, accChild: BaseWidget(baseWidgetKey: baseWidgetKey), accModel: accModel);
 
@@ -83,14 +83,16 @@ class ACCManager extends ChangeNotifier {
       // acc overay 에 등록은 StudioMainScreen 의 after build 에서 한다. registerOverayAll
       // acc.registerOverlay(context);
 
+      logHolder.log('fromProperty(${accModel.order.value}, ${acc.accModel.mid})', level: 6);
       accMap[acc.accModel.mid] = acc;
       //setCurrentMid(acc.accModel.mid);
       _currentAccMid = acc.accModel.mid;
       orderMap[acc.accModel.order.value] = acc;
       acc.accChild.setParentAcc(acc);
 
-      for (ContentsModel contents in accModel.contentsList) {
-        logHolder.log('pushACCs(${accModel.order})->push contents(${contents.name})', level: 6);
+      for (ContentsModel contents in accModel.contentsMap.values) {
+        logHolder.log('pushACCs(${contents.order.value})->pushcontents(${contents.name})',
+            level: 6);
         acc.accChild.playManager.push(acc, contents, invalidate: false);
       }
     }

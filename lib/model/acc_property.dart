@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_final_fields
+import 'package:sortedmap/sortedmap.dart';
 import 'package:flutter_neumorphic_null_safety/flutter_neumorphic.dart';
 import '../common/undo/undo.dart';
 import '../constants/styles.dart';
@@ -53,7 +54,7 @@ class ACCProperty extends AbsModel {
   late UndoAble<double> intensity;
   late UndoAble<BoxType> boxType;
 
-  List<ContentsModel> contentsList = []; // db get 전용
+  SortedMap<int, ContentsModel> contentsMap = SortedMap<int, ContentsModel>(); // db get 전용
 
   ACCProperty({required ModelType type, required String parent})
       : super(type: type, parent: parent) {

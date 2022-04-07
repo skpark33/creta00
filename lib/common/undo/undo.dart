@@ -26,6 +26,10 @@ class UndoAble<T> {
 
   T get value => _value;
 
+  void changeMid(String mid) {
+    _mid = mid;
+  }
+
   void set(T val, {bool save = true}) {
     if (val == _value) return; // 값이 동일하다면, 할 필요가 없다.
     MyChange<T> c = MyChange<T>(_value, () {

@@ -288,6 +288,11 @@ class PlayManager {
 
   Future<void> push(ACC acc, ContentsModel model, {bool invalidate = true}) async {
     await _lock.synchronized(() async {
+      if (invalidate) {
+        // 마우스로 끌어다 놓은 경우이다.
+        int order = _playList.value.length;
+        model.order.set(order, save: false); // save 는 어차피 아래에서 되므로, 여기서는 save 하지 않는다.
+      }
       AbsPlayWidget? aWidget;
       if (model.isVideo()) {
         logHolder.log('push video');
@@ -318,6 +323,7 @@ class PlayManager {
         return;
       }
       _playList.value.add(aWidget);
+
       if (invalidate && baseWidget.isAnime()) {
         // 애니타입인 경우, 새로운 데이터를 이해시키기 위해
         baseWidget.invalidate();
@@ -584,7 +590,7 @@ class PlayManager {
     List<Node> conNodes = [];
     int idx = 0;
     for (AbsPlayWidget playWidget in _playList.value) {
-      playWidget.model!.order.set(idx);
+      //playWidget.model!.order.set(idx);
       conNodes.add(Node<AbsModel>(
           key: '${model.mid}/${baseWidget.acc!.accModel.mid}/${playWidget.model!.mid}',
           label: playWidget.model!.name,

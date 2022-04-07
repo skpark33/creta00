@@ -242,7 +242,8 @@ class ACC {
 
           child: GestureDetector(
             onLongPressDown: (details) {
-              logHolder.log("onLongPressDown", level: 7);
+              logHolder.log("onLongPressDown(${accModel.mid})", level: 7);
+
               //saveManagerHolder!.blockAutoSave();
               if (isCorners(details.localPosition, marginSize, resizeButtonSize) ||
                   isRadius(details.localPosition, marginSize, resizeButtonSize / 2, realSize)) {

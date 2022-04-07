@@ -56,6 +56,10 @@ abstract class AbsModel {
 
   void changeMid(String newOne) {
     _mid = newOne;
+    parentMid.changeMid(newOne);
+    order.changeMid(newOne);
+    hashTag.changeMid(newOne);
+    isRemoved.changeMid(newOne);
   }
 
   void deserialize(Map<String, dynamic> map) {

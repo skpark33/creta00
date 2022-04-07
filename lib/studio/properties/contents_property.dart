@@ -101,7 +101,7 @@ class ContentsPropertyState extends State<ContentsProperty> with SingleTickerPro
                     children: [
                       Text(
                         model.name,
-                        style: MyTextStyles.h6,
+                        style: MyTextStyles.h6.copyWith(color: MyColors.primaryText),
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),

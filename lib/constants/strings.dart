@@ -115,10 +115,18 @@ class MyStrings {
   static String fitToContents = Locale.isKr() ? '콘텐츠 비율에 맞춤' : "Fit to contents ratio";
   static String isFixedRatio = Locale.isKr() ? '가로 세로 비를 고정' : "Fixed aspect ratio";
 
-  static String saving = Locale.isKr() ? '저장중입니다...' : "Saving...";
-  static String contentsUploading = Locale.isKr() ? '콘텐츠를 업로드 중입니다...' : "Uploading Contents...";
-  static String thumbnailUploading = Locale.isKr() ? '썸네일을 업로드 중입니다...' : "Uploading Thumbnail...";
-  static String downloding = Locale.isKr() ? '다운로드 중입니다...' : "Downloading...";
+  static String doneMsg = Locale.isKr() ? '작업이 완료되었습니다.' : 'Work is done.';
+  static String saving = Locale.isKr()
+      ? '데이터를 저장 중입니다...화면을 닫지 마십시오.'
+      : 'Data is being saved...Do not close the screen.';
+  static String contentsUploading = Locale.isKr()
+      ? '콘텐츠를 업로드 중입니다...화면을 닫지 마십시오.'
+      : "Content is being uploaded...Do not close the screen.";
+  static String thumbnailUploading = Locale.isKr()
+      ? '썸네일을 업로드 중입니다...화면을 닫지 마십시오.'
+      : "Thumbnail is being uploadedl...Do not close the screen.";
+  static String downloding =
+      Locale.isKr() ? '다운로드 중입니다...화면을 닫지 마십시오.' : "Downloading...Do not close the screen.";
 
   static String saveError = Locale.isKr() ? '저장에 실패하였습니다.' : "fail to Save";
   static String uploadError = Locale.isKr() ? '업로드에 실패하였습니다.' : "fail to upload";
@@ -130,4 +138,5 @@ class MyStrings {
   static String dayBefore = Locale.isKr() ? '일 전' : "Day before";
   static String hourBefore = Locale.isKr() ? '시간 전' : "Hour before";
   static String minBefore = Locale.isKr() ? '분 전' : "Min before";
+  static String tryNextTime = Locale.isKr() ? '잠시 후 다시 시도 하십시오' : 'Please try again later.';
 }

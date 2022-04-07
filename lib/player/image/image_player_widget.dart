@@ -9,6 +9,8 @@ import 'package:creta00/model/model_enums.dart';
 import 'package:creta00/acc/acc.dart';
 import 'package:creta00/player/abs_player.dart';
 
+import '../../common/util/my_utils.dart';
+
 // ignore: must_be_immutable
 class ImagePlayerWidget extends AbsPlayWidget {
   ImagePlayerWidget({
@@ -112,21 +114,53 @@ class ImagePlayerWidgetState extends State<ImagePlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    Size outSize = widget.getOuterSize(widget.model!.aspectRatio.value);
+
     double topLeft = widget.acc.accModel.radiusTopLeft.value;
     double topRight = widget.acc.accModel.radiusTopRight.value;
     double bottomLeft = widget.acc.accModel.radiusBottomLeft.value;
     double bottomRight = widget.acc.accModel.radiusBottomRight.value;
-    return Container(
-      decoration: BoxDecoration(
-          //shape: BoxShape.circle,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(topLeft),
-            topRight: Radius.circular(topRight),
-            bottomLeft: Radius.circular(bottomLeft),
-            bottomRight: Radius.circular(bottomRight),
+
+    String uri = widget.model!.url;
+    if (widget.model!.remoteUrl != null && widget.model!.remoteUrl!.isNotEmpty) {
+      uri = widget.model!.remoteUrl!;
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.only(
+        topRight: Radius.circular(topRight),
+        topLeft: Radius.circular(topLeft),
+        bottomRight: Radius.circular(bottomRight),
+        bottomLeft: Radius.circular(bottomLeft),
+      ),
+      child: SizedBox.expand(
+        child: FittedBox(
+          alignment: Alignment.center,
+          fit: BoxFit.cover,
+          child: SizedBox(
+            width: outSize.width,
+            height: outSize.height,
+            child: Image.network(
+              uri,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return defaultBGImage();
+              },
+            ),
           ),
-          //image: DecorationImage(fit: BoxFit.fill, image: NetworkImage(widget.model!.url))),
-          image: DecorationImage(fit: BoxFit.fill, image: NetworkImage(widget.model!.url))),
+        ),
+      ),
     );
+    // return Container(
+    //   decoration: BoxDecoration(
+    //       //shape: BoxShape.circle,
+    //       borderRadius: BorderRadius.only(
+    //         topLeft: Radius.circular(topLeft),
+    //         topRight: Radius.circular(topRight),
+    //         bottomLeft: Radius.circular(bottomLeft),
+    //         bottomRight: Radius.circular(bottomRight),
+    //       ),
+    //       //image: DecorationImage(fit: BoxFit.fill, image: NetworkImage(widget.model!.url))),
+    //       image: DecorationImage(fit: BoxFit.fill, image: NetworkImage(uri))),
+    // );
   }
 }

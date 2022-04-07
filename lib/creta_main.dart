@@ -16,6 +16,7 @@ import 'main_util.dart';
 import 'model/book.dart';
 import 'model/model_enums.dart';
 import 'constants/strings.dart';
+import 'studio/save_manager.dart';
 
 CretaMainScreen? cretaMainHolder;
 
@@ -85,7 +86,6 @@ class CretaMainScreenState extends State<CretaMainScreen> {
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       logHolder.log('afterBuild CretaMainScreen', level: 5);
     });
@@ -133,29 +133,19 @@ class CretaMainScreenState extends State<CretaMainScreen> {
   SliverGrid renderSliverGrid() {
     return SliverGrid(
         delegate: SliverChildBuilderDelegate((context, index) {
-          BookModel book = widget.bookList[index];
-          Duration duration = DateTime.now().difference(book.updateTime);
-          String durStr = '';
-          if (duration.inDays >= 365) {
-            durStr = '${((duration.inDays / 365) * 10).round()} ${MyStrings.yearBefore}';
-          } else if (duration.inDays >= 30) {
-            durStr = '${((duration.inDays / 30) * 10).round()} ${MyStrings.monthBefore}';
-          } else if (duration.inDays >= 1) {
-            durStr = '${duration.inDays} ${MyStrings.dayBefore}';
-          } else if (duration.inHours >= 1) {
-            durStr = '${duration.inHours} ${MyStrings.hourBefore}';
-          } else {
-            durStr = '${duration.inMinutes} ${MyStrings.minBefore}';
+          if (index < widget.bookList.length) {
+            BookModel book = widget.bookList[index];
+            return BookGridCard(
+                index: index,
+                book: book,
+                durationStr: _dateToDurationString(book.updateTime),
+                onTapdown: () {
+                  widget.defaultBook = book;
+                  MainUtil.goToStudio(context, widget.user);
+                });
           }
-          return BookGridCard(
-              index: index,
-              book: book,
-              durationStr: durStr,
-              onTapdown: () {
-                widget.defaultBook = book;
-                MainUtil.goToStudio(context, widget.user);
-              });
-        }, childCount: widget.bookList.length),
+          return _emptyGridCard();
+        }, childCount: 48),
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: gridWidth + 8,
           mainAxisExtent: gridHeight + 8,
@@ -164,8 +154,40 @@ class CretaMainScreenState extends State<CretaMainScreen> {
         ));
   }
 
+  String _dateToDurationString(DateTime updateTime) {
+    Duration duration = DateTime.now().difference(updateTime);
+    if (duration.inDays >= 365) {
+      return '${((duration.inDays / 365) * 10).round()} ${MyStrings.yearBefore}';
+    }
+    if (duration.inDays >= 30) {
+      return '${((duration.inDays / 30) * 10).round()} ${MyStrings.monthBefore}';
+    }
+    if (duration.inDays >= 1) {
+      return '${duration.inDays} ${MyStrings.dayBefore}';
+    }
+    if (duration.inHours >= 1) {
+      return '${duration.inHours} ${MyStrings.hourBefore}';
+    }
+
+    return '${duration.inMinutes} ${MyStrings.minBefore}';
+  }
+
+  Widget _emptyGridCard() {
+    return Card(
+      color: Colors.white.withOpacity(0.5),
+      //shadowColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(width: 1.0, color: Colors.white),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      elevation: 8,
+      child: Container(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    saveManagerHolder = SaveManager();
     return Scaffold(
       //key: context.read<MenuController>().scaffoldKey,
       //appBar: buildAppBar(),
@@ -186,7 +208,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
             future: DbActions.getMyBookList(widget.user.id),
             builder: (context, AsyncSnapshot<List<BookModel>> snapshot) {
               if (snapshot.hasError) {
-                //error가 발생하게 될 경우 반환하게 되는 부분
+                logHolder.log("snapshot.hasError", level: 7);
                 return errMsgWidget(snapshot);
               }
               if (snapshot.hasData == false) {
@@ -194,7 +216,9 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                 return showWaitSign();
               }
               if (snapshot.connectionState == ConnectionState.done) {
+                logHolder.log("line 1");
                 widget.bookList = snapshot.data!;
+                logHolder.log("line 2");
                 if (widget.bookList.isEmpty) {
                   logHolder.log("No data founded , first customer(2)", level: 7);
                   widget.defaultBook = MainUtil.createDefaultBook();

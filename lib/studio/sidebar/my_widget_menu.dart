@@ -60,7 +60,8 @@ class MyMenuStickState extends State<MyMenuStick> {
 
   static void createACC(BuildContext context, ContentsModel model) {
     const uuid = Uuid();
-    GlobalObjectKey<BaseWidgetState> baseWidgetKey = GlobalObjectKey<BaseWidgetState>(uuid.v1());
+    _keyIdx = accManagerHolder!.accMap.length;
+    GlobalObjectKey<BaseWidgetState> baseWidgetKey = GlobalObjectKey<BaseWidgetState>(uuid.v4());
     ACC acc = accManagerHolder!.createACC(_keyIdx, context,
         BaseWidget(baseWidgetKey: baseWidgetKey), pageManagerHolder!.getSelected()!);
     _keyIdx++;
@@ -338,8 +339,9 @@ class MyMenuStickState extends State<MyMenuStick> {
 
   void framePressed() {
     logHolder.log('frame Pressed');
+    _keyIdx = accManagerHolder!.accMap.length;
     const uuid = Uuid();
-    GlobalObjectKey<BaseWidgetState> baseWidgetKey = GlobalObjectKey<BaseWidgetState>(uuid.v1());
+    GlobalObjectKey<BaseWidgetState> baseWidgetKey = GlobalObjectKey<BaseWidgetState>(uuid.v4());
     accManagerHolder!.createACC(_keyIdx, context, BaseWidget(baseWidgetKey: baseWidgetKey),
         pageManagerHolder!.getSelected()!);
     _keyIdx++;

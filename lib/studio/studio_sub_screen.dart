@@ -1,4 +1,5 @@
 import 'package:creta00/creta_main.dart';
+import 'package:creta00/studio/save_indicator.dart';
 import 'package:flutter/material.dart';
 
 import 'package:creta00/acc/acc_manager.dart';
@@ -11,11 +12,12 @@ import 'package:creta00/studio/save_manager.dart';
 import 'package:creta00/constants/constants.dart';
 
 import '../common/util/my_utils.dart';
+import '../constants/strings.dart';
+import '../model/model_enums.dart';
 import '../model/users.dart';
 import 'artboard/artboard_frame.dart';
 import 'pages/pages_frame.dart';
 import 'properties/properties_frame.dart';
-import 'save_indicator.dart';
 
 class StudioSubScreen extends StatefulWidget {
   final GlobalKey<StudioSubScreenState> mainScreenKey;
@@ -89,10 +91,11 @@ class StudioSubScreenState extends State<StudioSubScreen> {
         ),
         Expanded(
           child: //ArtBoardScreen(),
-              Column(
+              Stack(
             children: [
-              const SaveIndicator(),
-              Expanded(child: ArtBoardScreen(key: GlobalKey<ArtBoardScreenState>())),
+              //Expanded(child: ArtBoardScreen(key: GlobalKey<ArtBoardScreenState>())),
+              ArtBoardScreen(key: GlobalKey<ArtBoardScreenState>()),
+              const SizedBox(height: 40, child: SaveIndicator()),
             ],
           ),
         ),
@@ -147,10 +150,15 @@ class StudioSubScreenState extends State<StudioSubScreen> {
 
   Future<void> goBackHome(BuildContext context) async {
     if (saveManagerHolder != null) {
-      if (InProgressType.done != await saveManagerHolder!.isInProgress()) {
-        await Future.delayed(const Duration(milliseconds: 100));
+      InProgressType prgType = await saveManagerHolder!.isInProgress();
+      if (InProgressType.done != prgType) {
+        String msg = inProgressTypeToMsg(prgType);
+        showSlimDialog(context, "$msg ${MyStrings.tryNextTime}", bgColor: Colors.white);
+        return;
+        //await Future.delayed(const Duration(milliseconds: 100));
       }
     }
+    if (accManagerHolder != null) accManagerHolder!.unshowMenu(context);
     naviPop(context);
     cretaMainHolder!.invalidate();
   }

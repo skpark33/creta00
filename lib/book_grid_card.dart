@@ -36,10 +36,10 @@ class _BookGridCardState extends State<BookGridCard> {
             Card(
           shadowColor: Colors.white,
           shape: RoundedRectangleBorder(
-            side: const BorderSide(width: 1.0, color: MyColors.buttonBorder),
+            side: const BorderSide(width: 1.0, color: Colors.white),
             borderRadius: BorderRadius.circular(8),
           ),
-          elevation: 4,
+          elevation: 8,
 
           child: Stack(children: [
             Column(children: [
@@ -148,7 +148,7 @@ class _HoverWidgetState extends State<HoverWidget> {
             color: Colors.white.withOpacity((hoverIndex == widget.index) ? 0.4 : 0.0),
             borderRadius: const BorderRadius.all(Radius.circular(8)),
             border: Border.all(
-                width: _isClikcked() ? 6.0 : 0.0, color: MyColors.border, style: BorderStyle.solid),
+                width: _isClikcked() ? 6.0 : 0.0, color: Colors.white, style: BorderStyle.solid),
           ),
           child: (hoverIndex == widget.index)
               ? Padding(

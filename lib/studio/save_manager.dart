@@ -11,9 +11,8 @@ import 'package:creta00/db/db_actions.dart';
 
 import '../constants/strings.dart';
 import '../model/models.dart';
+import '../model/model_enums.dart';
 import '../storage/creta_storage.dart';
-
-enum InProgressType { done, saving, contentsUploading, thumbnailUploading }
 
 SaveManager? saveManagerHolder;
 
@@ -129,7 +128,7 @@ class SaveManager extends ChangeNotifier {
       }
       await _datalock.synchronized(() async {
         if (_dataChangedQue.isNotEmpty) {
-          logHolder.log('autoSave------------start(${_dataChangedQue.length})', level: 5);
+          logHolder.log('autoSave------------start(${_dataChangedQue.length})', level: 6);
           while (_dataChangedQue.isNotEmpty) {
             final mid = _dataChangedQue.first;
             if (!await DbActions.save(mid)) {
@@ -138,12 +137,12 @@ class SaveManager extends ChangeNotifier {
             _dataChangedQue.removeFirst();
           }
           notifyListeners();
-          logHolder.log('autoSave------------end', level: 5);
+          logHolder.log('autoSave------------end', level: 6);
         }
       });
       await _dataCreatedlock.synchronized(() async {
         if (_dataCreatedQue.isNotEmpty) {
-          logHolder.log('autoSaveCreated------------start(${_dataCreatedQue.length})', level: 5);
+          logHolder.log('autoSaveCreated------------start(${_dataCreatedQue.length})', level: 6);
           while (_dataCreatedQue.isNotEmpty) {
             final model = _dataCreatedQue.first;
             if (!await DbActions.saveModel(model)) {
@@ -152,7 +151,7 @@ class SaveManager extends ChangeNotifier {
             _dataCreatedQue.removeFirst();
           }
           notifyListeners();
-          logHolder.log('autoSaveCreated------------end', level: 5);
+          logHolder.log('autoSaveCreated------------end', level: 6);
         }
       });
       if (_isContentsUploading == false) {

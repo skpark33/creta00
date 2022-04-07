@@ -1,3 +1,5 @@
+import '../constants/strings.dart';
+
 enum UserType {
   superAdmin,
   customerAdmin,
@@ -192,5 +194,20 @@ BoxType intToBoxType(int t) {
       return BoxType.stadium;
     default:
       return BoxType.rect;
+  }
+}
+
+enum InProgressType { done, saving, contentsUploading, thumbnailUploading }
+
+String inProgressTypeToMsg(InProgressType type) {
+  switch (type) {
+    case InProgressType.done:
+      return MyStrings.doneMsg;
+    case InProgressType.saving:
+      return MyStrings.saving;
+    case InProgressType.contentsUploading:
+      return MyStrings.contentsUploading;
+    case InProgressType.thumbnailUploading:
+      return MyStrings.thumbnailUploading;
   }
 }

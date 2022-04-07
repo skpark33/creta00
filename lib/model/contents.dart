@@ -103,7 +103,7 @@ class ContentsModel extends AbsModel {
     isDynamicSize.set(map["isDynamicSize"] ?? false, save: false);
     lastModifiedTime = map["lastModifiedTime"];
     prevPlayTime = map["prevPlayTime"];
-    remoteUrl = map["remoteUrl"];
+    remoteUrl = map["remoteUrl"] ?? '';
     thumbnail = map["thumbnail"] ?? '';
   }
 
@@ -123,7 +123,7 @@ class ContentsModel extends AbsModel {
         "aspectRatio": aspectRatio.value,
         "isDynamicSize": isDynamicSize.value,
         "prevPlayTime": prevPlayTime,
-        "lastModifiedTime": (file != null) ? file!.lastModifiedDate.toString() : 0,
+        "lastModifiedTime": (file != null) ? file!.lastModifiedDate.toString() : '',
         "remoteUrl": (remoteUrl != null) ? remoteUrl : '',
         "thumbnail": (thumbnail != null) ? thumbnail : '',
       }.entries);

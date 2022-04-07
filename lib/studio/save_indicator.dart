@@ -9,15 +9,21 @@ import 'package:loading_animations/loading_animations.dart';
 
 import '../constants/strings.dart';
 import '../constants/styles.dart';
+import '../model/model_enums.dart';
 
 class SaveIndicator extends StatefulWidget {
-  const SaveIndicator({Key? key}) : super(key: key);
+  final bool isMainScreen;
+  const SaveIndicator({Key? key, this.isMainScreen = false}) : super(key: key);
 
   @override
   State<SaveIndicator> createState() => SaveIndicatorState();
 }
 
 class SaveIndicatorState extends State<SaveIndicator> {
+  final double height = 40;
+  Paint paint = Paint()..color = Colors.transparent;
+  Color color = Colors.grey.withOpacity(0.1);
+
   @override
   void setState(VoidCallback fn) {
     if (mounted) super.setState(fn);
@@ -25,12 +31,9 @@ class SaveIndicatorState extends State<SaveIndicator> {
 
   @override
   void initState() {
+    color = widget.isMainScreen ? Colors.red : Colors.grey.withOpacity(0.1);
     super.initState();
   }
-
-  static const double height = 40;
-  static Color color = Colors.grey.withOpacity(0.1);
-  static Paint paint = Paint()..color = Colors.transparent;
 
   @override
   Widget build(BuildContext context) {
