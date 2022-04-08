@@ -1,3 +1,4 @@
+import 'package:creta00/creta_main.dart';
 import 'package:flutter/material.dart';
 import 'constants/styles.dart';
 import 'model/book.dart';
@@ -112,21 +113,17 @@ class HoverWidget extends StatefulWidget {
 class _HoverWidgetState extends State<HoverWidget> {
   int hoverIndex = -1;
   // ignore: unused_field
-  static Map<int, bool> clickedMap = <int, bool>{};
 
   bool _isClikcked() {
-    return clickedMap[widget.index] != null;
+    return widget.book.mid == cretaMainHolder!.defaultBook!.mid;
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (details) {
-        setState(() {
-          clickedMap.clear();
-          clickedMap[widget.index] = true;
-        });
         widget.onTapdown();
+        setState(() {});
       },
       child: MouseRegion(
         onEnter: (event) {},

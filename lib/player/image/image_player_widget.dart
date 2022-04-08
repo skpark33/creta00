@@ -121,10 +121,13 @@ class ImagePlayerWidgetState extends State<ImagePlayerWidget> {
     double bottomLeft = widget.acc.accModel.radiusBottomLeft.value;
     double bottomRight = widget.acc.accModel.radiusBottomRight.value;
 
-    String uri = widget.model!.url;
-    if (widget.model!.remoteUrl != null && widget.model!.remoteUrl!.isNotEmpty) {
-      uri = widget.model!.remoteUrl!;
+    String uri = widget.getURI(widget.model!);
+    String errMsg = '${widget.model!.name} uri is null';
+    if (uri.isEmpty) {
+      logHolder.log(errMsg, level: 7);
     }
+    logHolder.log("uri=$uri", level: 5);
+
     return ClipRRect(
       borderRadius: BorderRadius.only(
         topRight: Radius.circular(topRight),
@@ -139,13 +142,17 @@ class ImagePlayerWidgetState extends State<ImagePlayerWidget> {
           child: SizedBox(
             width: outSize.width,
             height: outSize.height,
-            child: Image.network(
-              uri,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return defaultBGImage();
-              },
-            ),
+            child: uri.isEmpty
+                ? noImage(errMsg)
+                : Image.network(
+                    uri,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      errMsg = '${widget.model!.name} ${error.toString()}';
+                      logHolder.log(errMsg, level: 7);
+                      return noImage(errMsg);
+                    },
+                  ),
           ),
         ),
       ),

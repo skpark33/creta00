@@ -128,7 +128,7 @@ class SaveManager extends ChangeNotifier {
       }
       await _datalock.synchronized(() async {
         if (_dataChangedQue.isNotEmpty) {
-          logHolder.log('autoSave------------start(${_dataChangedQue.length})', level: 6);
+          logHolder.log('autoSave------------start(${_dataChangedQue.length})', level: 5);
           while (_dataChangedQue.isNotEmpty) {
             final mid = _dataChangedQue.first;
             if (!await DbActions.save(mid)) {
@@ -137,7 +137,7 @@ class SaveManager extends ChangeNotifier {
             _dataChangedQue.removeFirst();
           }
           notifyListeners();
-          logHolder.log('autoSave------------end', level: 6);
+          logHolder.log('autoSave------------end', level: 5);
         }
       });
       await _dataCreatedlock.synchronized(() async {
@@ -166,7 +166,11 @@ class SaveManager extends ChangeNotifier {
               logHolder.log('autoUploadContents1------------start', level: 5);
               _isContentsUploading = true;
               CretaStorage.upload(contents, () {
-                // onComplete
+                logHolder.log('Upload complete ${contents.remoteUrl!}', level: 5);
+                if (contents.thumbnail == null || contents.thumbnail!.isEmpty) {
+                  pushUploadThumbnail(contents);
+                }
+                pushChanged(contents.mid, 'upload');
                 _contentsChangedQue.removeFirst();
                 _isContentsUploading = false;
                 notifyListeners();
@@ -177,6 +181,24 @@ class SaveManager extends ChangeNotifier {
                 notifyListeners();
                 _errMsg = MyStrings.uploadError + "(${contents.name})";
               });
+              // CretaUploader.upload(contents, () {
+              //   // onComplete
+              //   logHolder.log('Upload complete ${contents.remoteUrl!}', level: 5);
+              //   if (contents.thumbnail == null || contents.thumbnail!.isEmpty) {
+              //     pushUploadThumbnail(contents);
+              //   }
+              //   pushChanged(contents.mid, 'upload');
+
+              //   _contentsChangedQue.removeFirst();
+              //   _isContentsUploading = false;
+              //   notifyListeners();
+              // }, () {
+              //   // onError
+              //   _contentsChangedQue.removeFirst();
+              //   _isContentsUploading = false;
+              //   notifyListeners();
+              //   _errMsg = MyStrings.uploadError + "(${contents.name})";
+              // });
             }
             logHolder.log('autoUploadContents------------end', level: 5);
           }

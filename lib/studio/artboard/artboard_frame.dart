@@ -54,10 +54,6 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
       menuStickEntry!.remove();
       menuStickEntry = null;
     }
-    if (accManagerHolder != null) {
-      accManagerHolder!.destroyEntry(context);
-    }
-
     super.dispose();
   }
 

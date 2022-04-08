@@ -73,7 +73,7 @@ class ACCManager extends ChangeNotifier {
 
   void pushACCs(PageModel page) {
     for (ACCProperty accModel in page.accPropertyList) {
-      logHolder.log('pushACCs(${accModel.order.value}, ${accModel.mid})', level: 6);
+      logHolder.log('pushACCs(${accModel.order.value}, ${accModel.mid})', level: 5);
       const uuid = Uuid();
       GlobalObjectKey<BaseWidgetState> baseWidgetKey = GlobalObjectKey<BaseWidgetState>(uuid.v4());
       ACC acc = ACC.fromProperty(
@@ -83,7 +83,7 @@ class ACCManager extends ChangeNotifier {
       // acc overay 에 등록은 StudioMainScreen 의 after build 에서 한다. registerOverayAll
       // acc.registerOverlay(context);
 
-      logHolder.log('fromProperty(${accModel.order.value}, ${acc.accModel.mid})', level: 6);
+      logHolder.log('fromProperty(${accModel.order.value}, ${acc.accModel.mid})', level: 5);
       accMap[acc.accModel.mid] = acc;
       //setCurrentMid(acc.accModel.mid);
       _currentAccMid = acc.accModel.mid;
@@ -92,16 +92,16 @@ class ACCManager extends ChangeNotifier {
 
       for (ContentsModel contents in accModel.contentsMap.values) {
         logHolder.log('pushACCs(${contents.order.value})->pushcontents(${contents.name})',
-            level: 6);
+            level: 5);
         acc.accChild.playManager.push(acc, contents, invalidate: false);
       }
     }
-    logHolder.log('pushACCs end', level: 6);
+    logHolder.log('pushACCs end', level: 5);
   }
 
   bool registerOverayAll(BuildContext context) {
     if (!isInitOverlay) {
-      logHolder.log('registerOverayAll', level: 6);
+      logHolder.log('registerOverayAll', level: 5);
       isInitOverlay = true;
       for (ACC acc in orderMap.values) {
         acc.registerOverlay(context);
@@ -350,8 +350,14 @@ class ACCManager extends ChangeNotifier {
   }
 
   void destroyEntry(BuildContext context) {
+    logHolder.log('destroyEntry', level: 6);
     for (ACC acc in accMap.values) {
-      acc.entry!.remove();
+      try {
+        acc.entry!.remove();
+        acc.entry = null;
+      } catch (e) {
+        logHolder.log('${acc.accModel.mid} destroyEntry failed : $e');
+      }
     }
     accMap.clear();
   }

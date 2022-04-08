@@ -76,14 +76,14 @@ class MyTextStyles {
 
   static TextStyle get cardText1 => myTextStyle.copyWith(
       color: Colors.black,
-      fontSize: MyFontsSize.s14,
+      fontSize: MyFontsSize.s16,
       height: 1.5,
       letterSpacing: 0.05,
       fontWeight: FontWeight.w400);
 
   static TextStyle get cardText2 => myTextStyle.copyWith(
       color: Colors.grey,
-      fontSize: MyFontsSize.s14,
+      fontSize: MyFontsSize.s16,
       height: 1.5,
       letterSpacing: 0.05,
       fontWeight: FontWeight.w400);

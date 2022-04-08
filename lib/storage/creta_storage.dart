@@ -2,6 +2,7 @@
 //import 'package:creta00/common/util/logger.dart';
 //ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 //import 'package:creta00/common/util/logger.dart';
@@ -31,21 +32,21 @@ class CretaStorage {
 
   static Future<void> upload(
       ContentsModel contents, void Function() onComplete, void Function() onError) async {
-    logHolder.log('upload', level: 6);
+    logHolder.log('upload', level: 5);
     _uploadToStorage(
         remotePath: "${studioMainHolder!.user.id}/${cretaMainHolder!.defaultBook!.mid}",
         content: contents,
         onComplete: (path) async {
           contents.remoteUrl = await CretaStorage.downloadUrlStr(path);
-          logHolder.log('Upload complete ${contents.remoteUrl!}', level: 5);
-          if (contents.thumbnail == null || contents.thumbnail!.isEmpty) {
-            if (saveManagerHolder != null) {
-              saveManagerHolder!.pushUploadThumbnail(contents);
-            }
-          }
-          if (saveManagerHolder != null) {
-            saveManagerHolder!.pushChanged(contents.mid, 'upload');
-          }
+          // logHolder.log('Upload complete ${contents.remoteUrl!}', level: 5);
+          // if (contents.thumbnail == null || contents.thumbnail!.isEmpty) {
+          //   if (saveManagerHolder != null) {
+          //     saveManagerHolder!.pushUploadThumbnail(contents);
+          //   }
+          // }
+          // if (saveManagerHolder != null) {
+          //   saveManagerHolder!.pushChanged(contents.mid, 'upload');
+          // }
           onComplete();
         },
         onError: onError);
@@ -53,7 +54,7 @@ class CretaStorage {
 
   static Future<void> uploadThumbnail(
       ContentsModel contents, void Function() onComplete, void Function() onError) async {
-    logHolder.log('uploadThumbnail', level: 6);
+    logHolder.log('uploadThumbnail', level: 5);
 
     if (contents.thumbnail == null) {
       if (contents.contentsType == ContentsType.video) {
@@ -119,7 +120,8 @@ class CretaStorage {
       reader.readAsDataUrl(content.file!);
       reader.onLoadEnd.listen((event) {
         logHolder.log('Upload ${content.file!.name}', level: 5);
-        ref.put(content.file!).future.then((value) {
+        fb.UploadTask uploadTask = ref.put(content.file!);
+        uploadTask.future.then((value) {
           onComplete(fullpath);
         });
       });
@@ -149,5 +151,106 @@ class CretaStorage {
     } catch (e) {
       logHolder.log("UPLOAD ERROR : $e", level: 7);
     }
+  }
+}
+
+class UploadIndicator extends StatefulWidget {
+  final fb.UploadTask uploadTask;
+  final String text;
+  const UploadIndicator({Key? key, required this.uploadTask, required this.text}) : super(key: key);
+
+  @override
+  State<UploadIndicator> createState() => _UploadIndicatorState();
+}
+
+class _UploadIndicatorState extends State<UploadIndicator> {
+  double progress = 0;
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<fb.UploadTaskSnapshot>(
+        stream: widget.uploadTask.onStateChanged,
+        builder: (context, snapshot) {
+          final event = snapshot.data;
+
+          progress = event != null
+              ? (event.bytesTransferred.toDouble() / event.totalBytes.toDouble()) * 100
+              : 0;
+          logHolder.log('--------------------------$progress---------------', level: 5);
+          return (progress >= 0 && progress <= 100) ? aniIndicator(widget.text) : Container();
+        });
+  }
+
+  Widget aniIndicator(String text, {double height = 40}) {
+    Paint paint = Paint()..color = Colors.transparent;
+    Color color = Colors.grey.withOpacity(0.1);
+
+    return Container(
+      height: height,
+      color: color,
+      alignment: AlignmentDirectional.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Stack(
+            alignment: AlignmentDirectional.center,
+            children: [
+              // LoadingRotating.square(
+              //   size: height / 2,
+              //   backgroundColor: MyColors.primaryColor,
+              // ),
+              Text(
+                '$progress%',
+                style: TextStyle(fontSize: height / 2, background: paint),
+              ),
+            ],
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Text(
+            text,
+            style: TextStyle(fontSize: height / 2, background: paint),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CretaUploader {
+  static fb.UploadTask? uploadTask;
+  static String fbServerUrl = 'gs://${FirebaseConfig.storageBucket}/';
+
+  static Future<void> upload(
+      ContentsModel contents, void Function() onComplete, void Function() onError) async {
+    logHolder.log('upload', level: 5);
+
+    String remotePath = studioMainHolder!.user.id;
+
+    try {
+      String fullpath = '$remotePath/${contents.file!.size}_${contents.file!.name}';
+      fb.StorageReference ref = fb.storage().refFromURL(fbServerUrl).child(fullpath);
+      final reader = html.FileReader();
+      reader.readAsDataUrl(contents.file!);
+      reader.onLoadEnd.listen((event) {
+        logHolder.log('Upload ${contents.file!.name}', level: 5);
+        uploadTask = ref.put(contents.file!);
+        uploadTask!.future.then((value) async {
+          contents.remoteUrl = await CretaStorage.downloadUrlStr(fullpath);
+          onComplete();
+        });
+      });
+    } on Exception catch (exception) {
+      logHolder.log('UPLOAD failed ${exception.toString()}', level: 7);
+      onError();
+    } catch (e) {
+      logHolder.log("UPLOAD ERROR : $e", level: 7);
+      onError();
+    }
+  }
+
+  static Widget getUploadIndicator(String text) {
+    if (uploadTask == null) return Container();
+    return UploadIndicator(uploadTask: uploadTask!, text: text);
   }
 }

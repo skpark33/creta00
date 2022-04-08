@@ -18,9 +18,9 @@ import 'page_manager.dart';
 // ignore: must_be_immutable
 class PagesFrame extends StatefulWidget {
   final bool isNarrow;
-  bool isListType = false;
+  static bool isListType = false;
 
-  PagesFrame({Key? key, required this.isNarrow}) : super(key: key);
+  const PagesFrame({Key? key, required this.isNarrow}) : super(key: key);
 
   @override
   State<PagesFrame> createState() => _PageScreenState();
@@ -50,10 +50,10 @@ class _PageScreenState extends State<PagesFrame> {
                   IconButton(
                     onPressed: () {
                       setState(() {
-                        widget.isListType = !widget.isListType;
+                        PagesFrame.isListType = !PagesFrame.isListType;
                       });
                     },
-                    icon: Icon(widget.isListType ? Icons.list_alt : Icons.grid_view),
+                    icon: Icon(PagesFrame.isListType ? Icons.list_alt : Icons.grid_view),
                     color: MyColors.icon,
                     iconSize: MySizes.smallIcon,
                   ),
@@ -114,7 +114,7 @@ class _PageScreenState extends State<PagesFrame> {
                         pageManager: pageManager,
                       ));
                 }),
-                flip: widget.isListType)
+                flip: PagesFrame.isListType)
           ]),
           Padding(
             padding: EdgeInsets.only(right: 17, bottom: 40),

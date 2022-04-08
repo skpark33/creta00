@@ -289,40 +289,45 @@ class PlayManager {
   Future<void> push(ACC acc, ContentsModel model, {bool invalidate = true}) async {
     await _lock.synchronized(() async {
       if (invalidate) {
+        // push 순서에 따라 order 가 결정된다.
         // 마우스로 끌어다 놓은 경우이다.
         int order = _playList.value.length;
         model.order.set(order, save: false); // save 는 어차피 아래에서 되므로, 여기서는 save 하지 않는다.
       }
       AbsPlayWidget? aWidget;
-      if (model.isVideo()) {
-        logHolder.log('push video');
-        GlobalObjectKey<VideoPlayerWidgetState> key =
-            GlobalObjectKey<VideoPlayerWidgetState>(model.mid);
-        aWidget = VideoPlayerWidget(
-          globalKey: key,
-          onAfterEvent: onVideoAfterEvent,
-          model: model,
-          acc: acc,
-          autoStart: true, // (_currentIndex < 0) ? true : false,
-        );
-        await aWidget.init();
-        if (_currentIndex < 0) _currentIndex = 0;
-      } else if (model.isImage()) {
-        GlobalObjectKey<ImagePlayerWidgetState> key =
-            GlobalObjectKey<ImagePlayerWidgetState>(model.mid);
-        aWidget = ImagePlayerWidget(
-          key: key,
-          model: model,
-          acc: acc,
-          autoStart: true, // (_currentIndex < 0) ? true : false,
-        );
-        await aWidget.init();
-        if (_currentIndex < 0) _currentIndex = 0;
-      } else {
-        logHolder.log('Invalid Contents Type error');
-        return;
+      try {
+        if (model.isVideo()) {
+          logHolder.log('push video');
+          GlobalObjectKey<VideoPlayerWidgetState> key =
+              GlobalObjectKey<VideoPlayerWidgetState>(model.mid);
+          aWidget = VideoPlayerWidget(
+            globalKey: key,
+            onAfterEvent: onVideoAfterEvent,
+            model: model,
+            acc: acc,
+            autoStart: true, // (_currentIndex < 0) ? true : false,
+          );
+          await aWidget.init();
+          if (_currentIndex < 0) _currentIndex = 0;
+        } else if (model.isImage()) {
+          GlobalObjectKey<ImagePlayerWidgetState> key =
+              GlobalObjectKey<ImagePlayerWidgetState>(model.mid);
+          aWidget = ImagePlayerWidget(
+            key: key,
+            model: model,
+            acc: acc,
+            autoStart: true, // (_currentIndex < 0) ? true : false,
+          );
+          await aWidget.init();
+          if (_currentIndex < 0) _currentIndex = 0;
+        } else {
+          logHolder.log('Invalid Contents Type error');
+          return;
+        }
+        _playList.value.add(aWidget);
+      } catch (e) {
+        logHolder.log('Contents Player widget exception $e');
       }
-      _playList.value.add(aWidget);
 
       if (invalidate && baseWidget.isAnime()) {
         // 애니타입인 경우, 새로운 데이터를 이해시키기 위해

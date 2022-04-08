@@ -54,12 +54,12 @@ class BookModel extends AbsModel {
 
   BookModel makeCopy(String newName) {
     BookModel newBook = BookModel(newName, userId, description.value, hashTag.value);
-    newBook.bookType.set(bookType.value);
-    newBook.isPublic.set(isPublic.value);
-    newBook.thumbnailUrl.set(thumbnailUrl.value);
-    newBook.thumbnailType.set(thumbnailType.value);
-    newBook.thumbnailAspectRatio.set(thumbnailAspectRatio.value);
-    logHolder.log('BookCopied(${newBook.mid}', level: 5);
+    newBook.bookType.set(bookType.value, save: false);
+    newBook.isPublic.set(isPublic.value, save: false);
+    newBook.thumbnailUrl.set(thumbnailUrl.value, save: false);
+    newBook.thumbnailType.set(thumbnailType.value, save: false);
+    newBook.thumbnailAspectRatio.set(thumbnailAspectRatio.value, save: false);
+    logHolder.log('BookCopied(${newBook.mid}', level: 6);
     newBook.saveModel();
     return newBook;
   }

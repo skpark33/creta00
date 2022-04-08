@@ -35,12 +35,14 @@ class VideoPlayerWidget extends AbsPlayWidget {
 
   @override
   Future<void> init() async {
-    logHolder.log('initVideo(${model!.name},${model!.remoteUrl})', level: 6);
+    logHolder.log('initVideo(${model!.name},${model!.remoteUrl})', level: 5);
 
-    String uri = model!.url;
-    if (model!.remoteUrl != null && model!.remoteUrl!.isNotEmpty) {
-      uri = model!.remoteUrl!;
+    String uri = getURI(model!);
+    String errMsg = '${model!.name} uri is null';
+    if (uri.isEmpty) {
+      logHolder.log(errMsg, level: 7);
     }
+    logHolder.log("uri=$uri", level: 5);
 
     wcontroller = VideoPlayerController.network(uri,
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))

@@ -74,7 +74,7 @@ class PageManager extends ChangeNotifier {
   String createPage() {
     PageModel page = PageModel(cretaMainHolder!.defaultBook!.mid);
     page.order.set(pageIndex);
-    logHolder.log('createPage $pageIndex', level: 6);
+    logHolder.log('createPage $pageIndex', level: 5);
     pageMap[page.mid] = page;
     orderMap[page.order.value] = page;
     pageIndex++;
@@ -82,13 +82,13 @@ class PageManager extends ChangeNotifier {
   }
 
   void pushPages(List<PageModel> list) {
-    logHolder.log('pushPages $pageIndex', level: 6);
+    logHolder.log('pushPages $pageIndex', level: 5);
     pageMap.clear();
     orderMap.clear();
     int minOrder = 999999999;
     int maxOrder = 0;
     for (PageModel page in list) {
-      logHolder.log('page(${page.order.value}) added', level: 6);
+      logHolder.log('page(${page.order.value}) added', level: 5);
       pageMap[page.mid] = page;
       orderMap[page.order.value] = page;
       if (page.order.value <= minOrder) {
@@ -132,7 +132,7 @@ class PageManager extends ChangeNotifier {
   }
 
   changeOrder(int newIndex, int oldIndex) {
-    logHolder.log('changeOrder($oldIndex --> $newIndex)', level: 6);
+    logHolder.log('changeOrder($oldIndex --> $newIndex)', level: 5);
     mychangeStack.startTrans();
     orderMap[newIndex]!.order.set(oldIndex);
     orderMap[oldIndex]!.order.set(newIndex);

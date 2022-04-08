@@ -73,6 +73,7 @@ class MainScreenState extends State<StudioMainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    logHolder.log('build StudioMainScreen', level: 6);
     pageManagerHolder = PageManager();
     accManagerHolder = ACCManager();
     return MultiProvider(
@@ -110,7 +111,7 @@ class MainScreenState extends State<StudioMainScreen> {
                 logHolder.log("No data founded", level: 7);
                 return Container();
               } else if (snapshot.connectionState == ConnectionState.done) {
-                logHolder.log("page founded ${snapshot.data!.length}", level: 6);
+                logHolder.log("page founded ${snapshot.data!.length}", level: 5);
                 if (snapshot.data!.isEmpty) {
                   pageManagerHolder!.createFirstPage();
                 } else {

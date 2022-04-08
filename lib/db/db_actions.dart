@@ -19,14 +19,14 @@ import '../model/book.dart';
 
 class DbActions {
   static Future<List<BookModel>> getMyBookList(String userId) async {
-    logHolder.log('getMyBookList', level: 6);
+    logHolder.log('getMyBookList', level: 5);
     List<BookModel> retval = [];
     try {
       List<dynamic> list = await CretaDB('creta_book')
           .simpleQueryData(orderBy: 'updateTime', name: 'userId', value: userId);
 
       for (QueryDocumentSnapshot item in list) {
-        logHolder.log(item.data()!.toString(), level: 6);
+        logHolder.log(item.data()!.toString(), level: 5);
         Map<String, dynamic> map = item.data()! as Map<String, dynamic>;
         String? mid = map["mid"];
         if (mid != null) {
@@ -38,7 +38,7 @@ class DbActions {
     } catch (e) {
       logHolder.log("Data error $e", level: 7);
     }
-    logHolder.log('getMyBookList end(${retval.length})', level: 6);
+    logHolder.log('getMyBookList end(${retval.length})', level: 5);
     return retval;
   }
 
@@ -48,10 +48,10 @@ class DbActions {
       List<dynamic> list = await CretaDB('creta_page')
           .simpleQueryData(orderBy: 'updateTime', name: 'parentMid', value: book.mid);
 
-      logHolder.log('getPages(${list.length})', level: 6);
+      logHolder.log('getPages(${list.length})', level: 5);
 
       for (QueryDocumentSnapshot item in list) {
-        logHolder.log(item.data()!.toString(), level: 6);
+        logHolder.log(item.data()!.toString(), level: 5);
         Map<String, dynamic> map = item.data()! as Map<String, dynamic>;
         String? mid = map["mid"];
         if (mid == null) {
@@ -59,7 +59,7 @@ class DbActions {
         }
         bool? isRemoved = map["isRemoved"];
         if (isRemoved != null && isRemoved == true) {
-          logHolder.log("removed data skipped($mid!", level: 6);
+          logHolder.log("removed data skipped($mid!", level: 5);
         }
         PageModel page = PageModel.createEmptyModel(mid, book.mid);
         page.deserialize(map);
@@ -77,10 +77,10 @@ class DbActions {
     try {
       List<dynamic> list = await CretaDB('creta_acc')
           .simpleQueryData(orderBy: 'updateTime', name: 'parentMid', value: page.mid);
-      logHolder.log('getACCProperties(${list.length})', level: 6);
+      logHolder.log('getACCProperties(${list.length})', level: 5);
 
       for (QueryDocumentSnapshot item in list) {
-        logHolder.log(item.data()!.toString(), level: 6);
+        logHolder.log(item.data()!.toString(), level: 5);
         Map<String, dynamic> map = item.data()! as Map<String, dynamic>;
         String? mid = map["mid"];
         if (mid == null) {
@@ -88,7 +88,7 @@ class DbActions {
         }
         bool? isRemoved = map["isRemoved"];
         if (isRemoved != null && isRemoved == true) {
-          logHolder.log("removed data skipped($mid!", level: 6);
+          logHolder.log("removed data skipped($mid!", level: 5);
         }
         ACCProperty accProperty = ACCProperty.createEmptyModel(mid, page.mid);
         accProperty.deserialize(map);
@@ -106,10 +106,10 @@ class DbActions {
     try {
       List<dynamic> list = await CretaDB('creta_contents')
           .simpleQueryData(orderBy: 'updateTime', name: 'parentMid', value: accProperty.mid);
-      logHolder.log('getContents(${list.length})', level: 6);
+      logHolder.log('getContents(${list.length})', level: 5);
       int idx = 0;
       for (QueryDocumentSnapshot item in list) {
-        logHolder.log(item.data()!.toString(), level: 6);
+        logHolder.log(item.data()!.toString(), level: 5);
         Map<String, dynamic> map = item.data()! as Map<String, dynamic>;
         String? mid = map["mid"];
         if (mid == null) {
@@ -117,13 +117,13 @@ class DbActions {
         }
         bool? isRemoved = map["isRemoved"];
         if (isRemoved != null && isRemoved == true) {
-          logHolder.log("removed data skipped($mid!", level: 6);
+          logHolder.log("removed data skipped($mid!", level: 5);
         }
         ContentsModel contents = ContentsModel.createEmptyModel(mid, accProperty.mid);
         contents.deserialize(map);
         retval[contents.order.value] = contents;
         idx++;
-        logHolder.log('getContents($idx)th complete', level: 6);
+        logHolder.log('getContents($idx)th complete', level: 5);
       }
     } catch (e) {
       logHolder.log("Data error $e", level: 7);
@@ -176,7 +176,7 @@ class DbActions {
     logHolder.log('save($mid)', level: 6);
     int retval = 1;
     if (mid == cretaMainHolder!.defaultBook!.mid) {
-      logHolder.log("save mid($mid)", level: 5);
+      logHolder.log("save mid($mid)", level: 6);
       retval = await _storeChangedDataOnly(
           cretaMainHolder!.defaultBook!, "creta_book", cretaMainHolder!.defaultBook!.serialize());
       logHolder.log("save mid($mid)=$retval", level: 5);
@@ -200,15 +200,15 @@ class DbActions {
       return false;
     }
     if (isACC(mid)) {
-      logHolder.log("before save mid($mid)", level: 6);
+      logHolder.log("before save mid($mid)", level: 5);
 
       for (ACC acc in accManagerHolder!.accMap.values) {
         if (acc.accModel.mid == mid) {
-          logHolder.log("my mid($mid)", level: 6);
+          logHolder.log("my mid($mid)", level: 5);
           retval = await _storeChangedDataOnly(acc.accModel, "creta_acc", acc.serialize());
         }
       }
-      logHolder.log("after save mid($mid)", level: 6);
+      logHolder.log("after save mid($mid)", level: 5);
       return (retval == 1);
     }
 
@@ -248,7 +248,7 @@ class DbActions {
     }
     if (tableName.isNotEmpty) {
       retval = await _storeChangedDataOnly(model, tableName, model.serialize());
-      logHolder.log("create mid($model.mid)=$retval", level: 5);
+      logHolder.log("create mid(${model.mid})=$retval", level: 6);
     }
     return (retval == 1);
   }
@@ -260,13 +260,13 @@ class DbActions {
       bool succeed = await CretaDB(tableName).setData(model.mid, data);
       model.clearDirty(succeed);
       if (succeed) {
-        logHolder.log('succeed $tableName(${model.mid}) save', level: 6);
+        logHolder.log('succeed $tableName(${model.mid}) save', level: 5);
         return 1;
       }
       logHolder.log('fail !! $tableName(${model.mid}) save', level: 7);
       return -1;
     }
-    logHolder.log('nothing changed !!! $tableName(${model.mid})', level: 6);
+    logHolder.log('nothing changed !!! $tableName(${model.mid})', level: 5);
     return 0;
   }
 }

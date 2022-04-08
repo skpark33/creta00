@@ -6,7 +6,6 @@ import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/common/buttons/basic_button.dart';
 import 'package:creta00/constants/styles.dart';
-import 'package:creta00/studio/sidebar/sidebar.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:creta00/studio/save_manager.dart';
 import 'package:creta00/constants/constants.dart';
@@ -18,6 +17,7 @@ import '../model/users.dart';
 import 'artboard/artboard_frame.dart';
 import 'pages/pages_frame.dart';
 import 'properties/properties_frame.dart';
+import 'sidebar/sidebar.dart';
 
 class StudioSubScreen extends StatefulWidget {
   final GlobalKey<StudioSubScreenState> mainScreenKey;
@@ -37,7 +37,7 @@ class StudioSubScreenState extends State<StudioSubScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      logHolder.log('afterBuild StudioMainScreen', level: 5);
+      logHolder.log('afterBuild StudioSubScreen', level: 6);
       if (accManagerHolder!.registerOverayAll(context)) {
         //setState(() {});
       }
@@ -52,6 +52,7 @@ class StudioSubScreenState extends State<StudioSubScreen> {
 
   @override
   Widget build(BuildContext context) {
+    logHolder.log('build StudioSubScreen', level: 6);
     return Scaffold(
       //key: context.read<MenuController>().scaffoldKey,
       appBar: buildAppBar(),
@@ -85,7 +86,7 @@ class StudioSubScreenState extends State<StudioSubScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // We want this side menu only for large screen
-        SizedBox(
+        const SizedBox(
           width: layoutPageWidth,
           child: PagesFrame(isNarrow: false),
         ),
@@ -115,7 +116,7 @@ class StudioSubScreenState extends State<StudioSubScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // We want this side menu only for large screen
-        SizedBox(
+        const SizedBox(
           height: 200,
           child: PagesFrame(isNarrow: true),
         ),
@@ -158,7 +159,10 @@ class StudioSubScreenState extends State<StudioSubScreen> {
         //await Future.delayed(const Duration(milliseconds: 100));
       }
     }
-    if (accManagerHolder != null) accManagerHolder!.unshowMenu(context);
+    if (accManagerHolder != null) {
+      accManagerHolder!.unshowMenu(context);
+      accManagerHolder!.destroyEntry(context);
+    }
     naviPop(context);
     cretaMainHolder!.invalidate();
   }

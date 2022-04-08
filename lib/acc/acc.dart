@@ -70,7 +70,7 @@ class ACC {
   }
 
   Map<String, dynamic> serialize() {
-    logHolder.log('serialize ACC', level: 6);
+    logHolder.log('serialize ACC', level: 5);
     return accModel.serialize();
   }
 
@@ -95,7 +95,7 @@ class ACC {
   }
 
   Widget registerOverlay(BuildContext context) {
-    logHolder.log('registerOverlay', level: 6);
+    logHolder.log('registerOverlay', level: 5);
     Widget? overlayWidget;
     if (entry == null) {
       entry = OverlayEntry(builder: (context) {

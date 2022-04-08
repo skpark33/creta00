@@ -50,6 +50,11 @@ class ContentsModel extends AbsModel {
     volume = UndoAble<double>(src.volume.value, mid);
     aspectRatio = UndoAble<double>(src.aspectRatio.value, mid);
     isDynamicSize = UndoAble<bool>(src.isDynamicSize.value, mid); //
+
+    if (src.remoteUrl != null) remoteUrl = src.remoteUrl;
+    if (src.thumbnail != null) thumbnail = src.thumbnail;
+    contentsType = src.contentsType;
+    lastModifiedTime = DateTime.now().toString();
   }
 
   ContentsModel.createEmptyModel(String srcMid, String pMid)
@@ -91,7 +96,8 @@ class ContentsModel extends AbsModel {
     super.deserialize(map);
     name = map["name"];
     bytes = map["bytes"];
-    url = map["url"];
+    //url = map["url"];  // url 의 desialize 하지 않는다.
+    url = ""; // url 의 desialize 하지 않는다.  즉 DB 로 부터 가져오지 않는다.
     mime = map["mime"];
 
     playTime.set(map["playTime"], save: false);

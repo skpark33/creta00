@@ -121,6 +121,16 @@ abstract class AbsPlayWidget extends StatefulWidget {
         styles: BlobStyles(color: Colors.green, fillType: BlobFillType.stroke, strokeWidth: 2),
         child: child);
   }
+
+  String getURI(ContentsModel model) {
+    if (model.url.isNotEmpty) {
+      return model.url;
+    }
+    if (model.remoteUrl != null && model.remoteUrl!.isNotEmpty) {
+      return model.remoteUrl!;
+    }
+    return '';
+  }
 }
 
 // ignore: must_be_immutable

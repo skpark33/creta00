@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     cretaMainHolder = CretaMainScreen(
         mainScreenKey: GlobalKey<CretaMainScreenState>(), user: UserModel(id: 'b49@sqisoft.com'));
+
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData.light().copyWith(

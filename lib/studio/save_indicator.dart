@@ -63,6 +63,7 @@ class SaveIndicatorState extends State<SaveIndicator> {
               case InProgressType.contentsUploading:
                 logHolder.log('ContentsUploding...', level: 5);
                 return aniIndicator(MyStrings.contentsUploading);
+              //return CretaUploader.getUploadIndicator(MyStrings.contentsUploading);
               case InProgressType.thumbnailUploading:
                 logHolder.log('ThumbnailUploding...', level: 5);
                 return aniIndicator(MyStrings.thumbnailUploading);

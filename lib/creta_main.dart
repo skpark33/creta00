@@ -39,7 +39,7 @@ class CretaMainScreen extends StatefulWidget {
   void setBookThumbnail(String path, ContentsType contentsType, double aspectRatio) {
     if (defaultBook == null) return;
     mychangeStack.startTrans();
-    logHolder.log("setBookThumbnail $path, $contentsType", level: 6);
+    logHolder.log("setBookThumbnail $path, $contentsType", level: 5);
     defaultBook!.thumbnailUrl.set(path);
     defaultBook!.thumbnailType.set(contentsType);
     defaultBook!.thumbnailAspectRatio.set(aspectRatio);
@@ -227,7 +227,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                 for (BookModel model in widget.bookList) {
                   logHolder.log("mybook=${model.name.value}, ${model.updateTime}", level: 5);
                 }
-                widget.defaultBook = widget.bookList[0];
+                widget.defaultBook ??= widget.bookList[0];
               }
               return Stack(
                 children: [

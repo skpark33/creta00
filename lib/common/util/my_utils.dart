@@ -246,25 +246,31 @@ void showSlimDialog(BuildContext context, String message, {Color bgColor = Color
           child: Material(
             color: bgColor,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Expanded(
-                child: InkWell(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Row(
-                      children: [
-                        const Icon(Icons.warning),
-                        const SizedBox(width: 16),
-                        Text(
+            //child: Padding(
+            //padding: const EdgeInsets.all(16),
+            child: Expanded(
+              child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 16),
+                      const Icon(Icons.warning),
+                      const SizedBox(width: 16),
+                      Container(
+                        height: 40,
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
                           message,
-                          style: MyTextStyles.body1,
+                          style: MyTextStyles.body1.copyWith(fontSize: 20),
                         ),
-                      ],
-                    )),
-              ),
+                      ),
+                    ],
+                  )),
             ),
+            //),
           ),
         ),
       );
@@ -520,6 +526,19 @@ Widget showWaitSign() {
 
 Widget defaultBGImage() {
   return Image.asset('assets/creta_default.png', fit: BoxFit.cover);
+}
+
+Widget noImage(String errMsg) {
+  return Stack(
+    alignment: AlignmentDirectional.center,
+    children: [
+      Image.asset('assets/no_image.png', fit: BoxFit.cover),
+      Text(
+        errMsg,
+        style: MyTextStyles.body1,
+      ),
+    ],
+  );
 }
 
 double getRadiusPos(double radius, {double minus = 1.0}) {

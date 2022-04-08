@@ -84,6 +84,7 @@ dev_dependencies:
   wave: ^0.2.0
   loading_animations: ^2.1.0
   liquid_progress_indicator: ^0.4.0
+
  
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -105,7 +106,8 @@ flutter:
       - assets/publish.png
       - assets/pilot.PNG
       - assets/grid.png      
-      - assets/creta_default.png      
+      - assets/creta_default.png   
+      - assets/no_image.png   
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
