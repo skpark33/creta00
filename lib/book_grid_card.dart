@@ -94,16 +94,22 @@ class HoverWidget extends StatefulWidget {
   final double width;
   final double height;
   final int index;
-  final BookModel book;
+  final BookModel? book;
   final void Function() onTapdown;
+  final double hoverOpacity;
+  final double normalOpacity;
+  final Widget? hoverWidget;
 
   const HoverWidget({
     Key? key,
+    this.book,
     required this.width,
     required this.height,
     required this.index,
-    required this.book,
     required this.onTapdown,
+    this.hoverOpacity = 0.4,
+    this.normalOpacity = 0.0,
+    this.hoverWidget,
   }) : super(key: key);
 
   @override
@@ -115,7 +121,7 @@ class _HoverWidgetState extends State<HoverWidget> {
   // ignore: unused_field
 
   bool _isClikcked() {
-    return widget.book.mid == cretaMainHolder!.defaultBook!.mid;
+    return widget.book != null && widget.book!.mid == cretaMainHolder!.defaultBook!.mid;
   }
 
   @override
@@ -138,25 +144,27 @@ class _HoverWidgetState extends State<HoverWidget> {
           });
         },
         child: Container(
-          width: widget.width,
-          height: widget.height,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity((hoverIndex == widget.index) ? 0.4 : 0.0),
-            borderRadius: const BorderRadius.all(Radius.circular(8)),
-            border: Border.all(
-                width: _isClikcked() ? 6.0 : 0.0, color: Colors.white, style: BorderStyle.solid),
-          ),
-          child: (hoverIndex == widget.index)
-              ? Padding(
-                  padding: const EdgeInsets.only(bottom: 50.0),
-                  child: Text(
-                    widget.book.description.value,
-                    style: MyTextStyles.cardText1,
-                  ),
-                )
-              : Container(),
-        ),
+            width: widget.width,
+            height: widget.height,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(
+                  (hoverIndex == widget.index) ? widget.hoverOpacity : widget.normalOpacity),
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              border: Border.all(
+                  width: _isClikcked() ? 6.0 : 0.0, color: Colors.white, style: BorderStyle.solid),
+            ),
+            child: (widget.book == null && widget.hoverWidget != null)
+                ? widget.hoverWidget!
+                : (hoverIndex == widget.index && widget.book != null)
+                    ? Padding(
+                        padding: const EdgeInsets.only(bottom: 50.0),
+                        child: Text(
+                          widget.book!.description.value,
+                          style: MyTextStyles.cardText1,
+                        ),
+                      )
+                    : Container()),
       ),
     );
   }

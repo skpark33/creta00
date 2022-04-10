@@ -139,4 +139,5 @@ class MyStrings {
   static String hourBefore = Locale.isKr() ? '시간 전' : "Hour before";
   static String minBefore = Locale.isKr() ? '분 전' : "Min before";
   static String tryNextTime = Locale.isKr() ? '잠시 후 다시 시도 하십시오' : 'Please try again later.';
+  static String newContentsBook = Locale.isKr() ? '새 콘텐츠북 만들기' : 'Create New Contents Book';
 }

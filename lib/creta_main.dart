@@ -74,6 +74,10 @@ class CretaMainScreenState extends State<CretaMainScreen> {
   final double gridTitle = 70;
   final double gridHeight = 140 + 70;
 
+  final int maxCard = 48;
+
+  //bool isEmptyCardHover = false;
+
   void invalidate() {
     setState(() {});
   }
@@ -133,19 +137,68 @@ class CretaMainScreenState extends State<CretaMainScreen> {
   SliverGrid renderSliverGrid() {
     return SliverGrid(
         delegate: SliverChildBuilderDelegate((context, index) {
-          if (index < widget.bookList.length) {
-            BookModel book = widget.bookList[index];
-            return BookGridCard(
+          // 첫번째 카드
+          if (index == 0) {
+            return Container(
+              padding: const EdgeInsets.all(4),
+              child: HoverWidget(
                 index: index,
-                book: book,
-                durationStr: _dateToDurationString(book.updateTime),
+                width: gridWidth,
+                height: gridHeight,
+                normalOpacity: 0.2,
+                hoverOpacity: 0.5,
+                hoverWidget: Center(
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.add_outlined,
+                      size: 100,
+                      color: MyColors.primaryColor,
+                    ),
+                    Text(
+                      MyStrings.newContentsBook,
+                      style: MyTextStyles.buttonText2,
+                    )
+                  ],
+                )),
                 onTapdown: () {
-                  widget.defaultBook = book;
+                  logHolder.log("New button Pressed", level: 5);
+                  widget.defaultBook = MainUtil.createDefaultBook();
                   MainUtil.goToStudio(context, widget.user);
-                });
+                },
+              ),
+            );
           }
-          return _emptyGridCard();
-        }, childCount: 48),
+          if (index >= widget.bookList.length) {
+            return Container(
+              padding: const EdgeInsets.all(4),
+              child: HoverWidget(
+                index: index,
+                width: gridWidth,
+                height: gridHeight,
+                normalOpacity: 0.2,
+                hoverOpacity: 0.5,
+                onTapdown: () {
+                  // logHolder.log("New button Pressed", level: 5);
+                  // widget.defaultBook = MainUtil.createDefaultBook();
+                  // MainUtil.goToStudio(context, widget.user);
+                },
+              ),
+            );
+          }
+
+          BookModel book = widget.bookList[index - 1];
+          return BookGridCard(
+              index: index,
+              book: book,
+              durationStr: _dateToDurationString(book.updateTime),
+              onTapdown: () {
+                widget.defaultBook = book;
+                MainUtil.goToStudio(context, widget.user);
+              });
+          //return _emptyGridCard(index);
+        }, childCount: maxCard),
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: gridWidth + 8,
           mainAxisExtent: gridHeight + 8,
@@ -172,18 +225,23 @@ class CretaMainScreenState extends State<CretaMainScreen> {
     return '${duration.inMinutes} ${MyStrings.minBefore}';
   }
 
-  Widget _emptyGridCard() {
-    return Card(
-      color: Colors.white.withOpacity(0.5),
-      //shadowColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(width: 1.0, color: Colors.white),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      elevation: 8,
-      child: Container(),
-    );
-  }
+  // Widget _emptyGridCard(int index) {
+  //   return Card(
+  //     color: Colors.white.withOpacity(0.2),
+  //     //shadowColor: Colors.white,
+  //     shape: RoundedRectangleBorder(
+  //       side: const BorderSide(width: 1.0, color: Colors.white),
+  //       borderRadius: BorderRadius.circular(8),
+  //     ),
+  //     elevation: 8,
+  //     child: Center(
+  //         child: Icon(
+  //       Icons.add_outlined,
+  //       size: 100,
+  //       color: Colors.grey,
+  //     )),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -321,18 +379,18 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                             child: Row(
                               children: [
                                 // New Button
-                                Container(
-                                  child: basicButton2(
-                                    onPressed: () {
-                                      logHolder.log("New button Pressed", level: 5);
-                                      widget.defaultBook = MainUtil.createDefaultBook();
-                                      MainUtil.goToStudio(context, widget.user);
-                                    },
-                                    name: '새 콘텐츠북 만들기',
-                                    textStyle: MyTextStyles.buttonText2,
-                                    borderColor: Colors.purple[100]!,
-                                  ),
-                                ),
+                                // Container(
+                                //   child: basicButton2(
+                                //     onPressed: () {
+                                //       logHolder.log("New button Pressed", level: 5);
+                                //       widget.defaultBook = MainUtil.createDefaultBook();
+                                //       MainUtil.goToStudio(context, widget.user);
+                                //     },
+                                //     name: '새 콘텐츠북 만들기',
+                                //     textStyle: MyTextStyles.buttonText2,
+                                //     borderColor: Colors.purple[100]!,
+                                //   ),
+                                // ),
                                 // 사용자 로고
                                 Container(
                                   padding: EdgeInsets.only(left: 20),

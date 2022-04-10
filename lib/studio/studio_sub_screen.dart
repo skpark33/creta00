@@ -187,8 +187,26 @@ class StudioSubScreenState extends State<StudioSubScreen> {
           icon: const Icon(Icons.redo)),
       IconButton(onPressed: () {}, icon: const Icon(Icons.zoom_in)),
       IconButton(onPressed: () {}, icon: const Icon(Icons.zoom_out)),
+
+      //appBarTitle(400),
       //IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
     ]);
+  }
+
+  Widget appBarTitle(double width) {
+    return SizedBox(
+      width: width,
+      child: GestureDetector(
+          onTapDown: (details) {},
+          child: MouseRegion(
+            onHover: (event) {},
+            onExit: (event) {},
+            child: Text(
+              cretaMainHolder!.defaultBook!.name.value,
+              style: MyTextStyles.h5,
+            ),
+          )),
+    );
   }
 
   List<Widget> appBarAction() {
