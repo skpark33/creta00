@@ -27,7 +27,9 @@ class MenuModel {
 }
 
 class MyMenuStick extends StatefulWidget {
-  const MyMenuStick({required Key key}) : super(key: key);
+  final bool isVisible;
+
+  const MyMenuStick({required Key key, this.isVisible = true}) : super(key: key);
 
   @override
   MyMenuStickState createState() => MyMenuStickState();
@@ -86,30 +88,33 @@ class MyMenuStickState extends State<MyMenuStick> {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      left: layoutPageWidth + 12,
-      top: 80,
-      child: Material(
-        type: MaterialType.card,
-        color: Colors.transparent,
-        child: frostedEdged(
-          sigma: 10.0,
-          radius: 8.0,
-          //child: Padding(
-          //padding: const EdgeInsets.only(left: 12, top: 10),
-          child: Container(
-              // decoration: simpleDeco(
-              //     8.0, 0.5, Colors.white.withOpacity(0.2), MyColors.white),
-              height: 560,
-              width: isExpanded
-                  ? wideWidth
-                  : isSubMenuOpen
-                      ? narrowWidth + subWidth
-                      : narrowWidth,
-              child: row(),
-              color: Colors.white.withOpacity(0.5) //MyColors.compexDrawerCanvasColor,
-              ),
-          //),
+    return Visibility(
+      visible: widget.isVisible,
+      child: Positioned(
+        left: layoutPageWidth + 12,
+        top: 80,
+        child: Material(
+          type: MaterialType.card,
+          color: Colors.transparent,
+          child: frostedEdged(
+            sigma: 10.0,
+            radius: 8.0,
+            //child: Padding(
+            //padding: const EdgeInsets.only(left: 12, top: 10),
+            child: Container(
+                // decoration: simpleDeco(
+                //     8.0, 0.5, Colors.white.withOpacity(0.2), MyColors.white),
+                height: 560,
+                width: isExpanded
+                    ? wideWidth
+                    : isSubMenuOpen
+                        ? narrowWidth + subWidth
+                        : narrowWidth,
+                child: row(),
+                color: Colors.white.withOpacity(0.5) //MyColors.compexDrawerCanvasColor,
+                ),
+            //),
+          ),
         ),
       ),
     );

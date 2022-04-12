@@ -19,7 +19,9 @@ import 'package:creta00/studio/sidebar/my_widget_menu.dart';
 OverlayEntry? menuStickEntry;
 
 class ArtBoardScreen extends StatefulWidget {
-  const ArtBoardScreen({Key? key}) : super(key: key);
+  final bool isFullScreen;
+
+  const ArtBoardScreen({Key? key, this.isFullScreen = false}) : super(key: key);
 
   @override
   State<ArtBoardScreen> createState() => ArtBoardScreenState();
@@ -73,7 +75,10 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
     logHolder.log('MenuStick build');
     if (menuStickEntry == null) {
       menuStickEntry = OverlayEntry(builder: (context) {
-        menuStick = MyMenuStick(key: _widgetMenuKey);
+        menuStick = MyMenuStick(
+          key: _widgetMenuKey,
+          isVisible: !(widget.isFullScreen),
+        );
         return menuStick!;
       });
       final overlay = Overlay.of(context)!;
@@ -90,8 +95,8 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
     return Consumer<PageManager>(builder: (context, pageManager, child) {
       onPageSelected(pageManager.getSelected());
       return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-        width = constraints.maxWidth * (7 / 8);
-        height = constraints.maxHeight * (7 / 8);
+        width = constraints.maxWidth * (widget.isFullScreen ? 1 : (7 / 8));
+        height = constraints.maxHeight * (widget.isFullScreen ? 1 : (7 / 8));
 
         if (pageRatio > 1) {
           // 세로형
@@ -122,7 +127,7 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
 
         return SafeArea(
           child: Container(
-            padding: EdgeInsets.only(left: 20),
+            padding: EdgeInsets.only(left: (widget.isFullScreen ? 0 : 20)),
             color: MyColors.bgColor,
             alignment: Alignment.center,
             child: Container(

@@ -58,6 +58,28 @@ class ACCManager extends ChangeNotifier {
     return accMap[_currentAccMid];
   }
 
+  bool isSelectedEmpty() {
+    return (_currentAccMid.isEmpty || accMap[_currentAccMid] == null);
+  }
+
+  ACC? selectLastACC() {
+    int maxOrder = getMaxOrder();
+    if (maxOrder < 0) {
+      return null;
+    }
+    ACC? acc = orderMap[maxOrder];
+    _currentAccMid = acc!.accModel.mid;
+    return acc;
+  }
+
+  int getMaxOrder() {
+    int retval = -1;
+    for (int order in orderMap.keys) {
+      retval = order;
+    }
+    return retval;
+  }
+
   ACC createACC(int order, BuildContext context, BaseWidget widget, PageModel page) {
     logHolder.log("createACC($order)");
     ACC acc = ACC(page: page, accChild: widget, idx: order);
@@ -518,13 +540,13 @@ class ACCManager extends ChangeNotifier {
         continue;
       }
       if (acc.page!.mid == modelId) {
-        if (!acc.accModel.visible.value) {
-          acc.accModel.visible.set(true);
+        if (!acc.visible) {
+          acc.visible = true;
           acc.setState();
         }
       } else {
-        if (acc.accModel.visible.value) {
-          acc.accModel.visible.set(false);
+        if (acc.visible) {
+          acc.visible = false;
           acc.setState();
         }
       }

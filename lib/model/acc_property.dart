@@ -27,7 +27,7 @@ enum CursorType {
 
 //class ACCProperty extends ChangeNotifier {
 class ACCProperty extends AbsModel {
-  late UndoAble<bool> visible;
+  //late UndoAble<bool> visible;
   late UndoAble<bool> resizable;
   late UndoAble<AnimeType> animeType;
   late UndoAble<double> radiusAll;
@@ -58,7 +58,7 @@ class ACCProperty extends AbsModel {
 
   ACCProperty({required ModelType type, required String parent})
       : super(type: type, parent: parent) {
-    visible = UndoAble<bool>(true, mid);
+    //visible = UndoAble<bool>(true, mid);
     resizable = UndoAble<bool>(true, mid);
     animeType = UndoAble<AnimeType>(AnimeType.none, mid);
     radiusAll = UndoAble<double>(0, mid);
@@ -90,7 +90,7 @@ class ACCProperty extends AbsModel {
 
   ACCProperty.copy(ACCProperty src, String parentId) : super(parent: parentId, type: src.type) {
     super.copy(src, parentId);
-    visible = UndoAble<bool>(src.visible.value, mid);
+    //visible = UndoAble<bool>(src.visible.value, mid);
     resizable = UndoAble<bool>(src.resizable.value, mid);
     animeType = UndoAble<AnimeType>(src.animeType.value, mid);
     radiusAll = UndoAble<double>(src.radiusAll.value, mid);
@@ -121,7 +121,7 @@ class ACCProperty extends AbsModel {
   ACCProperty.createEmptyModel(String srcMid, String pMid)
       : super(type: ModelType.acc, parent: pMid) {
     super.changeMid(srcMid);
-    visible = UndoAble<bool>(true, srcMid);
+    //visible = UndoAble<bool>(true, srcMid);
     resizable = UndoAble<bool>(true, srcMid);
     animeType = UndoAble<AnimeType>(AnimeType.none, srcMid);
     radiusAll = UndoAble<double>(0, srcMid);
@@ -154,7 +154,7 @@ class ACCProperty extends AbsModel {
     super.deserialize(map);
     animeType.set(intToAnimeType(map["animeType"]), save: false);
 
-    visible.set(map["visible"], save: false);
+    //visible.set(map["visible"], save: false);
     resizable.set(map["resizable"], save: false);
     radiusAll.set(map["radiusAll"], save: false);
     radiusTopLeft.set(map["radiusTopLeft"], save: false);
@@ -201,7 +201,7 @@ class ACCProperty extends AbsModel {
     return super.serialize()
       ..addEntries({
         "animeType": animeTypeToInt(animeType.value),
-        "visible": visible.value,
+        //"visible": visible.value,
         "resizable": resizable.value,
         "radiusAll": radiusAll.value,
         "radiusTopLeft": radiusTopLeft.value,

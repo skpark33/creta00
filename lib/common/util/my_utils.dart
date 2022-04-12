@@ -525,7 +525,8 @@ Widget showWaitSign() {
 }
 
 Widget defaultBGImage() {
-  return Image.asset('assets/creta_default.png', fit: BoxFit.cover);
+  //return Image.asset('assets/creta_default.png', fit: BoxFit.cover);
+  return Image.asset('creta_default.png', fit: BoxFit.cover);
 }
 
 Widget noImage(String errMsg) {

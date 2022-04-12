@@ -131,6 +131,7 @@ enum AnimeType {
   none,
   carousel,
   flip,
+  enlarge,
 }
 
 int animeTypeToInt(AnimeType value) {
@@ -141,6 +142,8 @@ int animeTypeToInt(AnimeType value) {
       return 1;
     case AnimeType.flip:
       return 2;
+    case AnimeType.enlarge:
+      return 3;
   }
 }
 
@@ -152,6 +155,8 @@ AnimeType intToAnimeType(int t) {
       return AnimeType.carousel;
     case 2:
       return AnimeType.flip;
+    case 3:
+      return AnimeType.enlarge;
     default:
       return AnimeType.none;
   }
@@ -209,5 +214,25 @@ String inProgressTypeToMsg(InProgressType type) {
       return MyStrings.contentsUploading;
     case InProgressType.thumbnailUploading:
       return MyStrings.thumbnailUploading;
+  }
+}
+
+enum PropertyType {
+  book,
+  page,
+  acc,
+  contents,
+}
+
+int propertyTypeToInt(PropertyType value) {
+  switch (value) {
+    case PropertyType.book:
+      return 0;
+    case PropertyType.page:
+      return 1;
+    case PropertyType.acc:
+      return 2;
+    case PropertyType.contents:
+      return 3;
   }
 }

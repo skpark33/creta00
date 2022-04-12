@@ -40,6 +40,8 @@ class StudioMainScreen extends StatefulWidget {
 
 class MainScreenState extends State<StudioMainScreen> {
   List<LogicalKeyboardKey> keys = [];
+  GlobalKey<StudioSubScreenState> mainScreenKey = GlobalKey<StudioSubScreenState>();
+  bool isFullScreen = false;
 
   void invalidate() {
     setState(() {});
@@ -52,9 +54,6 @@ class MainScreenState extends State<StudioMainScreen> {
 
   @override
   void dispose() {
-    if (saveManagerHolder != null) {
-      saveManagerHolder!.stopTimer();
-    }
     super.dispose();
   }
 
@@ -119,8 +118,7 @@ class MainScreenState extends State<StudioMainScreen> {
                 }
               }
 
-              return StudioSubScreen(
-                  mainScreenKey: GlobalKey<StudioSubScreenState>(), user: widget.user);
+              return StudioSubScreen(key: mainScreenKey, user: widget.user);
             }),
       ),
     );
@@ -142,6 +140,11 @@ class MainScreenState extends State<StudioMainScreen> {
         setState(() {
           logHolder.showLog = !logHolder.showLog;
         });
+      }
+      if (event.isKeyPressed(LogicalKeyboardKey.f10)) {
+        logHolder.log("F10 pressed", level: 6);
+        isFullScreen = !isFullScreen;
+        mainScreenKey.currentState!.setFullScreen(isFullScreen);
       }
       keys.add(key);
       // Ctrl Key Area

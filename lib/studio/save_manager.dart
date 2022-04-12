@@ -43,6 +43,7 @@ class SaveManager extends ChangeNotifier {
   void stopTimer() {
     if (_timer != null) {
       _timer!.cancel();
+      _timer = null;
     }
   }
 

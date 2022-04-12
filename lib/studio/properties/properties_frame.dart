@@ -1,19 +1,26 @@
 // ignore_for_file: prefer_const_constructors_in_immutables, prefer_const_constructors, must_be_immutable, prefer_const_literals_to_create_immutables
 
 //import 'package:flutter/cupertino.dart';
+//import 'package:creta00/acc/acc_manager.dart';
+import 'package:creta00/studio/properties/property_selector.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-//import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
+//import 'package:flutter/cupertino.dart';
+//import 'package:flutter/rendering.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 //import 'package:creta00/studio/save_manager.dart';
-import 'package:creta00/acc/acc_manager.dart';
-import 'package:creta00/player/play_manager.dart';
-import 'package:creta00/studio/properties/property_selector.dart';
+//import 'package:creta00/acc/acc_manager.dart';
 //import 'package:creta00/studio/properties/page_property.dart';
 import 'package:creta00/constants/styles.dart';
 import 'package:creta00/model/pages.dart';
+import 'package:creta00/model/model_enums.dart';
 import 'package:creta00/common/util/logger.dart';
+
+import '../../common/buttons/toggle_switch.dart';
+import '../../common/undo/undo.dart';
+import '../../constants/strings.dart';
+import '../../player/play_manager.dart';
+
 //import 'package:creta00/constants/strings.dart';
 
 class PropertiesFrame extends StatefulWidget {
@@ -62,90 +69,130 @@ class PropertiesFrameState extends State<PropertiesFrame> {
     //         ? Colors.black
     //         : Colors.white;
 
-    return SafeArea(
-        child: Container(
-      color: MyColors.white,
-      child: Stack(
-        children: [
-          Consumer<PageManager>(builder: (context, pageManager, child) {
-            _init();
-            PropertySelector selector = PropertySelector.fromManager(
-              pageManager: pageManager,
-              selectedPage: selectedPage,
-              isNarrow: widget.isNarrow,
-              isLandscape: isLandscape,
-              parent: this,
-            );
-            return selector;
-            // return Column(
-            //   children: [
-            //     CupertinoSlidingSegmentedControl<PropertyType>(
-            //       children: <PropertyType, Widget>{
-            //         PropertyType.page: Padding(
-            //           padding: const EdgeInsets.all(5),
-            //           child: Text(
-            //             MyStrings.pagePropTitle,
-            //             textAlign: TextAlign.center,
-            //             style: pageManager.propertyType == PropertyType.page
-            //                 ? _segmentTextStyle.copyWith(color: _thumbOnColor)
-            //                 : _segmentTextStyle,
-            //           ),
-            //         ),
-            //         PropertyType.acc: Padding(
-            //           padding: const EdgeInsets.all(5),
-            //           child: Text(
-            //             MyStrings.widgetPropTitle,
-            //             textAlign: TextAlign.center,
-            //             style: pageManager.propertyType == PropertyType.acc
-            //                 ? _segmentTextStyle.copyWith(color: _thumbOnColor)
-            //                 : _segmentTextStyle,
-            //           ),
-            //         ),
-            //         PropertyType.contents: Padding(
-            //           padding: const EdgeInsets.all(5),
-            //           child: Text(
-            //             MyStrings.contentsPropTitle,
-            //             textAlign: TextAlign.center,
-            //             style: pageManager.propertyType == PropertyType.contents
-            //                 ? _segmentTextStyle.copyWith(color: _thumbOnColor)
-            //                 : _segmentTextStyle,
-            //           ),
-            //         ),
-            //       },
-            //       thumbColor: _thumbColor,
-            //       onValueChanged: (PropertyType? value) {
-            //         if (value != null) {
-            //           setState(() {
-            //             pageManager.setPropertyType(value);
-            //           });
-            //         }
-            //       },
-            //       groupValue: pageManager.propertyType,
-            //     ),
-            //     selector,
-            //   ],
-            // );
-          }),
-          Consumer<ACCManager>(builder: (context, pageManager, child) {
-            // Dummy Consumer : 컨슈머가 late 하게 만들이지면 Provider 가 초기화가 안되기 때문에
-            //  더미 Consumber 를 하나 만들어 둔다.
-            //logHolder.log('Consumer of dummy accManager');
-            return Container();
-          }),
-          Consumer<SelectedModel>(builder: (context, selectedModel, child) {
-            // Dummy Consumer : 컨슈머가 late 하게 만들이지면 Provider 가 초기화가 안되기 때문에
-            //  더미 Consumber 를 하나 만들어 둔다.
-            //logHolder.log('Consumer of dummy accManager');
-            return Container();
-          }),
-          // Consumer<SaveManager>(builder: (context, selectedModel, child) {
-          //   // Dummy Consumer : 컨슈머가 late 하게 만들이지면 Provider 가 초기화가 안되기 때문에
-          //   //  더미 Consumber 를 하나 만들어 둔다.
-          //   //logHolder.log('Consumer of dummy saveManager');
-          //   return Container();
-          // }),
-        ],
-      ),
-    ));
+    return SafeArea(child: Consumer<PageManager>(builder: (context, pageManager, child) {
+      _init();
+      PropertySelector selector = PropertySelector.fromManager(
+        pageManager: pageManager,
+        selectedPage: selectedPage,
+        isNarrow: widget.isNarrow,
+        isLandscape: isLandscape,
+        parent: this,
+      );
+
+      int selectedTab = propertyTypeToInt(pageManager.propertyType);
+      selectedTab = selectedTab > 2 ? 2 : selectedTab;
+      return Container(
+        color: MyColors.white,
+        child: Stack(children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 2, right: 2, bottom: 2, top: 28),
+            child: Container(
+              padding: EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                border: Border(
+                  left:
+                      BorderSide(width: 3, color: MyColors.primaryColor, style: BorderStyle.solid),
+                  top: BorderSide(width: 3, color: MyColors.primaryColor, style: BorderStyle.solid),
+                  right:
+                      BorderSide(width: 3, color: MyColors.primaryColor, style: BorderStyle.solid),
+                  bottom:
+                      BorderSide(width: 3, color: MyColors.primaryColor, style: BorderStyle.solid),
+                ),
+              ),
+              child: Stack(
+                children: [
+                  selector,
+                  // Consumer<PageManager>(builder: (context, pageManager, child) {
+                  //   _init();
+                  //   PropertySelector selector = PropertySelector.fromManager(
+                  //     pageManager: pageManager,
+                  //     selectedPage: selectedPage,
+                  //     isNarrow: widget.isNarrow,
+                  //     isLandscape: isLandscape,
+                  //     parent: this,
+                  //   );
+                  //   return selector;
+                  // }),
+                  // Consumer<ACCManager>(builder: (context, pageManager, child) {
+                  //   // Dummy Consumer : 컨슈머가 late 하게 만들이지면 Provider 가 초기화가 안되기 때문에
+                  //   //  더미 Consumber 를 하나 만들어 둔다.
+                  //   //logHolder.log('Consumer of dummy accManager');
+                  //   return Container();
+                  // }),
+                  Consumer<SelectedModel>(builder: (context, selectedModel, child) {
+                    // Dummy Consumer : 컨슈머가 late 하게 만들이지면 Provider 가 초기화가 안되기 때문에
+                    //  더미 Consumber 를 하나 만들어 둔다.
+                    //logHolder.log('Consumer of dummy accManager');
+                    return Container();
+                  }),
+                  // Consumer<SaveManager>(builder: (context, selectedModel, child) {
+                  //   // Dummy Consumer : 컨슈머가 late 하게 만들이지면 Provider 가 초기화가 안되기 때문에
+                  //   //  더미 Consumber 를 하나 만들어 둔다.
+                  //   //logHolder.log('Consumer of dummy saveManager');
+                  //   return Container();
+                  // }),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            alignment: AlignmentDirectional.center,
+            height: 60,
+            //padding: const EdgeInsets.only(left: 10, top: 12),
+            child: Center(
+              child: ToggleSwitch(
+                minHeight: 36.0,
+                minWidth: 112.0,
+                initialLabelIndex: selectedTab,
+                cornerRadius: 8.0,
+                radiusStyle: true,
+                activeFgColor: Colors.black,
+                inactiveBgColor: MyColors.puple100,
+                inactiveFgColor: MyColors.puple600,
+                totalSwitches: 3,
+                labels: [
+                  MyStrings.bookPropTitle,
+                  MyStrings.pagePropTitle,
+                  MyStrings.widgetPropTitle
+                ],
+                icons: [Icons.import_contacts_outlined, Icons.auto_stories_outlined, Icons.widgets],
+                activeBgColor: [
+                  MyColors.primaryColor,
+                  MyColors.primaryColor,
+                  MyColors.primaryColor,
+                ],
+                borderColor: [
+                  MyColors.primaryColor,
+                  MyColors.primaryColor,
+                  MyColors.primaryColor,
+                ],
+                borderWidth: 1,
+                onToggle: (index) {
+                  //setState(() {
+                  mychangeStack.startTrans();
+                  switch (index) {
+                    case 0:
+                      pageManagerHolder!.setAsBook();
+                      isSizeChangable = false;
+                      break;
+                    case 1:
+                      pageManagerHolder!.setAsPage();
+                      isSizeChangable = false;
+                      break;
+                    case 2:
+                      pageManagerHolder!.setAsAcc();
+                      isSizeChangable = false;
+                      break;
+                    default:
+                      break;
+                  }
+                  mychangeStack.endTrans();
+                },
+              ),
+            ),
+          ),
+        ]),
+      );
+    }));
   }
 }

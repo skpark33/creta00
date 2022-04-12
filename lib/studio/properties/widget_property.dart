@@ -208,6 +208,14 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
     _modelList.add(borderModel);
 
     super.initState();
+
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      if (accWasNotSelected != null) {
+        logHolder.log('afterBuild WidgetPropertyState', level: 6);
+        accWasNotSelected!.setState();
+        accWasNotSelected = null;
+      }
+    });
   }
 
   @override
@@ -230,9 +238,9 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
           //crossAxisAlignment: CrossAxisAlignment.start,
           controller: _scrollController,
           children: [
-            _titleRow(25, 15, 12, 10),
-            divider(),
-            _primaryRow(acc, 25, 5, 12, 5),
+            //_titleRow(25, 15, 12, 10),
+            //divider(),
+            _primaryRow(acc, 25, 25, 12, 5),
             divider(),
             _sourceRatioRow(acc, 25, 5, 12, 5),
             divider(),
@@ -400,15 +408,15 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
     );
   }
 
-  Widget _titleRow(double left, double top, double right, double bottom) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(left, top, right, bottom),
-      child: Text(
-        MyStrings.widgetPropTitle,
-        style: MyTextStyles.body1,
-      ),
-    );
-  }
+  // Widget _titleRow(double left, double top, double right, double bottom) {
+  //   return Padding(
+  //     padding: EdgeInsets.fromLTRB(left, top, right, bottom),
+  //     child: Text(
+  //       MyStrings.widgetPropTitle,
+  //       style: MyTextStyles.body1,
+  //     ),
+  //   );
+  // }
 
   Widget _primaryRow(ACC acc, double left, double top, double right, double bottom) {
     return Padding(
@@ -1060,6 +1068,22 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                   //icon: AnimatedIcons.view_list,
                   //progress: _aniIconController,
                 ),
+                IconButton(
+                  onPressed: () {
+                    _aniIconController.forward().then((value) async {
+                      await Future.delayed(Duration(seconds: 1));
+                      _aniIconController.reverse();
+                    });
+                    acc.accModel.animeType.set(AnimeType.enlarge);
+                    acc.invalidateContents();
+                    setState(() {});
+                  },
+                  iconSize: acc.accModel.animeType.value == AnimeType.enlarge ? 36 : 24,
+                  icon: Icon(Icons.expand),
+                  //icon: AnimatedIcon(
+                  //icon: AnimatedIcons.view_list,
+                  //progress: _aniIconController,
+                ),
               ],
             )
           ],
@@ -1072,6 +1096,8 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
         return AnimatedIcons.list_view;
       case AnimeType.flip:
         return AnimatedIcons.add_event;
+      case AnimeType.enlarge:
+        return AnimatedIcons.ellipsis_search;
       default:
         return AnimatedIcons.close_menu;
     }
@@ -1083,6 +1109,8 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
         return MyStrings.animeCarousel;
       case AnimeType.flip:
         return MyStrings.animeFlip;
+      case AnimeType.enlarge:
+        return MyStrings.animeEnlarge;
       default:
         return "";
     }

@@ -52,27 +52,30 @@ class PagePropertyState extends State<PageProperty> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(25, 15, 25, 15),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                MyStrings.pagePropTitle,
-                style: MyTextStyles.body2,
-              ),
-            ],
-          ),
+        // Padding(
+        //   padding: const EdgeInsets.fromLTRB(25, 15, 25, 15),
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //     children: [
+        //       Text(
+        //         MyStrings.pagePropTitle,
+        //         style: MyTextStyles.body2,
+        //       ),
+        //     ],
+        //   ),
+        // ),
+        // Divider(
+        //   height: 5,
+        //   thickness: 1,
+        //   color: MyColors.divide,
+        //   indent: 0,
+        //   endIndent: 0,
+        // ),
+        SizedBox(
+          height: 20,
         ),
-        Divider(
-          height: 5,
-          thickness: 1,
-          color: MyColors.divide,
-          indent: 0,
-          endIndent: 0,
-        ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(25, 6, 10, 1),
+          padding: const EdgeInsets.fromLTRB(22, 6, 10, 1),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -102,7 +105,7 @@ class PagePropertyState extends State<PageProperty> {
           endIndent: 14,
         ),
         Padding(
-          padding: const EdgeInsets.only(left: 25, top: 6),
+          padding: const EdgeInsets.only(left: 25, top: 16),
           child: Text(
             MyStrings.landPort,
             style: MyTextStyles.subtitle2,

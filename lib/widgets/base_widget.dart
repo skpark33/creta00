@@ -1,5 +1,8 @@
 //import 'dart:collection';
 // ignore_for_file: must_be_immutable
+
+import 'package:creta00/widgets/abs_anime.dart';
+import 'package:creta00/widgets/enlarge_widget.dart';
 import 'package:flutter/material.dart';
 //import 'package:carousel_slider/carousel_slider.dart';
 
@@ -82,6 +85,10 @@ class BaseWidgetState extends State<BaseWidget> {
   void initState() {
     widget.playManager.initTimer();
     super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      //initAnimeTimer();
+    });
+
     //carousel = AnimeCarousel.create();
   }
 
@@ -134,6 +141,14 @@ class BaseWidgetState extends State<BaseWidget> {
               case AnimeType.flip:
                 logHolder.log('AnimeType.flip');
                 return snapshot.data!;
+              case AnimeType.enlarge:
+                logHolder.log('AnimeType.enlarge');
+                EnlargeWidget anime = EnlargeWidget(
+                  enlargeWidgetKey: GlobalObjectKey<EnlargeWidgetState>(widget.acc!.accModel.mid),
+                  child: snapshot.data!,
+                );
+                AbsAnime.push(widget.acc!.accModel.mid, anime);
+                return anime;
               default:
                 //logHolder.log('AnimeType.normal');
                 return snapshot.data!;

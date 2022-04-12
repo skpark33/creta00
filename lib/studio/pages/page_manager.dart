@@ -8,14 +8,9 @@ import 'package:creta00/acc/acc_manager.dart';
 import '../../creta_main.dart';
 import '../../model/pages.dart';
 import '../../model/models.dart';
+import '../../model/model_enums.dart';
 import '../../common/undo/undo.dart';
 //import '../../db/db_actions.dart';
-
-enum PropertyType {
-  page,
-  acc,
-  contents,
-}
 
 PageManager? pageManagerHolder;
 
@@ -50,6 +45,11 @@ class PageManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> setAsBook() async {
+    _propertyType = PropertyType.book;
+    notifyListeners();
+  }
+
   bool isAcc() {
     return _propertyType == PropertyType.acc;
   }
@@ -60,6 +60,10 @@ class PageManager extends ChangeNotifier {
 
   bool isContents() {
     return _propertyType == PropertyType.contents;
+  }
+
+  bool isBook() {
+    return _propertyType == PropertyType.book;
   }
 
   int lastWidth = 1920;

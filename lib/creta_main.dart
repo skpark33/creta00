@@ -497,6 +497,15 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                             iconData: Icons.people_outline_outlined,
                             height: 32,
                           ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          BasicButton3(
+                            onPressed: () {},
+                            name: '광고 관리',
+                            iconData: Icons.live_tv_outlined,
+                            height: 32,
+                          ),
                         ],
                       )),
                 ],

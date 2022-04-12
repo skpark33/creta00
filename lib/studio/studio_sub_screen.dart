@@ -19,12 +19,12 @@ import 'pages/pages_frame.dart';
 import 'properties/properties_frame.dart';
 import 'sidebar/sidebar.dart';
 
+// ignore: must_be_immutable
 class StudioSubScreen extends StatefulWidget {
-  final GlobalKey<StudioSubScreenState> mainScreenKey;
   final UserModel user;
+  bool isFullScreen = false;
 
-  const StudioSubScreen({required this.mainScreenKey, required this.user})
-      : super(key: mainScreenKey);
+  StudioSubScreen({required Key key, required this.user}) : super(key: key);
 
   @override
   State<StudioSubScreen> createState() => StudioSubScreenState();
@@ -32,6 +32,13 @@ class StudioSubScreen extends StatefulWidget {
 
 class StudioSubScreenState extends State<StudioSubScreen> {
   bool isPlayed = false;
+
+  void setFullScreen(bool f) {
+    setState(() {
+      logHolder.log("setFullScreen($f)", level: 6);
+      widget.isFullScreen = f;
+    });
+  }
 
   @override
   void initState() {
@@ -47,12 +54,30 @@ class StudioSubScreenState extends State<StudioSubScreen> {
 
   @override
   void dispose() {
+    logHolder.log('disposeq StudioSubScreen', level: 6);
+    if (saveManagerHolder != null) {
+      saveManagerHolder!.stopTimer();
+    }
+    if (accManagerHolder != null) {
+      accManagerHolder!.unshowMenu(context);
+      accManagerHolder!.destroyEntry(context);
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     logHolder.log('build StudioSubScreen', level: 6);
+
+    if (widget.isFullScreen) {
+      return SafeArea(
+          // child: Expanded(
+          child: ArtBoardScreen(
+        key: GlobalKey<ArtBoardScreenState>(),
+        isFullScreen: true,
+      ));
+    }
+
     return Scaffold(
       //key: context.read<MenuController>().scaffoldKey,
       appBar: buildAppBar(),
@@ -82,6 +107,7 @@ class StudioSubScreenState extends State<StudioSubScreen> {
     if (isShort) {
       return Container();
     }
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -159,10 +185,10 @@ class StudioSubScreenState extends State<StudioSubScreen> {
         //await Future.delayed(const Duration(milliseconds: 100));
       }
     }
-    if (accManagerHolder != null) {
-      accManagerHolder!.unshowMenu(context);
-      accManagerHolder!.destroyEntry(context);
-    }
+    // if (accManagerHolder != null) {
+    //   accManagerHolder!.unshowMenu(context);
+    //   accManagerHolder!.destroyEntry(context);
+    // }
     naviPop(context);
     cretaMainHolder!.invalidate();
   }

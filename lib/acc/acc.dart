@@ -2,11 +2,13 @@
 import 'dart:math';
 //import 'package:flutter/material.dart';
 import 'package:creta00/player/play_manager.dart';
+import 'package:creta00/widgets/enlarge_widget.dart';
 import 'package:flutter_neumorphic_null_safety/flutter_neumorphic.dart';
 import 'package:creta00/common/util/my_utils.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:creta00/studio/save_manager.dart';
 
+import '../widgets/abs_anime.dart';
 import 'resizable.dart';
 import '../model/acc_property.dart';
 import 'acc_manager.dart';
@@ -36,6 +38,7 @@ class ACC {
   PageModel? page;
   OverlayEntry? entry;
 
+  bool visible = true;
   bool actionStart = false;
   bool radiusActionStart = false;
   bool sizeActionStart = false;
@@ -105,7 +108,7 @@ class ACC {
       final overlay = Overlay.of(context)!;
       overlay.insert(entry!, below: menuStickEntry);
     } else {
-      accModel.visible.set(true);
+      visible = true;
     }
     if (overlayWidget != null) {
       return overlayWidget!;
@@ -229,7 +232,10 @@ class ACC {
     Size marginSize = Size(realSize.width + resizeButtonSize, realSize.height + resizeButtonSize);
 
     return Visibility(
-        visible: (accModel.visible.value && !accModel.isRemoved.value),
+        visible: (visible &&
+            !accModel.isRemoved.value &&
+            page != null &&
+            accModel.parentMid.value == page!.mid),
         child: Positioned(
           // left: realOffset.dx,
           // top: realOffset.dy,
@@ -251,6 +257,12 @@ class ACC {
                 return;
               }
               selectContents(context, accModel.mid);
+              if (accModel.animeType.value == AnimeType.enlarge) {
+                AbsAnime? anime = AbsAnime.get(accModel.mid);
+                if (anime != null) {
+                  (anime as EnlargeWidget).enlargeWidgetKey.currentState!.setSize(realSize);
+                }
+              }
               //saveManagerHolder!.delayedReleaseAutoSave(500);
             },
             // onPanDown: (details) {

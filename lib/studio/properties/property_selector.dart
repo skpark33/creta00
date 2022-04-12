@@ -2,12 +2,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:creta00/model/pages.dart';
+import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:creta00/studio/properties/page_property.dart';
 import 'package:creta00/studio/properties/widget_property.dart';
 //import 'package:creta00/studio/properties/contents_property.dart';
 import 'package:creta00/studio/properties/properties_frame.dart';
 import 'package:creta00/common/util/logger.dart';
+
+import '../../acc/acc.dart';
+import 'book_property.dart';
+
+ACC? accWasNotSelected;
 
 class PropertySelector extends StatefulWidget {
   final bool isNarrow;
@@ -36,7 +42,20 @@ class PropertySelector extends StatefulWidget {
       return PageProperty(key, selectedPage, isNarrow, isLandscape, parent);
     }
     if (pageManager.isAcc() || pageManager.isContents()) {
+      ACC? acc;
+      if (accManagerHolder!.isSelectedEmpty()) {
+        acc = accManagerHolder!.selectLastACC();
+        if (acc != null) accWasNotSelected = acc;
+      } else {
+        acc = accManagerHolder!.getCurrentACC();
+      }
+      if (acc == null) {
+        return NullProperty(key, selectedPage, isNarrow, isLandscape, parent);
+      }
       return WidgetProperty(key, selectedPage, isNarrow, isLandscape, parent);
+    }
+    if (pageManager.isBook()) {
+      return BookProperty(key, selectedPage, isNarrow, isLandscape, parent);
     }
     // if (pageManager.isContents()) {
     //   return ContentsProperty(key, selectedPage, isNarrow, isLandscape, parent);

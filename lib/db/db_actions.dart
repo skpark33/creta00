@@ -60,6 +60,7 @@ class DbActions {
         bool? isRemoved = map["isRemoved"];
         if (isRemoved != null && isRemoved == true) {
           logHolder.log("removed data skipped($mid!", level: 5);
+          continue;
         }
         PageModel page = PageModel.createEmptyModel(mid, book.mid);
         page.deserialize(map);
@@ -89,6 +90,7 @@ class DbActions {
         bool? isRemoved = map["isRemoved"];
         if (isRemoved != null && isRemoved == true) {
           logHolder.log("removed data skipped($mid!", level: 5);
+          continue;
         }
         ACCProperty accProperty = ACCProperty.createEmptyModel(mid, page.mid);
         accProperty.deserialize(map);
@@ -118,6 +120,7 @@ class DbActions {
         bool? isRemoved = map["isRemoved"];
         if (isRemoved != null && isRemoved == true) {
           logHolder.log("removed data skipped($mid!", level: 5);
+          continue;
         }
         ContentsModel contents = ContentsModel.createEmptyModel(mid, accProperty.mid);
         contents.deserialize(map);

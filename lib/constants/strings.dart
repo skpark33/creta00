@@ -31,8 +31,9 @@ class MyStrings {
   static String publish = Locale.isKr() ? "발행하기" : 'Publish';
   static String bookPropChange = Locale.isKr() ? "콘텐츠북 속성 변경" : 'Contents Book Properties';
   static String pageAdd = Locale.isKr() ? "페이지 추가" : 'Add Page';
-  static String pagePropTitle = Locale.isKr() ? " [ 페이지 설정 ]" : 'Page Settings';
-  static String widgetPropTitle = Locale.isKr() ? " [ 위젯 설정 ]" : 'Widget Settings';
+  static String pagePropTitle = Locale.isKr() ? "페이지" : 'Page';
+  static String widgetPropTitle = Locale.isKr() ? "위젯" : 'Widget';
+  static String bookPropTitle = Locale.isKr() ? "콘텐츠북" : 'Book';
   static String contentsPropTitle = Locale.isKr() ? " [ 콘텐츠 설정 ]" : 'Widget Settings';
   static String pageDesc = Locale.isKr() ? " 페이지명" : 'Page description';
   static String title = Locale.isKr() ? "제목" : 'Title';
@@ -85,6 +86,7 @@ class MyStrings {
 
   static String animeCarousel = Locale.isKr() ? '카로셀' : "Carousel";
   static String animeFlip = Locale.isKr() ? '플립' : "Flip";
+  static String animeEnlarge = Locale.isKr() ? '점점 커짐' : "Enlarge";
 
   static String basicColor = Locale.isKr() ? '기본색' : "Primary";
   static String accentColor = Locale.isKr() ? '강조색' : "Accent";
