@@ -155,11 +155,14 @@ class PageManager extends ChangeNotifier {
     return pageMap[_selectedMid];
   }
 
-  void setSelectedIndex(BuildContext context, String val) {
+  Future<void> setSelectedIndex(BuildContext context, String val) async {
     _selectedMid = val;
-    logHolder.log('pageId=$val', level: 5);
-    accManagerHolder!.showPages(context, val);
     pageManagerHolder!.setAsPage(); //setAsPage contain setState()
+    PageModel? page = pageManagerHolder!.getSelected();
+    if (page != null) {
+      await page.waitPageBuild();
+      accManagerHolder!.showPages(context, val); // page 가 완전히 노출된 후에 해보자....
+    }
   }
 
   void reorderMap() {

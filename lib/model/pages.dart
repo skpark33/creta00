@@ -123,7 +123,17 @@ class PageModel extends AbsModel {
       RenderBox box = key.currentContext?.findRenderObject() as RenderBox;
       realSize = box.size; //this is global position
     }
+    //logHolder.log("kye.currentContext is null $realSize", level: 6);
     return realSize; //보관된 realSize 값을 리턴한다.
+  }
+
+  Future<bool> waitPageBuild() async {
+    while (key.currentContext == null) {
+      await Future.delayed(const Duration(milliseconds: 10));
+    }
+    getRealSize(); // 페이지 크기 계산 다시 해준다.
+    logHolder.log('page build complete !!!', level: 6);
+    return true;
   }
 
   Size getRealRatio() {

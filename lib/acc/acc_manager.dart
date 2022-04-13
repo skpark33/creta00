@@ -540,13 +540,15 @@ class ACCManager extends ChangeNotifier {
         continue;
       }
       if (acc.page!.mid == modelId) {
-        if (!acc.visible) {
-          acc.visible = true;
+        if (acc.isVisible == null || !acc.isVisible!) {
+          logHolder.log('showPages $modelId', level: 6);
+          acc.isVisible = true;
           acc.setState();
         }
       } else {
-        if (acc.visible) {
-          acc.visible = false;
+        if (acc.isVisible == null || acc.isVisible!) {
+          logHolder.log('un-showPages $modelId', level: 6);
+          acc.isVisible = false;
           acc.setState();
         }
       }

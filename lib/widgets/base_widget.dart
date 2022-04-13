@@ -145,6 +145,7 @@ class BaseWidgetState extends State<BaseWidget> {
                 logHolder.log('AnimeType.enlarge');
                 EnlargeWidget anime = EnlargeWidget(
                   enlargeWidgetKey: GlobalObjectKey<EnlargeWidgetState>(widget.acc!.accModel.mid),
+                  millisec: 3000,
                   child: snapshot.data!,
                 );
                 AbsAnime.push(widget.acc!.accModel.mid, anime);

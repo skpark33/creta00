@@ -2,7 +2,6 @@
 import 'dart:math';
 //import 'package:flutter/material.dart';
 import 'package:creta00/player/play_manager.dart';
-import 'package:creta00/widgets/enlarge_widget.dart';
 import 'package:flutter_neumorphic_null_safety/flutter_neumorphic.dart';
 import 'package:creta00/common/util/my_utils.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
@@ -38,7 +37,7 @@ class ACC {
   PageModel? page;
   OverlayEntry? entry;
 
-  bool visible = true;
+  bool? isVisible;
   bool actionStart = false;
   bool radiusActionStart = false;
   bool sizeActionStart = false;
@@ -108,7 +107,7 @@ class ACC {
       final overlay = Overlay.of(context)!;
       overlay.insert(entry!, below: menuStickEntry);
     } else {
-      visible = true;
+      isVisible = true;
     }
     if (overlayWidget != null) {
       return overlayWidget!;
@@ -136,11 +135,13 @@ class ACC {
 
   Offset getRealOffsetWithGivenRatio(Size ratio) {
     if (page != null) {
+      //logHolder.log("getRealOffsetWithGivenRatio($ratio)", level: 6);
       Offset origin = page!.getPosition();
       double dx = ratio.width * accModel.containerOffset.value.dx + origin.dx;
       double dy = ratio.height * accModel.containerOffset.value.dy + origin.dy;
       return Offset(dx, dy);
     }
+    //logHolder.log("getRealOffsetWithGivenRatio(page is null)", level: 6);
     return accModel.containerOffset.value;
   }
 
@@ -223,6 +224,12 @@ class ACC {
     }
   }
 
+  bool getVisibility() {
+    return (!accModel.isRemoved.value &&
+        pageManagerHolder != null &&
+        pageManagerHolder!.isPageSelected(accModel.parentMid.value));
+  }
+
   Widget showOverlay(BuildContext context) {
     Size ratio = getRealRatio();
     Offset realOffset = getRealOffsetWithGivenRatio(ratio);
@@ -230,12 +237,10 @@ class ACC {
     bool isAccSelected = accManagerHolder!.isCurrentIndex(accModel.mid);
     double mouseMargin = resizeButtonSize / 2;
     Size marginSize = Size(realSize.width + resizeButtonSize, realSize.height + resizeButtonSize);
-
+    isVisible = getVisibility();
+    logHolder.log("showOverlay($isVisible, $realOffset, ${accModel.mid}", level: 6);
     return Visibility(
-        visible: (visible &&
-            !accModel.isRemoved.value &&
-            page != null &&
-            accModel.parentMid.value == page!.mid),
+        visible: isVisible!,
         child: Positioned(
           // left: realOffset.dx,
           // top: realOffset.dy,
@@ -260,7 +265,7 @@ class ACC {
               if (accModel.animeType.value == AnimeType.enlarge) {
                 AbsAnime? anime = AbsAnime.get(accModel.mid);
                 if (anime != null) {
-                  (anime as EnlargeWidget).enlargeWidgetKey.currentState!.setSize(realSize);
+                  anime.action(realSize);
                 }
               }
               //saveManagerHolder!.delayedReleaseAutoSave(500);

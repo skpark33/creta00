@@ -46,7 +46,7 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
     onPageSelected(pageManagerHolder!.getSelected());
 
     WidgetsBinding.instance!.addPostFrameCallback((_) {
-      registerOverlay(context);
+      registerMenuStickOverlay(context);
     });
   }
 
@@ -68,11 +68,13 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
   void onPageSelected(PageModel? selectedPage) {
     if (selectedPage != null) {
       pageRatio = selectedPage.getRatio();
+      Size realSize = selectedPage.getRealSize();
+      logHolder.log('onPageSelected ${selectedPage.mid}, $realSize', level: 6);
     }
   }
 
-  Widget registerOverlay(BuildContext context) {
-    logHolder.log('MenuStick build');
+  Widget registerMenuStickOverlay(BuildContext context) {
+    logHolder.log('registerMenuStickOverlay', level: 6);
     if (menuStickEntry == null) {
       menuStickEntry = OverlayEntry(builder: (context) {
         menuStick = MyMenuStick(
@@ -94,6 +96,7 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
   Widget build(BuildContext context) {
     return Consumer<PageManager>(builder: (context, pageManager, child) {
       onPageSelected(pageManager.getSelected());
+
       return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
         width = constraints.maxWidth * (widget.isFullScreen ? 1 : (7 / 8));
         height = constraints.maxHeight * (widget.isFullScreen ? 1 : (7 / 8));
@@ -124,7 +127,7 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
 
         PageModel? model = pageManagerHolder!.getSelected();
         if (model == null) return Container();
-
+        logHolder.log("build ArtBoardScreen", level: 6);
         return SafeArea(
           child: Container(
             padding: EdgeInsets.only(left: (widget.isFullScreen ? 0 : 20)),
