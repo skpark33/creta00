@@ -160,8 +160,8 @@ class PageManager extends ChangeNotifier {
     pageManagerHolder!.setAsPage(); //setAsPage contain setState()
     PageModel? page = pageManagerHolder!.getSelected();
     if (page != null) {
-      await page.waitPageBuild();
-      accManagerHolder!.showPages(context, val); // page 가 완전히 노출된 후에 해보자....
+      await page.waitPageBuild(); // 페이지가 완전히 빌드 될때까지 기둘린다.
+      accManagerHolder!.showPages(context, val); // page 가 완전히 노출된 후에 ACC 를 그린다.
     }
   }
 

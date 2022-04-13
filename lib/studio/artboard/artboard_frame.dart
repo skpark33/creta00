@@ -62,14 +62,15 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
   @override
   void setState(VoidCallback fn) {
     if (mounted) super.setState(fn);
-    menuStickEntry!.markNeedsBuild();
+    if (widget.isFullScreen == false) menuStickEntry!.markNeedsBuild();
   }
 
   void onPageSelected(PageModel? selectedPage) {
     if (selectedPage != null) {
+      logHolder.log('onPageSelected ${selectedPage.mid}', level: 6);
       pageRatio = selectedPage.getRatio();
-      Size realSize = selectedPage.getRealSize();
-      logHolder.log('onPageSelected ${selectedPage.mid}, $realSize', level: 6);
+      //Size realSize = selectedPage.getRealSize();
+      //logHolder.log('onPageSelected ${selectedPage.mid}, $realSize', level: 6);
     }
   }
 
@@ -96,7 +97,6 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
   Widget build(BuildContext context) {
     return Consumer<PageManager>(builder: (context, pageManager, child) {
       onPageSelected(pageManager.getSelected());
-
       return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
         width = constraints.maxWidth * (widget.isFullScreen ? 1 : (7 / 8));
         height = constraints.maxHeight * (widget.isFullScreen ? 1 : (7 / 8));

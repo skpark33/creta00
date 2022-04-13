@@ -87,6 +87,7 @@ class MyStrings {
   static String animeCarousel = Locale.isKr() ? '카로셀' : "Carousel";
   static String animeFlip = Locale.isKr() ? '플립' : "Flip";
   static String animeEnlarge = Locale.isKr() ? '점점 커짐' : "Enlarge";
+  static String animeScale = Locale.isKr() ? '점점 커짐' : "Scale";
 
   static String basicColor = Locale.isKr() ? '기본색' : "Primary";
   static String accentColor = Locale.isKr() ? '강조색' : "Accent";

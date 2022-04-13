@@ -1084,6 +1084,22 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                   //icon: AnimatedIcons.view_list,
                   //progress: _aniIconController,
                 ),
+                IconButton(
+                  onPressed: () {
+                    _aniIconController.forward().then((value) async {
+                      await Future.delayed(Duration(seconds: 1));
+                      _aniIconController.reverse();
+                    });
+                    acc.accModel.animeType.set(AnimeType.scale);
+                    acc.invalidateContents();
+                    setState(() {});
+                  },
+                  iconSize: acc.accModel.animeType.value == AnimeType.scale ? 36 : 24,
+                  icon: Icon(Icons.expand),
+                  //icon: AnimatedIcon(
+                  //icon: AnimatedIcons.view_list,
+                  //progress: _aniIconController,
+                ),
               ],
             )
           ],
@@ -1098,6 +1114,8 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
         return AnimatedIcons.add_event;
       case AnimeType.enlarge:
         return AnimatedIcons.ellipsis_search;
+      case AnimeType.scale:
+        return AnimatedIcons.event_add;
       default:
         return AnimatedIcons.close_menu;
     }
@@ -1111,6 +1129,8 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
         return MyStrings.animeFlip;
       case AnimeType.enlarge:
         return MyStrings.animeEnlarge;
+      case AnimeType.scale:
+        return MyStrings.animeScale;
       default:
         return "";
     }

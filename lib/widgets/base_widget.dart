@@ -3,6 +3,7 @@
 
 import 'package:creta00/widgets/abs_anime.dart';
 import 'package:creta00/widgets/enlarge_widget.dart';
+import 'package:creta00/widgets/scale_anime.dart';
 import 'package:flutter/material.dart';
 //import 'package:carousel_slider/carousel_slider.dart';
 
@@ -146,6 +147,13 @@ class BaseWidgetState extends State<BaseWidget> {
                 EnlargeWidget anime = EnlargeWidget(
                   enlargeWidgetKey: GlobalObjectKey<EnlargeWidgetState>(widget.acc!.accModel.mid),
                   millisec: 3000,
+                  child: snapshot.data!,
+                );
+                AbsAnime.push(widget.acc!.accModel.mid, anime);
+                return anime;
+              case AnimeType.scale:
+                logHolder.log('AnimeType.scale');
+                ScaleAnime anime = ScaleAnime(
                   child: snapshot.data!,
                 );
                 AbsAnime.push(widget.acc!.accModel.mid, anime);

@@ -131,6 +131,7 @@ enum AnimeType {
   none,
   carousel,
   flip,
+  scale,
   enlarge,
 }
 
@@ -142,8 +143,10 @@ int animeTypeToInt(AnimeType value) {
       return 1;
     case AnimeType.flip:
       return 2;
-    case AnimeType.enlarge:
+    case AnimeType.scale:
       return 3;
+    case AnimeType.enlarge:
+      return 4;
   }
 }
 
@@ -156,6 +159,8 @@ AnimeType intToAnimeType(int t) {
     case 2:
       return AnimeType.flip;
     case 3:
+      return AnimeType.scale;
+    case 4:
       return AnimeType.enlarge;
     default:
       return AnimeType.none;
