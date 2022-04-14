@@ -22,11 +22,14 @@ Widget myTextField(String value,
     bool enabled = true,
     bool hasBorder = false,
     TextAlignVertical textAlignVertical = TextAlignVertical.top,
+    int maxLines = 1,
     void Function(String)? onChanged,
     void Function()? onEditingComplete,
     void Function(String)? onSubmitted}) {
   controller.text = value;
   return TextField(
+    style: style,
+    maxLines: maxLines,
     enabled: enabled,
     keyboardType: keyboardType,
     controller: controller,
@@ -91,6 +94,8 @@ Widget myTextField(String value,
                   },
                 )
               : IconButton(
+                  //constraints: BoxConstraints.tight(Size(16, 16)),
+                  padding: EdgeInsets.only(right: 5),
                   color: MyColors.mainColor,
                   iconSize: MySizes.smallIcon,
                   icon: Icon(Icons.close),

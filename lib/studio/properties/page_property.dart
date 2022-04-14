@@ -85,6 +85,7 @@ class PagePropertyState extends State<PageProperty> {
                 child: myTextField(
                   widget.selectedPage!.getDescription(),
                   limit: 24,
+                  textAlign: TextAlign.start,
                   labelText: MyStrings.pageDesc,
                   controller: descCon,
                   style: MyTextStyles.body2,

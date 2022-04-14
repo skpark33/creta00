@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:creta00/book_manager.dart';
 import 'package:sortedmap/sortedmap.dart';
 
 import 'package:creta00/constants/constants.dart';
@@ -14,7 +15,7 @@ import 'package:creta00/model/models.dart';
 import 'package:creta00/db/creta_db.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../creta_main.dart';
+//import '../creta_main.dart';
 import '../model/book.dart';
 
 class DbActions {
@@ -136,7 +137,7 @@ class DbActions {
 
   static Future<void> saveAll() async {
     _storeChangedDataOnly(
-        cretaMainHolder!.defaultBook!, "creta_book", cretaMainHolder!.defaultBook!.serialize());
+        bookManagerHolder!.defaultBook!, "creta_book", bookManagerHolder!.defaultBook!.serialize());
 
     for (PageModel page in pageManagerHolder!.orderMap.values) {
       if (page.isRemoved.value == false) {
@@ -178,10 +179,10 @@ class DbActions {
   static Future<bool> save(String mid) async {
     logHolder.log('save($mid)', level: 6);
     int retval = 1;
-    if (mid == cretaMainHolder!.defaultBook!.mid) {
+    if (mid == bookManagerHolder!.defaultBook!.mid) {
       logHolder.log("save mid($mid)", level: 6);
-      retval = await _storeChangedDataOnly(
-          cretaMainHolder!.defaultBook!, "creta_book", cretaMainHolder!.defaultBook!.serialize());
+      retval = await _storeChangedDataOnly(bookManagerHolder!.defaultBook!, "creta_book",
+          bookManagerHolder!.defaultBook!.serialize());
       logHolder.log("save mid($mid)=$retval", level: 5);
       return (retval == 1);
     }

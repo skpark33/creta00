@@ -2,7 +2,7 @@
 
 import 'dart:async';
 
-import 'package:creta00/creta_main.dart';
+import 'package:creta00/book_manager.dart';
 import 'package:creta00/db/db_actions.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_bloc/flutter_bloc.dart';
@@ -267,7 +267,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
               child: Column(
                 children: [
                   myTextField(
-                    cretaMainHolder!.defaultBook!.name.value,
+                    bookManagerHolder!.defaultBook!.name.value,
                     hasBorder: true,
                     labelText: 'input new name',
                     controller: _saveAsController,
@@ -280,7 +280,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
                     basicButton(
                         name: MyStrings.apply,
                         onPressed: () {
-                          _aleadyExist = makeCopy();
+                          _aleadyExist = !bookManagerHolder!.makeCopy(_saveAsController.text);
                           setState(() {
                             if (!_aleadyExist) {
                               _saveAsMode = !_saveAsMode;
@@ -330,10 +330,8 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
   }
 
   bool makeCopy() {
-    if (cretaMainHolder!.defaultBook!.name.value != _saveAsController.text) {
-      if (cretaMainHolder!.makeCopy(_saveAsController.text)) {
-        return false; // not already exist
-      }
+    if (bookManagerHolder!.makeCopy(_saveAsController.text)) {
+      return false; // not already exist
     }
     return true; // already exist
   }

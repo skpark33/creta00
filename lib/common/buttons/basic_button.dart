@@ -136,7 +136,7 @@ IconButton logoIconButton(
     {required void Function() onPressed, double iconSize = MySizes.imageIcon}) {
   return IconButton(
       iconSize: iconSize,
-      padding: EdgeInsets.zero,
+      padding: EdgeInsets.only(left: 20, right: 20),
       icon: const ImageIcon(
         AssetImage(
           "assets/logo.png",

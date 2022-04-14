@@ -15,13 +15,29 @@ class Locale {
 }
 
 class MyStrings {
+  static String initialName = Locale.isKr() ? '나의 첫 콘텐츠북' : 'My 1st Contents Book';
   static String apply = Locale.isKr() ? '적용' : 'Apply';
   static String close = Locale.isKr() ? '닫기' : 'Close';
   static String cancel = Locale.isKr() ? '취소' : 'Cancel';
 
+  static String copyResultMsg(String name) =>
+      Locale.isKr() ? "복사본 '$name' 이(가) 작성되었습니다." : 'A Copy of $name has been made.';
+
   // layouts
   static String pages = Locale.isKr() ? '페이지' : 'Pages';
+  static String bookPropTitle = Locale.isKr() ? "콘텐츠북" : 'Book';
+  static String readOnly = Locale.isKr() ? "읽기 전용" : 'Read only';
+  static String isPublic = Locale.isKr() ? "공개" : 'For public use';
+
+  static String bookType = Locale.isKr() ? "용도" : 'Usage';
+  static String signage = Locale.isKr() ? "사이니지용" : 'Signage';
+  static String electricBoard = Locale.isKr() ? "전자칠판용" : 'E-Board';
+  static String presentation = Locale.isKr() ? "프리젠테이션용" : 'Presentation';
+  static String nft = Locale.isKr() ? "NFT용" : 'NFT';
+  static String none = Locale.isKr() ? "미설정" : 'N/A';
+
   // Menus
+  static String inputNewName = Locale.isKr() ? "복사본의 이름을 입력하세요" : 'input new name';
   static String newBook = Locale.isKr() ? "새로만들기" : 'New Book';
   static String open = Locale.isKr() ? "열기" : 'Open Book';
   static String recent = Locale.isKr() ? "최근 파일 열기" : 'Open Recently Edited';
@@ -33,8 +49,9 @@ class MyStrings {
   static String pageAdd = Locale.isKr() ? "페이지 추가" : 'Add Page';
   static String pagePropTitle = Locale.isKr() ? "페이지" : 'Page';
   static String widgetPropTitle = Locale.isKr() ? "위젯" : 'Widget';
-  static String bookPropTitle = Locale.isKr() ? "콘텐츠북" : 'Book';
   static String contentsPropTitle = Locale.isKr() ? " [ 콘텐츠 설정 ]" : 'Widget Settings';
+  static String bookName = Locale.isKr() ? " 콘텐츠북 이름" : 'Book name';
+  static String desc = Locale.isKr() ? "부가 설명" : 'Description';
   static String pageDesc = Locale.isKr() ? " 페이지명" : 'Page description';
   static String title = Locale.isKr() ? "제목" : 'Title';
   static String landscape = Locale.isKr() ? "가로" : 'Landscape';

@@ -5,7 +5,7 @@ import 'package:sortedmap/sortedmap.dart';
 
 import 'package:creta00/acc/acc_manager.dart';
 //import 'package:creta00/constants/strings.dart';
-import '../../creta_main.dart';
+import '../../book_manager.dart';
 import '../../model/pages.dart';
 import '../../model/models.dart';
 import '../../model/model_enums.dart';
@@ -76,7 +76,7 @@ class PageManager extends ChangeNotifier {
   }
 
   String createPage() {
-    PageModel page = PageModel(cretaMainHolder!.defaultBook!.mid);
+    PageModel page = PageModel(bookManagerHolder!.defaultBook!.mid);
     page.order.set(pageIndex);
     logHolder.log('createPage $pageIndex', level: 5);
     pageMap[page.mid] = page;

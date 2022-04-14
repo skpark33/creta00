@@ -45,6 +45,7 @@ enum BookType {
   electricBoard,
   presentaion,
   nft,
+  none,
 }
 
 int bookTypeToInt(BookType value) {
@@ -57,6 +58,23 @@ int bookTypeToInt(BookType value) {
       return 2;
     case BookType.nft:
       return 3;
+    case BookType.none:
+      return 99;
+  }
+}
+
+String bookTypeToString(BookType value) {
+  switch (value) {
+    case BookType.signage:
+      return MyStrings.signage;
+    case BookType.electricBoard:
+      return MyStrings.electricBoard;
+    case BookType.presentaion:
+      return MyStrings.presentation;
+    case BookType.nft:
+      return MyStrings.nft;
+    case BookType.none:
+      return MyStrings.none;
   }
 }
 
@@ -71,7 +89,7 @@ BookType intToBookType(int t) {
     case 3:
       return BookType.nft;
     default:
-      return BookType.signage;
+      return BookType.none;
   }
 }
 

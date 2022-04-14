@@ -12,7 +12,7 @@ import 'package:creta00/model/contents.dart';
 import 'package:creta00/model/model_enums.dart';
 import 'package:firebase/firebase.dart' as fb;
 
-import '../creta_main.dart';
+import '../book_manager.dart';
 import '../studio/save_manager.dart';
 import '../studio/studio_main_screen.dart';
 
@@ -34,7 +34,7 @@ class CretaStorage {
       ContentsModel contents, void Function() onComplete, void Function() onError) async {
     logHolder.log('upload', level: 5);
     _uploadToStorage(
-        remotePath: "${studioMainHolder!.user.id}/${cretaMainHolder!.defaultBook!.mid}",
+        remotePath: "${studioMainHolder!.user.id}/${bookManagerHolder!.defaultBook!.mid}",
         content: contents,
         onComplete: (path) async {
           contents.remoteUrl = await CretaStorage.downloadUrlStr(path);
@@ -102,7 +102,7 @@ class CretaStorage {
       if (saveManagerHolder != null) {
         saveManagerHolder!.pushChanged(contents.mid, 'uploadThumbnail');
       }
-      cretaMainHolder!
+      bookManagerHolder!
           .setBookThumbnail(contents.thumbnail!, contents.contentsType, contents.aspectRatio.value);
       onComplete();
     }

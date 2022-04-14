@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'package:creta00/creta_main.dart';
 import 'package:creta00/db/db_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +12,7 @@ import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:creta00/studio/save_manager.dart';
 import 'package:creta00/player/play_manager.dart';
 
+import '../book_manager.dart';
 import '../common/util/my_utils.dart';
 import '../model/pages.dart';
 import 'studio_sub_screen.dart';
@@ -94,13 +94,16 @@ class MainScreenState extends State<StudioMainScreen> {
         ChangeNotifierProvider<SaveManager>.value(
           value: saveManagerHolder!,
         ),
+        ChangeNotifierProvider<BookManager>.value(
+          value: bookManagerHolder!,
+        ),
       ],
       child: RawKeyboardListener(
         autofocus: true,
         focusNode: FocusNode(),
         onKey: keyEventHandler,
         child: FutureBuilder<List<PageModel>>(
-            future: DbActions.getPages(cretaMainHolder!.defaultBook!),
+            future: DbActions.getPages(bookManagerHolder!.defaultBook!),
             builder: (context, AsyncSnapshot<List<PageModel>> snapshot) {
               if (snapshot.hasError) {
                 //error가 발생하게 될 경우 반환하게 되는 부분

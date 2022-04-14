@@ -56,6 +56,7 @@ class BookModel extends AbsModel {
     BookModel newBook = BookModel(newName, userId, description.value, hashTag.value);
     newBook.bookType.set(bookType.value, save: false);
     newBook.isPublic.set(isPublic.value, save: false);
+    newBook.readOnly.set(readOnly.value, save: false);
     newBook.thumbnailUrl.set(thumbnailUrl.value, save: false);
     newBook.thumbnailType.set(thumbnailType.value, save: false);
     newBook.thumbnailAspectRatio.set(thumbnailAspectRatio.value, save: false);
@@ -70,6 +71,7 @@ class BookModel extends AbsModel {
     name.set(map["name"], save: false);
     userId = map["userId"];
     isPublic.set(map["isPublic"], save: false);
+    readOnly.set(map["readOnly"] ?? false, save: false);
     bookType.set(intToBookType(map["bookType"]), save: false);
     description.set(map["description"], save: false);
     thumbnailUrl.set(map["thumbnailUrl"], save: false);
@@ -84,6 +86,7 @@ class BookModel extends AbsModel {
         "name": name.value,
         "userId": userId,
         "isPublic": isPublic.value,
+        "readOnly": readOnly.value,
         "bookType": bookTypeToInt(bookType.value),
         "description": description.value,
         "thumbnailUrl": thumbnailUrl.value,

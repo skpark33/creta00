@@ -59,9 +59,4 @@ class MainUtil {
     studioMainHolder = StudioMainScreen(mainScreenKey: GlobalKey<MainScreenState>(), user: user);
     naviPush(context, studioMainHolder!);
   }
-
-  static BookModel createDefaultBook({String userId = 'b49@sqisoft.com'}) {
-    return BookModel('나의 첫 콘텐츠북', userId,
-        "'You could do it simple and plain'\nfrom [Sure thing] of Miguel.", "");
-  }
 }

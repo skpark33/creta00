@@ -1,4 +1,4 @@
-import 'package:creta00/creta_main.dart';
+import 'package:creta00/book_manager.dart';
 import 'package:flutter/material.dart';
 import 'constants/styles.dart';
 import 'model/book.dart';
@@ -121,7 +121,7 @@ class _HoverWidgetState extends State<HoverWidget> {
   // ignore: unused_field
 
   bool _isClikcked() {
-    return widget.book != null && widget.book!.mid == cretaMainHolder!.defaultBook!.mid;
+    return widget.book != null && widget.book!.mid == bookManagerHolder!.defaultBook!.mid;
   }
 
   @override

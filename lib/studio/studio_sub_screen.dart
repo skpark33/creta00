@@ -1,6 +1,8 @@
+import 'package:creta00/book_manager.dart';
 import 'package:creta00/creta_main.dart';
 import 'package:creta00/studio/save_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/common/util/logger.dart';
@@ -82,30 +84,31 @@ class StudioSubScreenState extends State<StudioSubScreen> {
         isFullScreen: true,
       ));
     }
+    return Consumer<BookManager>(builder: (context, bookManager, child) {
+      return Scaffold(
+        //key: context.read<MenuController>().scaffoldKey,
+        appBar: buildAppBar(bookManager),
+        //drawer: const SideMenu(),
+        body: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+          bool isNarrow = (constraints.maxWidth <= minWindowWidth);
+          bool isShort =
+              (constraints.maxHeight <= (isNarrow ? minWindowHeight : minWindowHeight / 2));
 
-    return Scaffold(
-      //key: context.read<MenuController>().scaffoldKey,
-      appBar: buildAppBar(),
-      //drawer: const SideMenu(),
-      body: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-        bool isNarrow = (constraints.maxWidth <= minWindowWidth);
-        bool isShort =
-            (constraints.maxHeight <= (isNarrow ? minWindowHeight : minWindowHeight / 2));
-
-        return SafeArea(
-          child: Column(children: [
-            Expanded(
-              flex: 9,
-              child: Stack(children: [
-                isNarrow ? narrowLayout(isShort) : wideLayout(isShort),
-                SideBar(user: widget.user),
-              ]),
-            ),
-            logHolder.showLog ? DebugBar(key: logHolder.veiwerKey) : const SizedBox(height: 1),
-          ]),
-        );
-      }),
-    );
+          return SafeArea(
+            child: Column(children: [
+              Expanded(
+                flex: 9,
+                child: Stack(children: [
+                  isNarrow ? narrowLayout(isShort) : wideLayout(isShort),
+                  SideBar(user: widget.user),
+                ]),
+              ),
+              logHolder.showLog ? DebugBar(key: logHolder.veiwerKey) : const SizedBox(height: 1),
+            ]),
+          );
+        }),
+      );
+    });
   }
 
   Widget wideLayout(bool isShort) {
@@ -162,12 +165,12 @@ class StudioSubScreenState extends State<StudioSubScreen> {
     );
   }
 
-  PreferredSizeWidget buildAppBar() {
+  PreferredSizeWidget buildAppBar(BookManager bookManager) {
     bool isNarrow = MediaQuery.of(context).size.width <= minWindowWidth;
     return AppBar(
       backgroundColor: MyColors.appbar,
       title: Text(
-        cretaMainHolder!.defaultBook!.name.value,
+        bookManager.defaultBook!.name.value,
         style: MyTextStyles.h5,
       ),
       leadingWidth: isNarrow ? 200 : 400,
@@ -233,7 +236,7 @@ class StudioSubScreenState extends State<StudioSubScreen> {
             onHover: (event) {},
             onExit: (event) {},
             child: Text(
-              cretaMainHolder!.defaultBook!.name.value,
+              bookManagerHolder!.defaultBook!.name.value,
               style: MyTextStyles.h5,
             ),
           )),

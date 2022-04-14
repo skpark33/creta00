@@ -1,20 +1,18 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:creta00/constants/styles.dart';
-import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/model/users.dart';
 
 import 'book_grid_card.dart';
+import 'book_manager.dart';
 import 'common/buttons/basic_button.dart';
 import 'common/buttons/hover_buttons.dart';
-import 'common/undo/undo.dart';
 import 'common/util/my_utils.dart';
 import 'db/db_actions.dart';
 import 'main_util.dart';
 import 'model/book.dart';
-import 'model/model_enums.dart';
 import 'constants/strings.dart';
 import 'studio/save_manager.dart';
 
@@ -22,10 +20,9 @@ CretaMainScreen? cretaMainHolder;
 
 // ignore: must_be_immutable
 class CretaMainScreen extends StatefulWidget {
-  CretaMainScreen({required this.mainScreenKey, required this.user}) : super(key: mainScreenKey);
+  const CretaMainScreen({required this.mainScreenKey, required this.user})
+      : super(key: mainScreenKey);
 
-  List<BookModel> bookList = [];
-  BookModel? defaultBook;
   final UserModel user;
   final GlobalKey<CretaMainScreenState> mainScreenKey;
 
@@ -35,37 +32,6 @@ class CretaMainScreen extends StatefulWidget {
 
   @override
   State<CretaMainScreen> createState() => CretaMainScreenState();
-
-  void setBookThumbnail(String path, ContentsType contentsType, double aspectRatio) {
-    if (defaultBook == null) return;
-    mychangeStack.startTrans();
-    logHolder.log("setBookThumbnail $path, $contentsType", level: 5);
-    defaultBook!.thumbnailUrl.set(path);
-    defaultBook!.thumbnailType.set(contentsType);
-    defaultBook!.thumbnailAspectRatio.set(aspectRatio);
-    mychangeStack.endTrans();
-    //DbActions.save(book.mid);
-    // set 에서 이미 pushChanged 를 하고 있으므로, pushChanged 를 할 필요가 없다.
-    // saveManagerHolder!.pushChanged(book.mid, 'setBookThumbnail');
-  }
-
-  bool makeCopy(String newName) {
-    // 중복체크
-    for (BookModel ele in bookList) {
-      if (ele.name.value == newName) {
-        // 이미 있다.
-        logHolder.log('$newName book already exist', level: 7);
-        return false;
-      }
-    }
-    if (defaultBook != null) {
-      BookModel newBook = defaultBook!.makeCopy(newName);
-      // 사본 page 를 만들기만 할뿐, 현재의 page 를 대체하는 것은 아니다.
-      pageManagerHolder!.makeCopy(defaultBook!.mid, newBook.mid);
-      return true;
-    }
-    return false;
-  }
 }
 
 class CretaMainScreenState extends State<CretaMainScreen> {
@@ -90,6 +56,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
   @override
   void initState() {
     super.initState();
+    bookManagerHolder = BookManager();
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       logHolder.log('afterBuild CretaMainScreen', level: 5);
     });
@@ -164,13 +131,13 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                 )),
                 onTapdown: () {
                   logHolder.log("New button Pressed", level: 5);
-                  widget.defaultBook = MainUtil.createDefaultBook();
+                  bookManagerHolder!.createDefaultBook();
                   MainUtil.goToStudio(context, widget.user);
                 },
               ),
             );
           }
-          if (index >= widget.bookList.length) {
+          if (index >= bookManagerHolder!.bookList.length) {
             return Container(
               padding: const EdgeInsets.all(4),
               child: HoverWidget(
@@ -188,13 +155,13 @@ class CretaMainScreenState extends State<CretaMainScreen> {
             );
           }
 
-          BookModel book = widget.bookList[index - 1];
+          BookModel book = bookManagerHolder!.bookList[index - 1];
           return BookGridCard(
               index: index,
               book: book,
               durationStr: _dateToDurationString(book.updateTime),
               onTapdown: () {
-                widget.defaultBook = book;
+                bookManagerHolder!.setDefaultBook(book);
                 MainUtil.goToStudio(context, widget.user);
               });
           //return _emptyGridCard(index);
@@ -275,17 +242,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
               }
               if (snapshot.connectionState == ConnectionState.done) {
                 logHolder.log("line 1");
-                widget.bookList = snapshot.data!;
-                logHolder.log("line 2");
-                if (widget.bookList.isEmpty) {
-                  logHolder.log("No data founded , first customer(2)", level: 7);
-                  widget.defaultBook = MainUtil.createDefaultBook();
-                  widget.bookList.add(widget.defaultBook!);
-                }
-                for (BookModel model in widget.bookList) {
-                  logHolder.log("mybook=${model.name.value}, ${model.updateTime}", level: 5);
-                }
-                widget.defaultBook ??= widget.bookList[0];
+                bookManagerHolder!.selectBook(snapshot.data!);
               }
               return Stack(
                 children: [
@@ -296,8 +253,8 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                     //child: Image.asset('assets/creta_default.png', fit: BoxFit.cover),
                     child: Stack(
                       children: [
-                        MainUtil.drawBackground(
-                            constraints.maxWidth, constraints.maxHeight, widget.defaultBook!),
+                        MainUtil.drawBackground(constraints.maxWidth, constraints.maxHeight,
+                            bookManagerHolder!.defaultBook!),
                         Container(
                           decoration: BoxDecoration(
                             //color: Colors.black.withOpacity(0.4),
@@ -370,7 +327,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                               //color: Colors.white,
                               padding: EdgeInsets.only(left: 103, top: 81),
                               child: Image.asset('assets/logo.png',
-                                  color: Colors.white, fit: BoxFit.cover, width: 144, height: 51)),
+                                  color: Colors.white, fit: BoxFit.cover, width: 220, height: 51)),
                           // 우측 상단 메뉴
                           Container(
                             alignment: Alignment.topRight,
@@ -423,16 +380,16 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(widget.defaultBook!.name.value,
+                          Text(bookManagerHolder!.defaultBook!.name.value,
                               style: MyTextStyles.h3, maxLines: 3, overflow: TextOverflow.ellipsis),
                           SizedBox(
                             height: 20,
                           ),
-                          Text(widget.defaultBook!.userId, style: MyTextStyles.h5),
+                          Text(bookManagerHolder!.defaultBook!.userId, style: MyTextStyles.h5),
                           SizedBox(
                             height: 20,
                           ),
-                          Text(widget.defaultBook!.description.value,
+                          Text(bookManagerHolder!.defaultBook!.description.value,
                               style: MyTextStyles.h5, maxLines: 2),
                           SizedBox(
                             height: 20,
