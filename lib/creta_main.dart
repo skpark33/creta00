@@ -327,7 +327,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                               //color: Colors.white,
                               padding: EdgeInsets.only(left: 103, top: 81),
                               child: Image.asset('assets/logo.png',
-                                  color: Colors.white, fit: BoxFit.cover, width: 220, height: 51)),
+                                  color: Colors.white, fit: BoxFit.cover, width: 230, height: 60)),
                           // 우측 상단 메뉴
                           Container(
                             alignment: Alignment.topRight,

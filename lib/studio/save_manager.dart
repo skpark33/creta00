@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:creta00/book_manager.dart';
 import 'package:creta00/model/contents.dart';
 import 'package:flutter/foundation.dart';
 //import 'package:flutter/cupertino.dart';
@@ -47,11 +48,22 @@ class SaveManager extends ChangeNotifier {
     }
   }
 
+  void shouldBookSave(String mid) {
+    if (mid.substring(0, 5) != 'Book=') {
+      // book 이 아닌 다른 Row 가 save 된 것인데, 마지막에 Book 의 updateTime 을 한번 바뀌어 줘야 한다.
+      if (bookManagerHolder!.defaultBook != null) {
+        bookManagerHolder!.defaultBook!.updateTime = DateTime.now();
+        _dataChangedQue.add(bookManagerHolder!.defaultBook!.mid);
+      }
+    }
+  }
+
   Future<void> pushCreated(AbsModel model, String hint) async {
     await _dataCreatedlock.synchronized(() async {
       logHolder.log('created:${model.mid}, via $hint', level: 6);
       _dataCreatedQue.add(model);
       notifyListeners();
+      shouldBookSave(model.mid);
     });
   }
 
@@ -61,6 +73,7 @@ class SaveManager extends ChangeNotifier {
         logHolder.log('changed:$mid, via $hint', level: 6);
         _dataChangedQue.add(mid);
         notifyListeners();
+        shouldBookSave(mid);
       }
     });
   }
