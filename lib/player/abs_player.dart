@@ -2,6 +2,7 @@
 //import 'package:creta00/common/util/logger.dart';
 //import 'package:creta00/acc/acc_manager.dart';
 import 'dart:math';
+import 'package:creta00/book_manager.dart';
 import 'package:creta00/player/play_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:creta00/model/contents.dart';
@@ -16,23 +17,27 @@ import 'package:blobs/blobs.dart';
 abstract class AbsPlayWidget extends StatefulWidget {
   ContentsModel? model;
   ACC acc;
-  bool autoStart = true;
+  bool autoStart;
 
   AbsPlayWidget(
-      {Key? key, required this.onAfterEvent, required this.acc, this.model, this.autoStart = true})
+      {Key? key,
+      required this.onAfterEvent,
+      required this.acc,
+      this.model,
+      required this.autoStart})
       : super(key: key);
 
-  AbsPlayWidget.copy(AbsPlayWidget old, this.acc)
-      : super(key: old.key) // 화면에서만 쓰이기 때문에  key 를 복사한다.
-  {
-    autoStart = old.autoStart;
-    model = ContentsModel.copy(old.model!, acc.accModel.mid,
-        name: old.model!.name,
-        mime: old.model!.mime,
-        bytes: old.model!.bytes,
-        url: old.model!.url,
-        file: old.model!.file);
-  }
+  // AbsPlayWidget.copy(AbsPlayWidget old, this.acc)
+  //     : super(key: old.key) // 화면에서만 쓰이기 때문에  key 를 복사한다.
+  // {
+  //   autoStart = old.autoStart;
+  //   model = ContentsModel.copy(old.model!, acc.accModel.mid,
+  //       name: old.model!.name,
+  //       mime: old.model!.mime,
+  //       bytes: old.model!.bytes,
+  //       url: old.model!.url,
+  //       file: old.model!.file);
+  // }
 
   void Function()? onAfterEvent;
 
@@ -49,7 +54,7 @@ abstract class AbsPlayWidget extends StatefulWidget {
   }
 
   PlayState getPlayState() {
-    return model!.state;
+    return model!.playState;
   }
 
   ContentsModel getModel() {
@@ -58,7 +63,7 @@ abstract class AbsPlayWidget extends StatefulWidget {
 
   Future<void> afterBuild() async {
     if (model == null) return;
-    model!.setState(PlayState.init);
+    model!.setPlayState(PlayState.init);
     if (model!.isDynamicSize.value) {
       model!.isDynamicSize.set(false);
       acc.resize(model!.aspectRatio.value);
@@ -139,7 +144,11 @@ class EmptyPlayWidget extends AbsPlayWidget {
       {required GlobalObjectKey<EmptyPlayWidgetState> key,
       required void Function() onAfterEvent,
       required ACC acc})
-      : super(key: key, onAfterEvent: onAfterEvent, acc: acc) {
+      : super(
+            key: key,
+            onAfterEvent: onAfterEvent,
+            acc: acc,
+            autoStart: bookManagerHolder!.isAutoPlay()) {
     globalKey = key;
   }
 
@@ -147,12 +156,12 @@ class EmptyPlayWidget extends AbsPlayWidget {
 
   @override
   Future<void> play() async {
-    model!.setState(PlayState.start);
+    model!.setPlayState(PlayState.start);
   }
 
   @override
   Future<void> pause() async {
-    model!.setState(PlayState.pause);
+    model!.setPlayState(PlayState.pause);
   }
 
   @override
@@ -163,7 +172,7 @@ class EmptyPlayWidget extends AbsPlayWidget {
 
   @override
   Future<void> close() async {
-    model!.setState(PlayState.none);
+    model!.setPlayState(PlayState.none);
   }
 
   @override

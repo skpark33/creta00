@@ -27,6 +27,7 @@ MyCarouselSlider carouselWidget(
         initialPage: indexNo,
         enlargeCenterPage: true,
         autoPlay: true,
+        //autoPlay: bookManagerHolder!.isAutoPlay(),
         reverse: true,
         enableInfiniteScroll: true,
         autoPlayInterval:

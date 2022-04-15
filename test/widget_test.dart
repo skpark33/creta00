@@ -59,3 +59,14 @@ Future<Map<String, String>> upload(String userId, String filename, Uint8List fil
     return {};
   }
 }
+
+
+// import 'dart:io';
+// import 'dart:typed_data';
+// import 'package:flutter/services.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:flutter/material.dart';
+// import 'package:http_parser/http_parser.dart';
+
+
+

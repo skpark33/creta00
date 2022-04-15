@@ -15,6 +15,8 @@ import '../common/undo/undo.dart';
 class BookModel extends AbsModel {
   late UndoAble<String> name;
   late UndoAble<bool> isPublic;
+  late UndoAble<bool> isSilent;
+  late UndoAble<bool> isAutoPlay;
   late UndoAble<BookType> bookType;
   late UndoAble<String> description;
   late UndoAble<bool> readOnly;
@@ -30,6 +32,8 @@ class BookModel extends AbsModel {
     thumbnailType = UndoAble<ContentsType>(ContentsType.free, srcMid);
     thumbnailAspectRatio = UndoAble<double>(1, srcMid);
     isPublic = UndoAble<bool>(false, srcMid);
+    isSilent = UndoAble<bool>(false, srcMid);
+    isAutoPlay = UndoAble<bool>(false, srcMid);
     bookType = UndoAble<BookType>(BookType.signage, srcMid);
     readOnly = UndoAble<bool>(false, srcMid);
     description =
@@ -43,6 +47,8 @@ class BookModel extends AbsModel {
     thumbnailType = UndoAble<ContentsType>(ContentsType.free, mid);
     thumbnailAspectRatio = UndoAble<double>(1, mid);
     isPublic = UndoAble<bool>(false, mid);
+    isSilent = UndoAble<bool>(false, mid);
+    isAutoPlay = UndoAble<bool>(false, mid);
     bookType = UndoAble<BookType>(BookType.signage, mid);
     readOnly = UndoAble<bool>(false, mid);
     description =
@@ -56,6 +62,8 @@ class BookModel extends AbsModel {
     BookModel newBook = BookModel(newName, userId, description.value, hashTag.value);
     newBook.bookType.set(bookType.value, save: false);
     newBook.isPublic.set(isPublic.value, save: false);
+    newBook.isSilent.set(isSilent.value, save: false);
+    newBook.isAutoPlay.set(isAutoPlay.value, save: false);
     newBook.readOnly.set(readOnly.value, save: false);
     newBook.thumbnailUrl.set(thumbnailUrl.value, save: false);
     newBook.thumbnailType.set(thumbnailType.value, save: false);
@@ -71,6 +79,8 @@ class BookModel extends AbsModel {
     name.set(map["name"], save: false);
     userId = map["userId"];
     isPublic.set(map["isPublic"], save: false);
+    isSilent.set(map["isSilent"] ?? false, save: false);
+    isAutoPlay.set(map["isAutoPlay"] ?? false, save: false);
     readOnly.set(map["readOnly"] ?? false, save: false);
     bookType.set(intToBookType(map["bookType"]), save: false);
     description.set(map["description"], save: false);
@@ -86,6 +96,8 @@ class BookModel extends AbsModel {
         "name": name.value,
         "userId": userId,
         "isPublic": isPublic.value,
+        "isSilent": isSilent.value,
+        "isAutoPlay": isAutoPlay.value,
         "readOnly": readOnly.value,
         "bookType": bookTypeToInt(bookType.value),
         "description": description.value,

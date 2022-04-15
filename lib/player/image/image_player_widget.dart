@@ -1,6 +1,7 @@
 // ignore: implementation_imports
 // ignore_for_file: prefer_final_fields
 import 'dart:ui';
+import 'package:creta00/book_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:creta00/common/util/logger.dart';
 import 'package:flutter/material.dart';
@@ -28,12 +29,12 @@ class ImagePlayerWidget extends AbsPlayWidget {
   @override
   Future<void> play() async {
     logHolder.log('image play');
-    model!.setState(PlayState.start);
+    model!.setPlayState(PlayState.start);
   }
 
   @override
   Future<void> pause() async {
-    model!.setState(PlayState.pause);
+    model!.setPlayState(PlayState.pause);
   }
 
   @override
@@ -44,7 +45,7 @@ class ImagePlayerWidget extends AbsPlayWidget {
 
   @override
   Future<void> close() async {
-    model!.setState(PlayState.none);
+    model!.setPlayState(PlayState.none);
   }
 
   @override
@@ -114,6 +115,11 @@ class ImagePlayerWidgetState extends State<ImagePlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (bookManagerHolder!.isAutoPlay()) {
+      widget.model!.setPlayState(PlayState.start);
+    } else {
+      widget.model!.setPlayState(PlayState.pause);
+    }
     Size outSize = widget.getOuterSize(widget.model!.aspectRatio.value);
 
     double topLeft = widget.acc.accModel.radiusTopLeft.value;

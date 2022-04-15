@@ -231,14 +231,14 @@ class ACCMenu {
             width: buttonWidth,
             height: buttonHeight,
             onPressed: () {
-              if (state != PlayState.pause) {
-                accManagerHolder!.pause(context);
-              } else {
+              if (state != PlayState.start) {
                 accManagerHolder!.play(context);
+              } else {
+                accManagerHolder!.pause(context);
               }
               setState();
             },
-            icon: Icon(state != PlayState.pause ? Icons.pause : Icons.play_arrow)),
+            icon: Icon(state != PlayState.start ? Icons.play_arrow : Icons.pause)),
         //icon: const Icon(Icons.pause)),
         HoverButton(
             onEnter: () {},
@@ -276,6 +276,29 @@ class ACCMenu {
               accManagerHolder!.next(context);
             },
             icon: const Icon(Icons.skip_next)),
+        HoverButton(
+            onEnter: () {},
+            onExit: () {},
+            width: buttonWidth,
+            height: buttonHeight,
+            onPressed: () {
+              if (state != PlayState.start) {
+                accManagerHolder!.play(context);
+              } else {
+                accManagerHolder!.pause(context);
+              }
+              setState();
+            },
+            icon: Icon(state != PlayState.start ? Icons.play_arrow : Icons.pause)),
+        HoverButton(
+            onEnter: () {},
+            onExit: () {},
+            width: buttonWidth,
+            height: buttonHeight,
+            onPressed: () {
+              // 누끼 버튼
+            },
+            icon: const Icon(Icons.person_remove_outlined)),
       ],
     );
   }

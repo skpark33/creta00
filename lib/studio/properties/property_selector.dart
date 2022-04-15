@@ -12,6 +12,7 @@ import 'package:creta00/common/util/logger.dart';
 
 import '../../acc/acc.dart';
 import 'book_property.dart';
+import 'settings.dart';
 
 ACC? accWasNotSelected;
 
@@ -56,6 +57,9 @@ class PropertySelector extends StatefulWidget {
     }
     if (pageManager.isBook()) {
       return BookProperty(key, selectedPage, isNarrow, isLandscape, parent);
+    }
+    if (pageManager.isSettings()) {
+      return Settings(key, selectedPage, isNarrow, isLandscape, parent);
     }
     // if (pageManager.isContents()) {
     //   return ContentsProperty(key, selectedPage, isNarrow, isLandscape, parent);
@@ -106,6 +110,8 @@ class NullPropertyState extends State<NullProperty> {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      color: Colors.amber,
+    );
   }
 }

@@ -2,8 +2,11 @@
 //import 'package:creta00/common/util/logger.dart';
 //ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
+import 'dart:io' as io;
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 //import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/common/util/logger.dart';
@@ -252,5 +255,52 @@ class CretaUploader {
   static Widget getUploadIndicator(String text) {
     if (uploadTask == null) return Container();
     return UploadIndicator(uploadTask: uploadTask!, text: text);
+  }
+
+  Future<String> uploadToServer(String userId, String filename, Uint8List file) async {
+    String url = "http://3.34.219.97:8021/uploadContents";
+    var req = http.MultipartRequest('POST', Uri.parse(url));
+
+    //헤더 Content-type 명시
+    // Map<String, String> headers = {
+    //   "Content-type": "multipart/form-data"
+    // };
+    // req.headers.addAll(headers);
+
+    req.fields["userId"] = "userId"; //userId 값
+    req.fields["filename"] = "filename"; //filename 값
+    req.files.add(http.MultipartFile.fromBytes('file', file,
+        contentType: MediaType('image', 'jpeg'))); //multipartfile 값
+
+    //요청 send
+    try {
+      var res = await http.Response.fromStream(await req.send());
+
+      if (res.statusCode == 200) {
+        logHolder.log(res.body, level: 6);
+        return "성공";
+      } else {
+        logHolder.log('${res.statusCode}', level: 7);
+        logHolder.log(res.body, level: 7);
+        return "실패";
+      }
+    } on Exception catch (e) {
+      logHolder.log(e.toString());
+    }
+    return "";
+  }
+
+  Future<Uint8List> readFileByte(String filePath) async {
+    Uri myUri = Uri.parse(filePath);
+    io.File audioFile = io.File.fromUri(myUri);
+    Uint8List bytes = Uint8List(0);
+    await audioFile.readAsBytes().then((value) {
+      bytes = Uint8List.fromList(value);
+      logHolder.log('reading of bytes is completed');
+    }).catchError((onError) {
+      logHolder.log('Exception Error while reading audio from path:' + onError.toString(),
+          level: 7);
+    });
+    return bytes;
   }
 }

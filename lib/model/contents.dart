@@ -69,14 +69,14 @@ class ContentsModel extends AbsModel {
   }
 
   // ignore: prefer_final_fields
-  PlayState _state = PlayState.none;
+  PlayState _playState = PlayState.none;
   // ignore: prefer_final_fields
   PlayState _prevState = PlayState.none;
-  PlayState get state => _state;
+  PlayState get playState => _playState;
   PlayState get prevState => _prevState;
-  void setState(PlayState s) {
-    _prevState = _state;
-    _state = s;
+  void setPlayState(PlayState s) {
+    _prevState = _playState;
+    _playState = s;
   }
 
   double progress = 0.0;

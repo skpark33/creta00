@@ -1,6 +1,7 @@
 import 'dart:async';
 
 //import 'package:creta00/acc/acc_property.dart';
+import 'package:creta00/book_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:flutter_treeview/flutter_treeview.dart';
@@ -145,7 +146,9 @@ class PlayManager {
       if (currentIndex >= 0) {
         int len = _playList.value.length;
         for (int i = 0; i < len; i++) {
-          _playList.value[i].autoStart = (i == currentIndex);
+          if (bookManagerHolder!.isAutoPlay()) {
+            _playList.value[i].autoStart = (i == currentIndex);
+          }
         }
       }
     });
@@ -154,7 +157,9 @@ class PlayManager {
   Future<void> setAutoStart() async {
     await _lock.synchronized(() async {
       if (_currentIndex >= 0) {
-        _playList.value[_currentIndex].autoStart = true;
+        if (bookManagerHolder!.isAutoPlay()) {
+          _playList.value[_currentIndex].autoStart = true;
+        }
       }
     });
   }
@@ -209,7 +214,7 @@ class PlayManager {
     PlayState state = PlayState.none;
     await _lock.synchronized(() async {
       if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-        state = _playList.value[_currentIndex].model!.state;
+        state = _playList.value[_currentIndex].model!.playState;
       }
     });
     return state;
@@ -262,8 +267,10 @@ class PlayManager {
           _currentPlaySec += _timeGap;
           return;
         }
-        // 교체 시간이 되었다.
-        next();
+        // 교체 시간이 되었다
+        if (currentModel!.playState == PlayState.start) {
+          next();
+        }
         //_currentPlaySec = 0;
         //baseWidget.invalidate();
         //accManagerHolder!.resizeMenu(currentModel!.type);
@@ -272,8 +279,8 @@ class PlayManager {
       if (currentModel!.isVideo()) {
         //if (currentModel!.prevState != PlayState.end &&
         //   currentModel!.state == PlayState.end) {
-        if (currentModel!.state == PlayState.end) {
-          currentModel!.setState(PlayState.none);
+        if (currentModel!.playState == PlayState.end) {
+          currentModel!.setPlayState(PlayState.none);
           next();
           // 비디오가 마무리 작업을 할 시간을 준다.
           Future.delayed(Duration(milliseconds: (_timeGap / 4).round()));
@@ -295,6 +302,10 @@ class PlayManager {
         model.order.set(order, save: false); // save 는 어차피 아래에서 되므로, 여기서는 save 하지 않는다.
       }
       AbsPlayWidget? aWidget;
+      bool isAutoPlay = bookManagerHolder!.isAutoPlay();
+      if (!isAutoPlay) {
+        model.setPlayState(PlayState.pause);
+      }
       try {
         if (model.isVideo()) {
           logHolder.log('push video');
@@ -305,7 +316,7 @@ class PlayManager {
             onAfterEvent: onVideoAfterEvent,
             model: model,
             acc: acc,
-            autoStart: true, // (_currentIndex < 0) ? true : false,
+            autoStart: isAutoPlay, // (_currentIndex < 0) ? true : false,
           );
           await aWidget.init();
           if (_currentIndex < 0) _currentIndex = 0;
@@ -316,7 +327,7 @@ class PlayManager {
             key: key,
             model: model,
             acc: acc,
-            autoStart: true, // (_currentIndex < 0) ? true : false,
+            autoStart: isAutoPlay, // (_currentIndex < 0) ? true : false,
           );
           await aWidget.init();
           if (_currentIndex < 0) _currentIndex = 0;
@@ -413,11 +424,15 @@ class PlayManager {
       int len = _playList.value.length;
       for (int i = 0; i < len; i++) {
         if (i == _currentIndex) {
-          _playList.value[i].autoStart = true;
+          if (bookManagerHolder!.isAutoPlay()) {
+            _playList.value[i].autoStart = true;
+          }
           await _playList.value[i].play();
           logHolder.log('anime play ${_playList.value[i].model!.name}', level: 5);
         } else {
-          _playList.value[i].autoStart = false;
+          if (bookManagerHolder!.isAutoPlay()) {
+            _playList.value[i].autoStart = false;
+          }
           await _playList.value[i].pause();
         }
       }
@@ -471,7 +486,9 @@ class PlayManager {
           if (prevIndex != _currentIndex) {
             baseWidget.invalidate();
           } else {
-            await _playList.value[_currentIndex].play();
+            if (bookManagerHolder!.isAutoPlay()) {
+              await _playList.value[_currentIndex].play();
+            }
           }
         } else {
           await _changeAnimePage();
@@ -507,7 +524,9 @@ class PlayManager {
           if (prevIndex != _currentIndex) {
             baseWidget.invalidate();
           } else {
-            await _playList.value[_currentIndex].play();
+            if (bookManagerHolder!.isAutoPlay()) {
+              await _playList.value[_currentIndex].play();
+            }
           }
         } else {
           await _changeAnimePage();

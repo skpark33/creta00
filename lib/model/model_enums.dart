@@ -245,6 +245,7 @@ enum PropertyType {
   page,
   acc,
   contents,
+  settings,
 }
 
 int propertyTypeToInt(PropertyType value) {
@@ -257,5 +258,7 @@ int propertyTypeToInt(PropertyType value) {
       return 2;
     case PropertyType.contents:
       return 3;
+    case PropertyType.settings:
+      return 4;
   }
 }

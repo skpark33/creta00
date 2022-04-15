@@ -277,7 +277,9 @@ class StudioSubScreenState extends State<StudioSubScreen> {
           ])),
       ElevatedButton(
         style: ButtonStyle(backgroundColor: MaterialStateProperty.all(MyColors.primaryColor)),
-        onPressed: () {},
+        onPressed: () {
+          pageManagerHolder!.setAsSettings();
+        },
         child: const Icon(Icons.settings),
       ),
     ];

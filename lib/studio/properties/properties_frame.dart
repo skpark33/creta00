@@ -85,7 +85,8 @@ class PropertiesFrameState extends State<PropertiesFrame> {
         color: MyColors.white,
         child: Stack(children: [
           Padding(
-            padding: const EdgeInsets.only(left: 2, right: 2, bottom: 2, top: 28),
+            padding: EdgeInsets.only(
+                left: 2, right: 2, bottom: 2, top: (pageManager.isSettings() ? 2 : 28)),
             child: Container(
               padding: EdgeInsets.all(3),
               decoration: BoxDecoration(
@@ -135,62 +136,68 @@ class PropertiesFrameState extends State<PropertiesFrame> {
               ),
             ),
           ),
-          Container(
-            alignment: AlignmentDirectional.center,
-            height: 60,
-            //padding: const EdgeInsets.only(left: 10, top: 12),
-            child: Center(
-              child: ToggleSwitch(
-                minHeight: 36.0,
-                minWidth: 112.0,
-                initialLabelIndex: selectedTab,
-                cornerRadius: 8.0,
-                radiusStyle: true,
-                activeFgColor: Colors.black,
-                inactiveBgColor: MyColors.puple100,
-                inactiveFgColor: MyColors.puple600,
-                totalSwitches: 3,
-                labels: [
-                  MyStrings.bookPropTitle,
-                  MyStrings.pagePropTitle,
-                  MyStrings.widgetPropTitle
-                ],
-                icons: [Icons.import_contacts_outlined, Icons.auto_stories_outlined, Icons.widgets],
-                activeBgColor: [
-                  MyColors.primaryColor,
-                  MyColors.primaryColor,
-                  MyColors.primaryColor,
-                ],
-                borderColor: [
-                  MyColors.primaryColor,
-                  MyColors.primaryColor,
-                  MyColors.primaryColor,
-                ],
-                borderWidth: 1,
-                onToggle: (index) {
-                  //setState(() {
-                  mychangeStack.startTrans();
-                  switch (index) {
-                    case 0:
-                      pageManagerHolder!.setAsBook();
-                      isSizeChangable = false;
-                      break;
-                    case 1:
-                      pageManagerHolder!.setAsPage();
-                      isSizeChangable = false;
-                      break;
-                    case 2:
-                      pageManagerHolder!.setAsAcc();
-                      isSizeChangable = false;
-                      break;
-                    default:
-                      break;
-                  }
-                  mychangeStack.endTrans();
-                },
-              ),
-            ),
-          ),
+          pageManager.isSettings()
+              ? Container()
+              : Container(
+                  alignment: AlignmentDirectional.center,
+                  height: 60,
+                  //padding: const EdgeInsets.only(left: 10, top: 12),
+                  child: Center(
+                    child: ToggleSwitch(
+                      minHeight: 36.0,
+                      minWidth: 112.0,
+                      initialLabelIndex: selectedTab,
+                      cornerRadius: 8.0,
+                      radiusStyle: true,
+                      activeFgColor: Colors.black,
+                      inactiveBgColor: MyColors.puple100,
+                      inactiveFgColor: MyColors.puple600,
+                      totalSwitches: 3,
+                      labels: [
+                        MyStrings.bookPropTitle,
+                        MyStrings.pagePropTitle,
+                        MyStrings.widgetPropTitle
+                      ],
+                      icons: [
+                        Icons.import_contacts_outlined,
+                        Icons.auto_stories_outlined,
+                        Icons.widgets
+                      ],
+                      activeBgColor: [
+                        MyColors.primaryColor,
+                        MyColors.primaryColor,
+                        MyColors.primaryColor,
+                      ],
+                      borderColor: [
+                        MyColors.primaryColor,
+                        MyColors.primaryColor,
+                        MyColors.primaryColor,
+                      ],
+                      borderWidth: 1,
+                      onToggle: (index) {
+                        //setState(() {
+                        mychangeStack.startTrans();
+                        switch (index) {
+                          case 0:
+                            pageManagerHolder!.setAsBook();
+                            isSizeChangable = false;
+                            break;
+                          case 1:
+                            pageManagerHolder!.setAsPage();
+                            isSizeChangable = false;
+                            break;
+                          case 2:
+                            pageManagerHolder!.setAsAcc();
+                            isSizeChangable = false;
+                            break;
+                          default:
+                            break;
+                        }
+                        mychangeStack.endTrans();
+                      },
+                    ),
+                  ),
+                ),
         ]),
       );
     }));

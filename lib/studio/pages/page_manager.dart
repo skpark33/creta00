@@ -24,29 +24,50 @@ class PageManager extends ChangeNotifier {
   SortedMap<int, PageModel> orderMap = SortedMap<int, PageModel>();
   List<Node> nodes = [];
 
-  PropertyType _propertyType = PropertyType.page;
+  PropertyType _propertyType = PropertyType.book;
   PropertyType get propertyType => _propertyType;
   void setPropertyType(PropertyType p) {
     _propertyType = p;
   }
 
+  PropertyType _prevPropertyType = PropertyType.book;
+  PropertyType get prevPropertyType => _prevPropertyType;
+  void setPrevPropertyType(PropertyType p) {
+    _prevPropertyType = p;
+  }
+
   Future<void> setAsAcc() async {
+    setPrevPropertyType(_propertyType);
     _propertyType = PropertyType.acc;
     notifyListeners();
   }
 
   Future<void> setAsPage() async {
+    setPrevPropertyType(_propertyType);
     _propertyType = PropertyType.page;
     notifyListeners();
   }
 
   Future<void> setAsContents() async {
+    setPrevPropertyType(_propertyType);
     _propertyType = PropertyType.contents;
     notifyListeners();
   }
 
   Future<void> setAsBook() async {
+    setPrevPropertyType(_propertyType);
     _propertyType = PropertyType.book;
+    notifyListeners();
+  }
+
+  Future<void> setAsSettings() async {
+    setPrevPropertyType(_propertyType);
+    _propertyType = PropertyType.settings;
+    notifyListeners();
+  }
+
+  Future<void> back() async {
+    _propertyType = prevPropertyType;
     notifyListeners();
   }
 
@@ -64,6 +85,10 @@ class PageManager extends ChangeNotifier {
 
   bool isBook() {
     return _propertyType == PropertyType.book;
+  }
+
+  bool isSettings() {
+    return _propertyType == PropertyType.settings;
   }
 
   int lastWidth = 1920;

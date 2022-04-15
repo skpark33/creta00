@@ -15,6 +15,10 @@ class Locale {
 }
 
 class MyStrings {
+  static String settings = Locale.isKr() ? '설정' : 'Settings';
+  static String isAutoPlay = Locale.isKr() ? '콘텐츠 자동 실행' : 'Contents Auto Play';
+  static String isSilent = Locale.isKr() ? '소리없는 콘텐츠북' : 'Silent Contents Book';
+
   static String initialName = Locale.isKr() ? '나의 첫 콘텐츠북' : 'My 1st Contents Book';
   static String apply = Locale.isKr() ? '적용' : 'Apply';
   static String close = Locale.isKr() ? '닫기' : 'Close';

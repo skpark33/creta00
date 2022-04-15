@@ -106,6 +106,22 @@ class BookManager extends ChangeNotifier {
     return false;
   }
 
+  bool toggleIsSilent() {
+    if (defaultBook != null) {
+      defaultBook!.isSilent.set(!defaultBook!.isSilent.value);
+      return true;
+    }
+    return false;
+  }
+
+  bool toggleIsAutoPlay() {
+    if (defaultBook != null) {
+      defaultBook!.isAutoPlay.set(!defaultBook!.isAutoPlay.value);
+      return true;
+    }
+    return false;
+  }
+
   bool setName(String value) {
     if (defaultBook != null) {
       defaultBook!.name.set(value);
@@ -135,5 +151,35 @@ class BookManager extends ChangeNotifier {
       postIndex++;
     }
     return newName;
+  }
+
+  bool isAutoPlay() {
+    if (defaultBook != null) {
+      //logHolder.log('isAutoPlay(${defaultBook!.isAutoPlay.value})', level: 6);
+      return defaultBook!.isAutoPlay.value;
+    }
+    logHolder.log('ERROR : defaultBook is null !!!', level: 7);
+    return false;
+  }
+
+  bool isReadOnly() {
+    if (defaultBook != null) {
+      return defaultBook!.readOnly.value;
+    }
+    return false;
+  }
+
+  bool isSilent() {
+    if (defaultBook != null) {
+      return defaultBook!.isSilent.value;
+    }
+    return false;
+  }
+
+  bool isPublic() {
+    if (defaultBook != null) {
+      return defaultBook!.isPublic.value;
+    }
+    return false;
   }
 }

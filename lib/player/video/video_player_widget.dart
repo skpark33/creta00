@@ -1,6 +1,7 @@
 // ignore: implementation_imports
 // ignore_for_file: prefer_final_fields
 
+import 'package:creta00/book_manager.dart';
 import 'package:flutter/material.dart';
 //import 'package:video_player/video_player.dart';
 
@@ -26,7 +27,9 @@ class VideoPlayerWidget extends AbsPlayWidget {
             onAfterEvent: onAfterEvent,
             acc: acc,
             model: model,
-            autoStart: autoStart);
+            autoStart: autoStart) {
+    logHolder.log("VideoPlayerWidget(isAutoPlay=$autoStart)", level: 6);
+  }
 
   final GlobalObjectKey<VideoPlayerWidgetState> globalKey;
 
@@ -53,6 +56,7 @@ class VideoPlayerWidget extends AbsPlayWidget {
 
         model!.videoPlayTime.set(wcontroller!.value.duration.inMilliseconds.toDouble());
         wcontroller!.setLooping(false);
+
         wcontroller!.onAfterVideoEvent = (event) {
           logHolder.log(
               'video event ${event.eventType.toString()}, ${event.duration.toString()},(${model!.name})');
@@ -60,7 +64,7 @@ class VideoPlayerWidget extends AbsPlayWidget {
             // bufferingEnd and completed 가 시간이 다 되서 종료한 것임.
 
             logHolder.log('video completed(${model!.name})');
-            model!.setState(PlayState.end);
+            model!.setPlayState(PlayState.end);
             onAfterEvent!.call();
           }
           prevEvent = event.eventType;
@@ -87,7 +91,7 @@ class VideoPlayerWidget extends AbsPlayWidget {
     //   await Future.delayed(const Duration(milliseconds: 100));
     // }
     logHolder.log('play  ${model!.name}');
-    model!.setState(PlayState.start);
+    model!.setPlayState(PlayState.start);
     await wcontroller!.play();
   }
 
@@ -97,13 +101,13 @@ class VideoPlayerWidget extends AbsPlayWidget {
     //   await Future.delayed(const Duration(milliseconds: 100));
     // }
     logHolder.log('pause', level: 5);
-    model!.setState(PlayState.pause);
+    model!.setPlayState(PlayState.pause);
     await wcontroller!.pause();
   }
 
   @override
   Future<void> close() async {
-    model!.setState(PlayState.none);
+    model!.setPlayState(PlayState.none);
     logHolder.log("videoController close()");
     await wcontroller!.dispose();
   }
@@ -161,7 +165,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     logHolder.log("video widget dispose,${widget.model!.name}", level: 5);
     //widget.wcontroller!.dispose();
     super.dispose();
-    widget.model!.setState(PlayState.disposed);
+    widget.model!.setPlayState(PlayState.disposed);
   }
 
   Future<bool> waitInit() async {
@@ -170,7 +174,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       await Future.delayed(const Duration(milliseconds: 100));
     }
     if (widget.autoStart) {
-      logHolder.log('initState play', level: 5);
+      logHolder.log('initState play-----------------', level: 6);
       await widget.play();
     }
     return true;
@@ -181,7 +185,10 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     logHolder.log('VideoPlayerWidgetState', level: 5);
     // aspectorRatio 는 실제 비디오의  넓이/높이 이다.
     Size outSize = widget.getOuterSize(widget.wcontroller!.value.aspectRatio);
-
+    if (bookManagerHolder!.isSilent()) {
+      widget.wcontroller!.setVolume(0.0);
+      widget.model!.mute.set(true, save: false);
+    }
     return FutureBuilder(
         future: waitInit(),
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
