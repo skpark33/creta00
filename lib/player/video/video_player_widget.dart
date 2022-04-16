@@ -207,7 +207,12 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
           // );
           return widget.getClipRect(
             outSize,
+            //Stack(
+            //children: [
             VideoPlayer(widget.wcontroller!, key: ValueKey(widget.model!.url)),
+            //BasicOverayWidget(controller: widget.wcontroller!),
+            //],
+            //),
           );
           // return ClipRRect(
           //   //clipper: MyContentsClipper(),

@@ -11,6 +11,8 @@ import 'package:creta00/acc/acc.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:blobs/blobs.dart';
 
+import 'video/video_player_controller.dart';
+
 // page (1) --> (n) acc (1) --> (1) baseWidget --> (1) PlayManager (n) absPlayWidget                                                                 (n) absPlayWidget
 
 // ignore: must_be_immutable
@@ -18,14 +20,16 @@ abstract class AbsPlayWidget extends StatefulWidget {
   ContentsModel? model;
   ACC acc;
   bool autoStart;
+  BasicOverayWidget? videoProgress;
 
-  AbsPlayWidget(
-      {Key? key,
-      required this.onAfterEvent,
-      required this.acc,
-      this.model,
-      required this.autoStart})
-      : super(key: key);
+  AbsPlayWidget({
+    Key? key,
+    required this.onAfterEvent,
+    required this.acc,
+    required this.autoStart,
+    this.model,
+    this.videoProgress,
+  }) : super(key: key);
 
   // AbsPlayWidget.copy(AbsPlayWidget old, this.acc)
   //     : super(key: old.key) // 화면에서만 쓰이기 때문에  key 를 복사한다.
@@ -135,6 +139,24 @@ abstract class AbsPlayWidget extends StatefulWidget {
       return model.remoteUrl!;
     }
     return '';
+  }
+}
+
+class BasicOverayWidget extends StatelessWidget {
+  final VideoPlayerController controller;
+  final double width;
+  final double height;
+
+  const BasicOverayWidget(
+      {Key? key, required this.controller, required this.width, required this.height})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+        width: width,
+        height: height,
+        child: VideoProgressIndicator(controller, allowScrubbing: true));
   }
 }
 

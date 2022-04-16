@@ -16,7 +16,7 @@ class ACCMenu {
   }
 
   Offset position = const Offset(0, 0);
-  Size size = const Size(210, 36);
+  Size size = const Size(410, 36);
   bool _visible = false;
   bool get visible => _visible;
   OverlayEntry? entry;
@@ -195,7 +195,7 @@ class ACCMenu {
             return errMsgWidget(snapshot);
           }
           if (_type == ContentsType.video || snapshot.data!.type == ContentsType.video) {
-            return videoMenu(context, snapshot.data!.state, snapshot.data!.mute);
+            return videoMenu(context, snapshot.data!.state, snapshot.data!.mute, acc);
           } else if (_type == ContentsType.image || snapshot.data!.type == ContentsType.image) {
             return imageMenu(context, snapshot.data!.state, snapshot.data!.mute);
           }
@@ -203,7 +203,7 @@ class ACCMenu {
         });
   }
 
-  Widget videoMenu(BuildContext context, PlayState state, bool mute) {
+  Widget videoMenu(BuildContext context, PlayState state, bool mute, ACC? acc) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -240,6 +240,7 @@ class ACCMenu {
             },
             icon: Icon(state != PlayState.start ? Icons.play_arrow : Icons.pause)),
         //icon: const Icon(Icons.pause)),
+        acc != null ? getProgressWidget(context, acc) : Container(),
         HoverButton(
             onEnter: () {},
             onExit: () {},
@@ -301,5 +302,25 @@ class ACCMenu {
             icon: const Icon(Icons.person_remove_outlined)),
       ],
     );
+  }
+
+  Widget getProgressWidget(BuildContext context, ACC? acc) {
+    return FutureBuilder(
+        future: acc!.getCurrentVideoController(),
+        builder: (context, AsyncSnapshot<Widget?> snapshot) {
+          if (snapshot.hasError) {
+            logHolder.log("snapshot.hasError", level: 7);
+            return const Text('progress error');
+          }
+          if (snapshot.hasData == false) {
+            logHolder.log("No data founded , first customer(1)", level: 7);
+            return Container();
+          }
+          if (snapshot.connectionState == ConnectionState.done) {
+            logHolder.log("line 1");
+          }
+          logHolder.log('getProgressWidget', level: 6);
+          return snapshot.data!;
+        });
   }
 }

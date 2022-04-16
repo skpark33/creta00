@@ -138,12 +138,12 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
               key: model.key,
               height: pageHeight,
               width: pageWidth,
-              color: pageManagerHolder!.getSelected() == null
+              color: pageManagerHolder == null || pageManagerHolder!.getSelected() == null
                   ? MyColors.bgColor
                   : pageManagerHolder!.getSelected()!.bgColor.value,
               child: GestureDetector(
                 onPanDown: (details) {
-                  if (pageManagerHolder != null) {
+                  if (pageManagerHolder != null && accManagerHolder != null) {
                     accManagerHolder!.setCurrentMid('');
                     accManagerHolder!.setState();
                     logHolder.log('artboard onPanDown : ${details.localPosition}', level: 5);

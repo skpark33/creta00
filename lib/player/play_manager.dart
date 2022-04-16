@@ -220,6 +220,18 @@ class PlayManager {
     return state;
   }
 
+  Future<Widget?> getCurrentVideoController() async {
+    return await _lock.synchronized(() async {
+      if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
+        if (_playList.value[_currentIndex].model!.contentsType == ContentsType.video) {
+          VideoPlayerWidget aVideo = _playList.value[_currentIndex] as VideoPlayerWidget;
+          return aVideo.videoProgress;
+        }
+      }
+      return Container();
+    });
+  }
+
   Future<bool> getCurrentMute() async {
     bool mute = false;
     await _lock.synchronized(() async {
@@ -319,6 +331,11 @@ class PlayManager {
             autoStart: isAutoPlay, // (_currentIndex < 0) ? true : false,
           );
           await aWidget.init();
+          aWidget.videoProgress = BasicOverayWidget(
+              key: ValueKey<String>(model.mid),
+              controller: (aWidget as VideoPlayerWidget).wcontroller!,
+              width: 200,
+              height: 20);
           if (_currentIndex < 0) _currentIndex = 0;
         } else if (model.isImage()) {
           GlobalObjectKey<ImagePlayerWidgetState> key =

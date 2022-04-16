@@ -202,15 +202,20 @@ class ACCManager extends ChangeNotifier {
     accMenu.setState();
   }
 
-  void resizeMenu(ContentsType type) {
-    if (!accMenu.visible) return;
+  void invalidateMenu(BuildContext context, ACC? acc) {
+    if (_currentAccMid.isEmpty) return;
+    accMenu.setState();
+  }
 
+  Future<void> resizeMenu(ContentsType type) async {
+    //if (!accMenu.visible) return;
+    logHolder.log("resizeMenu", level: 6);
+    double height = 36;
     if (type == ContentsType.video || type == ContentsType.image) {
-      accMenu.size = Size(accMenu.size.width, 68);
-    } else {
-      accMenu.size = Size(accMenu.size.width, 36);
+      height = 68;
     }
 
+    accMenu.size = Size(accMenu.size.width, height);
     accMenu.setType(type);
     accMenu.setState();
   }

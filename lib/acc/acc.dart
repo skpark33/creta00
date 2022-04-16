@@ -218,6 +218,9 @@ class ACC {
       accManagerHolder!.unshowMenu(context);
       if (reshow) {
         accManagerHolder!.showMenu(context, this);
+      } else {
+        //setState 만 다시 해준다.
+        accManagerHolder!.invalidateMenu(context, this);
       }
     } else {
       accManagerHolder!.showMenu(context, this);
@@ -805,6 +808,10 @@ class ACC {
 
   Future<PlayState> getCurrentPlayState() {
     return accChild.playManager.getCurrentPlayState();
+  }
+
+  Future<Widget?> getCurrentVideoController() async {
+    return await accChild.playManager.getCurrentVideoController();
   }
 
   Future<bool> getCurrentMute() {
