@@ -11,6 +11,8 @@ import 'package:creta00/acc/acc.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:blobs/blobs.dart';
 
+import '../acc/acc_manager.dart';
+import '../common/util/logger.dart';
 import 'video/video_player_controller.dart';
 
 // page (1) --> (n) acc (1) --> (1) baseWidget --> (1) PlayManager (n) absPlayWidget                                                                 (n) absPlayWidget
@@ -67,7 +69,7 @@ abstract class AbsPlayWidget extends StatefulWidget {
 
   Future<void> afterBuild() async {
     if (model == null) return;
-    model!.setPlayState(PlayState.init);
+    //model!.setPlayState(PlayState.init);
     if (model!.isDynamicSize.value) {
       model!.isDynamicSize.set(false);
       acc.resize(model!.aspectRatio.value);
@@ -75,6 +77,7 @@ abstract class AbsPlayWidget extends StatefulWidget {
     if (await selectedModelHolder!.isSelectedModel(model!)) {
       pageManagerHolder!.setAsContents();
     }
+    accManagerHolder!.resizeMenu(model!.contentsType);
   }
 
   Size getOuterSize(double srcRatio) {
@@ -211,7 +214,11 @@ class EmptyPlayWidget extends AbsPlayWidget {
 
   @override
   PlayState getPlayState() {
-    return PlayState.none;
+    if (model == null) {
+      logHolder.log("getPlayState model is null", level: 6);
+      return PlayState.none;
+    }
+    return model!.prevState;
   }
 
   @override

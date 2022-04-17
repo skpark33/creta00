@@ -211,19 +211,23 @@ class PlayManager {
   }
 
   Future<PlayState> getCurrentPlayState() async {
-    PlayState state = PlayState.none;
-    await _lock.synchronized(() async {
+    return await _lock.synchronized(() async {
       if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-        state = _playList.value[_currentIndex].model!.playState;
+        return _playList.value[_currentIndex].model!.playState;
       }
+      logHolder.log('getCurrentPlayState currentIdex is invalid $_currentIndex', level: 6);
+      return PlayState.none;
     });
-    return state;
   }
 
   Future<Widget?> getCurrentVideoController() async {
     return await _lock.synchronized(() async {
       if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
         if (_playList.value[_currentIndex].model!.contentsType == ContentsType.video) {
+          if (_playList.value[_currentIndex].model!.playState != PlayState.start) {
+            Future.delayed(const Duration(milliseconds: 100));
+            // player 가 start 할때까지 기다려 줘야 한다.
+          }
           VideoPlayerWidget aVideo = _playList.value[_currentIndex] as VideoPlayerWidget;
           return aVideo.videoProgress;
         }
@@ -276,13 +280,15 @@ class PlayManager {
         }
         // 아직 교체시간이 되지 않았다.
         if (_currentPlaySec < currentModel!.playTime.value) {
-          _currentPlaySec += _timeGap;
+          if (bookManagerHolder!.isAutoPlay()) {
+            _currentPlaySec += _timeGap;
+          }
           return;
         }
         // 교체 시간이 되었다
-        if (currentModel!.playState == PlayState.start) {
-          next();
-        }
+        //if (currentModel!.playState == PlayState.start) {
+        next();
+        //}
         //_currentPlaySec = 0;
         //baseWidget.invalidate();
         //accManagerHolder!.resizeMenu(currentModel!.type);
@@ -293,6 +299,8 @@ class PlayManager {
         //   currentModel!.state == PlayState.end) {
         if (currentModel!.playState == PlayState.end) {
           currentModel!.setPlayState(PlayState.none);
+          logHolder.log('before next', level: 6);
+
           next();
           // 비디오가 마무리 작업을 할 시간을 준다.
           Future.delayed(Duration(milliseconds: (_timeGap / 4).round()));
@@ -510,11 +518,11 @@ class PlayManager {
         } else {
           await _changeAnimePage();
         } // skpark carousel problem
-        accManagerHolder!.resizeMenu(_playList.value[_currentIndex].model!.contentsType);
         if (pageManagerHolder!.isContents() &&
             accManagerHolder!.isCurrentIndex(baseWidget.acc!.accModel.mid)) {
           selectedModelHolder!.setModel(_playList.value[_currentIndex].model!);
         }
+        //accManagerHolder!.resizeMenu(_playList.value[_currentIndex].model!.contentsType);
       }
     });
   }
@@ -548,11 +556,11 @@ class PlayManager {
         } else {
           await _changeAnimePage();
         } // skpark carousel problem
-        accManagerHolder!.resizeMenu(_playList.value[_currentIndex].model!.contentsType);
         if (pageManagerHolder!.isContents() &&
             accManagerHolder!.isCurrentIndex(baseWidget.acc!.accModel.mid)) {
           selectedModelHolder!.setModel(_playList.value[_currentIndex].model!);
         }
+        accManagerHolder!.resizeMenu(_playList.value[_currentIndex].model!.contentsType);
       }
     });
   }

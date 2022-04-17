@@ -102,7 +102,7 @@ flutter:
   assets:
       - assets/
       - assets/icons/
-      - assets/logo.png
+      - assets/logo_en.png
       - assets/publish.png
       - assets/pilot.PNG
       - assets/grid.png      

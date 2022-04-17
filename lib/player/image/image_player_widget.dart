@@ -45,6 +45,8 @@ class ImagePlayerWidget extends AbsPlayWidget {
 
   @override
   Future<void> close() async {
+    logHolder.log('Image close', level: 6);
+
     model!.setPlayState(PlayState.none);
   }
 
@@ -58,11 +60,6 @@ class ImagePlayerWidget extends AbsPlayWidget {
   @override
   bool isInit() {
     return true;
-  }
-
-  @override
-  PlayState getPlayState() {
-    return PlayState.none;
   }
 
   @override

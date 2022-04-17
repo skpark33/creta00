@@ -139,7 +139,7 @@ IconButton logoIconButton(
       padding: EdgeInsets.only(left: 20, right: 20),
       icon: const ImageIcon(
         AssetImage(
-          "assets/logo.png",
+          "assets/logo_en.png",
         ),
         //size: IconSizes.imageIcon,
       ),
@@ -150,7 +150,7 @@ IconButton logoIconButton(
 Widget logoIcon({Color color = MyColors.mainColor, double size = 40}) {
   return ImageIcon(
     AssetImage(
-      "assets/logo.png",
+      "assets/logo_en.png",
     ),
     color: color,
     size: size,

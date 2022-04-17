@@ -204,6 +204,8 @@ class ACCMenu {
   }
 
   Widget videoMenu(BuildContext context, PlayState state, bool mute, ACC? acc) {
+    logHolder.log('videoMenu() $state', level: 6);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

@@ -108,7 +108,7 @@ class VideoPlayerWidget extends AbsPlayWidget {
   @override
   Future<void> close() async {
     model!.setPlayState(PlayState.none);
-    logHolder.log("videoController close()");
+    logHolder.log("videoController close()", level: 6);
     await wcontroller!.dispose();
   }
 
