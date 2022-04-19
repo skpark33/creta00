@@ -23,18 +23,31 @@ class DbActions {
     logHolder.log('getMyBookList', level: 5);
     List<BookModel> retval = [];
     try {
-      List<dynamic> list = await CretaDB('creta_book')
-          .simpleQueryData(orderBy: 'updateTime', name: 'userId', value: userId);
+      QuerySnapshot<Object?> querySnapshot = await CretaDB('creta_book')
+          .collectionRef
+          .where(
+            'userId',
+            isEqualTo: userId,
+          )
+          .where('isRemoved', isEqualTo: false)
+          .orderBy('updateTime', descending: true)
+          .get();
+      List<dynamic> list = querySnapshot.docs;
+      //List<dynamic> list = querySnapshot.docs.map((doc) => doc.data()).toList();
+      // List<dynamic> list = await CretaDB('creta_book')
+      //     .simpleQueryData(orderBy: 'updateTime', name: 'userId', value: userId);
 
-      for (QueryDocumentSnapshot item in list) {
-        logHolder.log(item.data()!.toString(), level: 5);
-        Map<String, dynamic> map = item.data()! as Map<String, dynamic>;
+      for (QueryDocumentSnapshot doc in list) {
+        logHolder.log(doc.data()!.toString(), level: 5);
+        Map<String, dynamic> map = doc.data()! as Map<String, dynamic>;
         String? mid = map["mid"];
-        if (mid != null) {
-          BookModel book = BookModel.createEmptyModel(mid, userId);
-          book.deserialize(map);
-          retval.add(book);
+
+        if (mid == null) {
+          continue;
         }
+        BookModel book = BookModel.createEmptyModel(mid, userId);
+        book.deserialize(map);
+        retval.add(book);
       }
     } catch (e) {
       logHolder.log("Data error $e", level: 7);
@@ -43,11 +56,21 @@ class DbActions {
     return retval;
   }
 
-  static Future<List<PageModel>> getPages(BookModel book) async {
+  static Future<List<PageModel>> getPages(String bookMid) async {
     List<PageModel> retval = [];
     try {
-      List<dynamic> list = await CretaDB('creta_page')
-          .simpleQueryData(orderBy: 'updateTime', name: 'parentMid', value: book.mid);
+      QuerySnapshot<Object?> querySnapshot = await CretaDB('creta_page')
+          .collectionRef
+          .where(
+            'parentMid',
+            isEqualTo: bookMid,
+          )
+          .where('isRemoved', isEqualTo: false)
+          .orderBy('updateTime', descending: true)
+          .get();
+      List<dynamic> list = querySnapshot.docs;
+      // List<dynamic> list = await CretaDB('creta_page')
+      //     .simpleQueryData(orderBy: 'updateTime', name: 'parentMid', value: bookMid);
 
       logHolder.log('getPages(${list.length})', level: 5);
 
@@ -58,12 +81,7 @@ class DbActions {
         if (mid == null) {
           continue;
         }
-        bool? isRemoved = map["isRemoved"];
-        if (isRemoved != null && isRemoved == true) {
-          logHolder.log("removed data skipped($mid!", level: 5);
-          continue;
-        }
-        PageModel page = PageModel.createEmptyModel(mid, book.mid);
+        PageModel page = PageModel.createEmptyModel(mid, bookMid);
         page.deserialize(map);
         retval.add(page);
         page.accPropertyList = await getACCProperties(page);
@@ -77,8 +95,18 @@ class DbActions {
   static Future<List<ACCProperty>> getACCProperties(PageModel page) async {
     List<ACCProperty> retval = [];
     try {
-      List<dynamic> list = await CretaDB('creta_acc')
-          .simpleQueryData(orderBy: 'updateTime', name: 'parentMid', value: page.mid);
+      QuerySnapshot<Object?> querySnapshot = await CretaDB('creta_acc')
+          .collectionRef
+          .where(
+            'parentMid',
+            isEqualTo: page.mid,
+          )
+          .where('isRemoved', isEqualTo: false)
+          .orderBy('updateTime', descending: true)
+          .get();
+      List<dynamic> list = querySnapshot.docs;
+      // List<dynamic> list = await CretaDB('creta_acc')
+      //     .simpleQueryData(orderBy: 'updateTime', name: 'parentMid', value: page.mid);
       logHolder.log('getACCProperties(${list.length})', level: 5);
 
       for (QueryDocumentSnapshot item in list) {
@@ -88,11 +116,11 @@ class DbActions {
         if (mid == null) {
           continue;
         }
-        bool? isRemoved = map["isRemoved"];
-        if (isRemoved != null && isRemoved == true) {
-          logHolder.log("removed data skipped($mid!", level: 5);
-          continue;
-        }
+        // bool? isRemoved = map["isRemoved"];
+        // if (isRemoved != null && isRemoved == true) {
+        //   logHolder.log("removed data skipped($mid!", level: 5);
+        //   continue;
+        // }
         ACCProperty accProperty = ACCProperty.createEmptyModel(mid, page.mid);
         accProperty.deserialize(map);
         retval.add(accProperty);
@@ -107,9 +135,19 @@ class DbActions {
   static Future<SortedMap<int, ContentsModel>> getContents(ACCProperty accProperty) async {
     SortedMap<int, ContentsModel> retval = SortedMap<int, ContentsModel>();
     try {
-      List<dynamic> list = await CretaDB('creta_contents')
-          .simpleQueryData(orderBy: 'updateTime', name: 'parentMid', value: accProperty.mid);
-      logHolder.log('getContents(${list.length})', level: 5);
+      QuerySnapshot<Object?> querySnapshot = await CretaDB('creta_contents')
+          .collectionRef
+          .where(
+            'parentMid',
+            isEqualTo: accProperty.mid,
+          )
+          .where('isRemoved', isEqualTo: false)
+          .orderBy('updateTime', descending: true)
+          .get();
+      List<dynamic> list = querySnapshot.docs;
+      // List<dynamic> list = await CretaDB('creta_contents')
+      //     .simpleQueryData(orderBy: 'updateTime', name: 'parentMid', value: accProperty.mid);
+      // logHolder.log('getContents(${list.length})', level: 5);
       int idx = 0;
       for (QueryDocumentSnapshot item in list) {
         logHolder.log(item.data()!.toString(), level: 5);
@@ -118,11 +156,11 @@ class DbActions {
         if (mid == null) {
           continue;
         }
-        bool? isRemoved = map["isRemoved"];
-        if (isRemoved != null && isRemoved == true) {
-          logHolder.log("removed data skipped($mid!", level: 5);
-          continue;
-        }
+        // bool? isRemoved = map["isRemoved"];
+        // if (isRemoved != null && isRemoved == true) {
+        //   logHolder.log("removed data skipped($mid!", level: 5);
+        //   continue;
+        // }
         ContentsModel contents = ContentsModel.createEmptyModel(mid, accProperty.mid);
         contents.deserialize(map);
         retval[contents.order.value] = contents;
@@ -272,5 +310,32 @@ class DbActions {
     }
     logHolder.log('nothing changed !!! $tableName(${model.mid})', level: 5);
     return 0;
+  }
+
+  static Future<bool> removeBook(BookModel book) async {
+    logHolder.log('removeBook(${book.mid})', level: 6);
+    List<PageModel> pageList = await getPages(book.mid);
+    for (PageModel page in pageList) {
+      for (ACCProperty accModel in page.accPropertyList) {
+        for (ContentsModel contents in accModel.contentsMap.values) {
+          _storeIsRemovedOnly(contents, "creta_contents");
+        }
+        _storeIsRemovedOnly(accModel, "creta_acc");
+      }
+      _storeIsRemovedOnly(page, "creta_page");
+    }
+    return await _storeIsRemovedOnly(book, "creta_book");
+  }
+
+  static Future<bool> _storeIsRemovedOnly(AbsModel model, String tableName) async {
+    Map<String, dynamic> data = model.serialize();
+    data["updateTime"] = DateTime.now();
+    data["isRemoved"] = true;
+    bool succeed = await CretaDB(tableName).setData(model.mid, data);
+    if (succeed) {
+      logHolder.log('succeed $tableName($model.mid) isRemove=true', level: 5);
+      return true;
+    }
+    return false;
   }
 }

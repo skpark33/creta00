@@ -22,7 +22,7 @@ abstract class AbsPlayWidget extends StatefulWidget {
   ContentsModel? model;
   ACC acc;
   bool autoStart;
-  BasicOverayWidget? videoProgress;
+  //BasicOverayWidget? videoProgress;
 
   AbsPlayWidget({
     Key? key,
@@ -30,7 +30,7 @@ abstract class AbsPlayWidget extends StatefulWidget {
     required this.acc,
     required this.autoStart,
     this.model,
-    this.videoProgress,
+    //this.videoProgress,
   }) : super(key: key);
 
   // AbsPlayWidget.copy(AbsPlayWidget old, this.acc)
@@ -77,7 +77,9 @@ abstract class AbsPlayWidget extends StatefulWidget {
     if (await selectedModelHolder!.isSelectedModel(model!)) {
       pageManagerHolder!.setAsContents();
     }
-    accManagerHolder!.resizeMenu(model!.contentsType);
+    if (accManagerHolder != null) {
+      accManagerHolder!.resizeMenu(model!.contentsType);
+    }
   }
 
   Size getOuterSize(double srcRatio) {

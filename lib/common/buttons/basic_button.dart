@@ -132,6 +132,56 @@ class _BasicButton3State extends State<BasicButton3> {
   }
 }
 
+class IconOnlyButton extends StatefulWidget {
+  final void Function() onPressed;
+  final String iconPath;
+  final double width;
+  final double height;
+  final EdgeInsetsGeometry padding;
+
+  const IconOnlyButton(
+      {Key? key,
+      required this.onPressed,
+      required this.iconPath,
+      required this.width,
+      required this.height,
+      required this.padding})
+      : super(key: key);
+
+  @override
+  State<IconOnlyButton> createState() => _IconOnlyButtonState();
+}
+
+class _IconOnlyButtonState extends State<IconOnlyButton> {
+  bool isHover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        alignment: Alignment.centerLeft,
+        width: widget.width + (isHover ? widget.width * 0.1 : 0),
+        height: widget.height + (isHover ? widget.height * 0.1 : 0),
+        padding: widget.padding,
+        color: isHover ? MyColors.hover : Colors.transparent,
+        child: GestureDetector(
+          onPanDown: (details) => widget.onPressed(),
+          child: MouseRegion(
+            onHover: (event) {
+              setState(() {
+                isHover = true;
+              });
+            },
+            onExit: (event) {
+              setState(() {
+                isHover = false;
+              });
+            },
+            child: Image.asset(widget.iconPath),
+          ),
+        ));
+  }
+}
+
 IconButton logoIconButton(
     {required void Function() onPressed, double iconSize = MySizes.imageIcon}) {
   return IconButton(
@@ -141,20 +191,11 @@ IconButton logoIconButton(
         AssetImage(
           "assets/logo_en.png",
         ),
+
         //size: IconSizes.imageIcon,
       ),
       onPressed: onPressed //context.read<MenuController>().controlMenu,
       );
-}
-
-Widget logoIcon({Color color = MyColors.mainColor, double size = 40}) {
-  return ImageIcon(
-    AssetImage(
-      "assets/logo_en.png",
-    ),
-    color: color,
-    size: size,
-  );
 }
 
 Widget logoIcon2({Color color = MyColors.mainColor, double size = 40}) {

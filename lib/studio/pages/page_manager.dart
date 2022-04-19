@@ -101,13 +101,38 @@ class PageManager extends ChangeNotifier {
   }
 
   String createPage() {
+    String retval = '';
     PageModel page = PageModel(bookManagerHolder!.defaultBook!.mid);
-    page.order.set(pageIndex);
-    logHolder.log('createPage $pageIndex', level: 5);
+    MyChange<PageModel> c = MyChange<PageModel>(page, () {
+      retval = pageManagerHolder!.redoCreatePage(page);
+    }, (PageModel old) {
+      retval = pageManagerHolder!.undoCreatePage(old); // 값이 동일하다면, 할 필요가 없다.
+    });
+    mychangeStack.add(c);
+    return retval;
+  }
+
+  String redoCreatePage(PageModel page) {
+    page.order.set(pageIndex, noUndo: true);
+    page.isRemoved.set(false, noUndo: true);
+    logHolder.log('redoCreatePage $pageIndex', level: 6);
     pageMap[page.mid] = page;
     orderMap[page.order.value] = page;
     pageIndex++;
     return page.mid;
+  }
+
+  String undoCreatePage(PageModel page) {
+    if (isPageSelected(page.mid)) {
+      setSelectedFirst();
+    }
+    pageIndex--;
+    logHolder.log('undoCreatePage $pageIndex', level: 6);
+    page.isRemoved.set(true, noUndo: true);
+    String mid = page.mid;
+    orderMap.remove(mid);
+    pageMap.remove(mid);
+    return mid;
   }
 
   void pushPages(List<PageModel> list) {
@@ -143,13 +168,29 @@ class PageManager extends ChangeNotifier {
     }
   }
 
-  void removePage(String mid) {
+  String getFirstPage() {
+    for (PageModel model in orderMap.values) {
+      if (model.isRemoved.value == false) {
+        return model.mid;
+      }
+    }
+    return '';
+  }
+
+  void removePage(BuildContext context, String mid) {
     if (pageMap[mid] == null) {
       logHolder.log('removePage($mid) is null', level: 5);
       return;
     }
+    String firstMid = getFirstPage();
+    if (firstMid == mid) {
+      logHolder.log('last page ($mid) cant be deleted', level: 7);
+      return;
+    }
     logHolder.log('removePage($mid)', level: 5);
-
+    if (isPageSelected(mid)) {
+      setSelectedIndex(context, firstMid);
+    }
     mychangeStack.startTrans();
     for (PageModel model in pageMap.values) {
       if (model.order.value > pageMap[mid]!.order.value) {
@@ -188,6 +229,12 @@ class PageManager extends ChangeNotifier {
       await page.waitPageBuild(); // 페이지가 완전히 빌드 될때까지 기둘린다.
       accManagerHolder!.showPages(context, val); // page 가 완전히 노출된 후에 ACC 를 그린다.
     }
+  }
+
+  String setSelectedFirst() {
+    _selectedMid = getFirstPage();
+    pageManagerHolder!.setAsPage(); //setAsPage contain setState()
+    return _selectedMid;
   }
 
   void reorderMap() {

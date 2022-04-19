@@ -213,14 +213,19 @@ class ACC {
   }
 
   void _showACCMenu(BuildContext context) {
+    logHolder.log('_showACCMenu', level: 6);
+    if (accManagerHolder == null) {
+      return;
+    }
     if (accManagerHolder!.isMenuVisible()) {
       bool reshow = accManagerHolder!.isMenuHostChanged();
       accManagerHolder!.unshowMenu(context);
       if (reshow) {
         accManagerHolder!.showMenu(context, this);
       } else {
-        //setState 만 다시 해준다.
-        accManagerHolder!.invalidateMenu(context, this);
+        //setState 만 다시 해준다.  2022.4.18 skpark 이걸 해야...progress controll 이 바뀔텐데..
+        // 테스트가 필요함...
+        //accManagerHolder!.invalidateMenu(context, this);
       }
     } else {
       accManagerHolder!.showMenu(context, this);
@@ -810,8 +815,8 @@ class ACC {
     return accChild.playManager.getCurrentPlayState();
   }
 
-  Future<Widget?> getCurrentVideoController() async {
-    return await accChild.playManager.getCurrentVideoController();
+  Future<Widget?> getCurrentVideoProgress() async {
+    return await accChild.playManager.getCurrentVideoProgress();
   }
 
   Future<bool> getCurrentMute() {

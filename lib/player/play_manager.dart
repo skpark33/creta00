@@ -220,16 +220,22 @@ class PlayManager {
     });
   }
 
-  Future<Widget?> getCurrentVideoController() async {
+  Future<Widget?> getCurrentVideoProgress() async {
     return await _lock.synchronized(() async {
       if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
         if (_playList.value[_currentIndex].model!.contentsType == ContentsType.video) {
-          if (_playList.value[_currentIndex].model!.playState != PlayState.start) {
-            Future.delayed(const Duration(milliseconds: 100));
-            // player 가 start 할때까지 기다려 줘야 한다.
-          }
+          // if (_playList.value[_currentIndex].model!.playState != PlayState.start) {
+          //   Future.delayed(const Duration(milliseconds: 100));
+          //   // player 가 start 할때까지 기다려 줘야 한다.
+          // }
           VideoPlayerWidget aVideo = _playList.value[_currentIndex] as VideoPlayerWidget;
-          return aVideo.videoProgress;
+          return BasicOverayWidget(
+              key: ValueKey<String>(aVideo.model!.mid),
+              controller: aVideo.wcontroller!,
+              width: 200,
+              height: 20);
+
+          //return aVideo.videoProgress;
         }
       }
       return Container();
@@ -280,7 +286,7 @@ class PlayManager {
         }
         // 아직 교체시간이 되지 않았다.
         if (_currentPlaySec < currentModel!.playTime.value) {
-          if (bookManagerHolder!.isAutoPlay()) {
+          if (bookManagerHolder!.isAutoPlay() && currentModel!.playState != PlayState.pause) {
             _currentPlaySec += _timeGap;
           }
           return;
@@ -339,11 +345,11 @@ class PlayManager {
             autoStart: isAutoPlay, // (_currentIndex < 0) ? true : false,
           );
           await aWidget.init();
-          aWidget.videoProgress = BasicOverayWidget(
-              key: ValueKey<String>(model.mid),
-              controller: (aWidget as VideoPlayerWidget).wcontroller!,
-              width: 200,
-              height: 20);
+          // aWidget.videoProgress = BasicOverayWidget(
+          //     key: ValueKey<String>(model.mid),
+          //     controller: (aWidget as VideoPlayerWidget).wcontroller!,
+          //     width: 200,
+          //     height: 20);
           if (_currentIndex < 0) _currentIndex = 0;
         } else if (model.isImage()) {
           GlobalObjectKey<ImagePlayerWidgetState> key =
@@ -487,13 +493,16 @@ class PlayManager {
 
   Future<void> next({bool pause = false, int until = -1}) async {
     await _lock.synchronized(() async {
+      //ContentsType prevContentsType = ContentsType.free;
       if (_playList.value.isNotEmpty) {
         int prevIndex = _currentIndex;
         if (_currentIndex >= 0) {
+          AbsPlayWidget prevPlayer = _playList.value[_currentIndex];
           if (pause) {
             logHolder.log('pause($_currentIndex)');
-            await _playList.value[_currentIndex].pause();
+            await prevPlayer.pause();
           }
+          //prevContentsType = prevPlayer.model!.contentsType;
         }
         if (until >= 0) {
           _currentIndex = until;
@@ -505,14 +514,14 @@ class PlayManager {
         }
         //logHolder.log('play($_currentIndex)--');
         _currentPlaySec = 0;
-
+        AbsPlayWidget currentPlayer = _playList.value[_currentIndex];
         if (!baseWidget.isAnime()) {
           //skpark carousel problem
           if (prevIndex != _currentIndex) {
             baseWidget.invalidate();
           } else {
             if (bookManagerHolder!.isAutoPlay()) {
-              await _playList.value[_currentIndex].play();
+              await currentPlayer.play();
             }
           }
         } else {
@@ -520,22 +529,28 @@ class PlayManager {
         } // skpark carousel problem
         if (pageManagerHolder!.isContents() &&
             accManagerHolder!.isCurrentIndex(baseWidget.acc!.accModel.mid)) {
-          selectedModelHolder!.setModel(_playList.value[_currentIndex].model!);
+          selectedModelHolder!.setModel(currentPlayer.model!);
         }
-        //accManagerHolder!.resizeMenu(_playList.value[_currentIndex].model!.contentsType);
+        //if (currentPlayer.model!.contentsType != prevContentsType) {
+        //accManagerHolder!.resizeMenu(currentPlayer.model!.contentsType);
+        //}
       }
     });
   }
 
   Future<void> prev({bool pause = false}) async {
     await _lock.synchronized(() async {
+      //ContentsType prevContentsType = ContentsType.free;
+
       if (_playList.value.isNotEmpty) {
         int prevIndex = _currentIndex;
         if (_currentIndex >= 0) {
+          AbsPlayWidget prevPlayer = _playList.value[_currentIndex];
           if (pause) {
             logHolder.log('pause($_currentIndex)');
-            await _playList.value[_currentIndex].pause();
+            await prevPlayer.pause();
           }
+          //prevContentsType = prevPlayer.model!.contentsType;
         }
         _currentIndex--;
         if (_currentIndex < 0) {
@@ -544,13 +559,14 @@ class PlayManager {
 //        logHolder.log('play($_currentIndex)');
         _currentPlaySec = 0;
 
+        AbsPlayWidget currentPlayer = _playList.value[_currentIndex];
         if (!baseWidget.isAnime()) {
           //skpark carousel problem
           if (prevIndex != _currentIndex) {
             baseWidget.invalidate();
           } else {
             if (bookManagerHolder!.isAutoPlay()) {
-              await _playList.value[_currentIndex].play();
+              await currentPlayer.play();
             }
           }
         } else {
@@ -558,9 +574,11 @@ class PlayManager {
         } // skpark carousel problem
         if (pageManagerHolder!.isContents() &&
             accManagerHolder!.isCurrentIndex(baseWidget.acc!.accModel.mid)) {
-          selectedModelHolder!.setModel(_playList.value[_currentIndex].model!);
+          selectedModelHolder!.setModel(currentPlayer.model!);
         }
-        accManagerHolder!.resizeMenu(_playList.value[_currentIndex].model!.contentsType);
+        //if (currentPlayer.model!.contentsType != prevContentsType) {
+        //accManagerHolder!.resizeMenu(currentPlayer.model!.contentsType);
+        //}
       }
     });
   }

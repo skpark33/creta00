@@ -170,6 +170,7 @@ class MyTextStyles {
 }
 
 class MyColors {
+  static const Color hover = Color(0xffD9D9D9);
   static const Color border = Color(0xff722ED1);
   static const Color divide = Color(0xffD9D9D9);
   static const Color artBoardBgColor = Color(0xFFE3E3E3);

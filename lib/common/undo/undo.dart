@@ -30,8 +30,12 @@ class UndoAble<T> {
     _mid = mid;
   }
 
-  void set(T val, {bool save = true}) {
+  void set(T val, {bool save = true, bool noUndo = false}) {
     if (val == _value) return; // 값이 동일하다면, 할 필요가 없다.
+    if (noUndo) {
+      _value = val;
+      return;
+    }
     MyChange<T> c = MyChange<T>(_value, () {
       _value = val;
       if (save && saveManagerHolder != null) {

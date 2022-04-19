@@ -156,126 +156,129 @@ class _MyTreeViewState extends State<MyTreeView> {
             selectedKey: _selectedNode,
           );
 
-          return GestureDetector(
-            onTap: () {
-              FocusScope.of(context).requestFocus(FocusNode());
-            },
+          return //GestureDetector(
+              //onTap: () {
+              //  FocusScope.of(context).requestFocus(FocusNode());
+              //},
 
-            child:
-                // Consumer<PageManager>(
-                //   builder: (context, pageManager, child) {
-                //     logHolder.log('Consumer build PageSwipListState ${pageManager.pageIndex}');
+              //child:
+              // Consumer<PageManager>(
+              //   builder: (context, pageManager, child) {
+              //     logHolder.log('Consumer build PageSwipListState ${pageManager.pageIndex}');
 
-                //     pageManager.reorderMap();
-                //     List<PageModel> items = pageManager.orderMap.values.toList();
+              //     pageManager.reorderMap();
+              //     List<PageModel> items = pageManager.orderMap.values.toList();
 
-                //     if (items.isEmpty) {
-                //       logHolder.log('item is empty');
-                //       return Container();
-                //     }
-                //     return
-                TreeView(
-              controller: _treeViewController,
-              allowParentSelect: _allowParentSelect,
-              supportParentDoubleTap: _supportParentDoubleTap,
-              onExpansionChanged: (key, expanded) => _expandNode(key, expanded),
-              onNodeTap: (key) {
-                debugPrint('Selected: $key');
-                if (_selectedNode == key) {
+              //     if (items.isEmpty) {
+              //       logHolder.log('item is empty');
+              //       return Container();
+              //     }
+              //     return
+              TreeView(
+            controller: _treeViewController,
+            allowParentSelect: _allowParentSelect,
+            supportParentDoubleTap: _supportParentDoubleTap,
+            onExpansionChanged: (key, expanded) => _expandNode(key, expanded),
+            onNodeTap: (key) {
+              debugPrint('Selected: $key');
+              if (_selectedNode == key) {
+                return;
+              }
+              setState(() {
+                _selectedNode = key;
+                _treeViewController = _treeViewController.copyWith(selectedKey: key);
+                Node? node = _treeViewController.getNode(key);
+                if (node == null) {
+                  logHolder.log('Invalid key', level: 7);
                   return;
                 }
-                setState(() {
-                  _selectedNode = key;
-                  _treeViewController = _treeViewController.copyWith(selectedKey: key);
-                  Node? node = _treeViewController.getNode(key);
-                  if (node == null) {
-                    logHolder.log('Invalid key', level: 7);
-                    return;
-                  }
-                  logHolder.log('key=$key');
-                  widget.pageManager.setSelectedIndex(context, key.substring(0, 5 + 36));
+                logHolder.log('key=$key');
+                widget.pageManager.setSelectedIndex(context, key.substring(0, 5 + 36));
 
-                  String mid = '';
-                  if (key.contains(accPrefix)) {
-                    //int pos = accPrefix.length;
-                    mid = key.substring(5 + 36 + 1, 5 + 36 + 1 + 4 + 36);
-                    logHolder.log('mid=$mid');
-                    accManagerHolder!.setCurrentMid(mid);
+                String mid = '';
+                if (key.contains(accPrefix)) {
+                  //int pos = accPrefix.length;
+                  mid = key.substring(5 + 36 + 1, 5 + 36 + 1 + 4 + 36);
+                  logHolder.log('mid=$mid');
+                  accManagerHolder!.setCurrentMid(mid);
+                }
+                if (mid.isNotEmpty && key.contains(contentsPrefix)) {
+                  ACC? acc = accManagerHolder!.getCurrentACC();
+                  if (acc != null) {
+                    int order = node.data.order.value;
+                    debugPrint('selectContents: $order');
+                    acc.selectContents(context, mid, contentsIdx: order);
                   }
-                  if (mid.isNotEmpty && key.contains(contentsPrefix)) {
-                    ACC? acc = accManagerHolder!.getCurrentACC();
-                    if (acc != null) {
-                      int order = node.data.order.value;
-                      debugPrint('selectContents: $order');
-                      acc.selectContents(context, mid, contentsIdx: order);
-                    }
-                  }
-                });
-              },
-              // onNodeDoubleTap: (key) {
-              //   logHolder.log('onNodeDoubleTap', level: 5);
-              // },
-              // nodeBuilder: (context, node) {
-              //   PageModel model = node.data;
-              //   String pageNo = (model.pageNo.value + 1).toString().padLeft(2, '0');
-              //   String desc = node.data.description.value;
-              //   if (desc.isEmpty) {
-              //     desc = MyStrings.title + ' $pageNo';
-              //   }
+                }
+              });
+            },
+            onNodeDoubleTap: (key) {
+              logHolder.log('onNodeDoubleTap', level: 6);
+            },
+            // nodeBuilder: (context, node) {
+            //   return Text(node.label);
+            // },
+            // nodeBuilder: (context, node) {
+            //   PageModel model = node.data;
+            //   String pageNo = (model.pageNo.value + 1).toString().padLeft(2, '0');
+            //   String desc = node.data.description.value;
+            //   if (desc.isEmpty) {
+            //     desc = MyStrings.title + ' $pageNo';
+            //   }
 
-              //   return Padding(
-              //     padding: const EdgeInsets.all(8.0),
-              //     child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              //       IconButton(
-              //         padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-              //         iconSize: MySizes.smallIcon,
-              //         onPressed: () {
-              //           setState(() {
-              //             model.isCircle.set(!model.isCircle.value);
-              //           });
-              //         },
-              //         icon: Icon(model.isCircle.value ? Icons.autorenew : Icons.push_pin_outlined),
-              //         color: MyColors.icon,
-              //       ),
-              //       SizedBox(
-              //         height: 40,
-              //         width: 180,
-              //         //color: Colors.red,
-              //         child: Row(
-              //           crossAxisAlignment: CrossAxisAlignment.center,
-              //           children: [
-              //             Text(
-              //               'Page $pageNo.',
-              //               style: MyTextStyles.buttonText,
-              //             ),
-              //             SizedBox(
-              //               width: 118,
-              //               child: Text(
-              //                 model.description.value.isEmpty
-              //                     ? '${MyStrings.title} ${model.id + 1}'
-              //                     : model.description.value,
-              //                 style: MyTextStyles.description,
-              //                 overflow: TextOverflow.ellipsis,
-              //               ),
-              //             ),
-              //           ],
-              //         ),
-              //       ),
-              //       IconButton(
-              //         iconSize: MySizes.smallIcon,
-              //         onPressed: () {
-              //           setState(() {
-              //             widget.pageManager.removePage(model.id);
-              //           });
-              //         },
-              //         icon: Icon(Icons.delete_outline),
-              //         color: MyColors.icon,
-              //       ),
-              //     ]),
-              //   );
-              // },
-              theme: _treeViewTheme,
-            ),
+            //   return Padding(
+            //     padding: const EdgeInsets.all(8.0),
+            //     child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            //       IconButton(
+            //         padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+            //         iconSize: MySizes.smallIcon,
+            //         onPressed: () {
+            //           setState(() {
+            //             model.isCircle.set(!model.isCircle.value);
+            //           });
+            //         },
+            //         icon: Icon(model.isCircle.value ? Icons.autorenew : Icons.push_pin_outlined),
+            //         color: MyColors.icon,
+            //       ),
+            //       SizedBox(
+            //         height: 40,
+            //         width: 180,
+            //         //color: Colors.red,
+            //         child: Row(
+            //           crossAxisAlignment: CrossAxisAlignment.center,
+            //           children: [
+            //             Text(
+            //               'Page $pageNo.',
+            //               style: MyTextStyles.buttonText,
+            //             ),
+            //             SizedBox(
+            //               width: 118,
+            //               child: Text(
+            //                 model.description.value.isEmpty
+            //                     ? '${MyStrings.title} ${model.id + 1}'
+            //                     : model.description.value,
+            //                 style: MyTextStyles.description,
+            //                 overflow: TextOverflow.ellipsis,
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //       IconButton(
+            //         iconSize: MySizes.smallIcon,
+            //         onPressed: () {
+            //           setState(() {
+            //             widget.pageManager.removePage(model.id);
+            //           });
+            //         },
+            //         icon: Icon(Icons.delete_outline),
+            //         color: MyColors.icon,
+            //       ),
+            //     ]),
+            //   );
+            // },
+            theme: _treeViewTheme,
+            //),
             //    },
             //  ),
             // GestureDetector(

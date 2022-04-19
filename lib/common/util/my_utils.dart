@@ -8,6 +8,8 @@ import 'package:creta00/common/util/logger.dart';
 //import 'package:creta00/constants/constants.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 
+import '../../constants/strings.dart';
+
 double getDeltaRadiusPercent(Size realSize, double dx, double dy, double direction) {
   if (dx == 0 && dy == 0) return 0;
 
@@ -128,10 +130,6 @@ Widget myCheckBox(String title, bool value, void Function() onPressed, double le
     double right, double bottom) {
   return Row(
     children: [
-      Text(
-        title,
-        style: MyTextStyles.subtitle2,
-      ),
       IconButton(
         padding: EdgeInsets.fromLTRB(left, top, right, bottom),
         iconSize: 30.0,
@@ -140,7 +138,11 @@ Widget myCheckBox(String title, bool value, void Function() onPressed, double le
           color: value == true ? MyColors.mainColor : Colors.grey,
         ),
         onPressed: onPressed,
-      )
+      ),
+      Text(
+        title,
+        style: MyTextStyles.subtitle2,
+      ),
     ],
   );
 }
@@ -574,4 +576,22 @@ void naviPop(BuildContext context) {
   Navigator.pop(
     context,
   );
+}
+
+String dateToDurationString(DateTime updateTime) {
+  Duration duration = DateTime.now().difference(updateTime);
+  if (duration.inDays >= 365) {
+    return '${((duration.inDays / 365) * 10).round()} ${MyStrings.yearBefore}';
+  }
+  if (duration.inDays >= 30) {
+    return '${((duration.inDays / 30) * 10).round()} ${MyStrings.monthBefore}';
+  }
+  if (duration.inDays >= 1) {
+    return '${duration.inDays} ${MyStrings.dayBefore}';
+  }
+  if (duration.inHours >= 1) {
+    return '${duration.inHours} ${MyStrings.hourBefore}';
+  }
+
+  return '${duration.inMinutes} ${MyStrings.minBefore}';
 }

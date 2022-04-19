@@ -162,7 +162,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   @override
   void dispose() {
-    logHolder.log("video widget dispose,${widget.model!.name}", level: 5);
+    logHolder.log("video widget dispose,${widget.model!.name}", level: 6);
     //widget.wcontroller!.dispose();
     super.dispose();
     widget.model!.setPlayState(PlayState.disposed);
@@ -174,7 +174,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       await Future.delayed(const Duration(milliseconds: 100));
     }
     if (widget.autoStart) {
-      logHolder.log('initState play-----------------', level: 6);
+      logHolder.log('initState play--${widget.model!.name}---------------', level: 6);
       await widget.play();
     }
     return true;

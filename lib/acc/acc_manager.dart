@@ -80,8 +80,13 @@ class ACCManager extends ChangeNotifier {
     return retval;
   }
 
-  ACC createACC(int order, BuildContext context, BaseWidget widget, PageModel page) {
+  ACC createACC(BuildContext context, PageModel page) {
+    int order = getMaxOrder() + 1;
+    BaseWidget widget =
+        BaseWidget(baseWidgetKey: GlobalObjectKey<BaseWidgetState>(const Uuid().v4()));
+
     logHolder.log("createACC($order)");
+
     ACC acc = ACC(page: page, accChild: widget, idx: order);
     acc.initSizeAndPosition();
     acc.registerOverlay(context);
@@ -173,6 +178,14 @@ class ACCManager extends ChangeNotifier {
     if (_currentAccMid.isEmpty) return;
     acc ??= accMap[_currentAccMid]!;
 
+    ContentsType type = await acc.getCurrentContentsType();
+
+    if (type == ContentsType.video || type == ContentsType.image) {
+      accMenu.size = Size(accMenu.size.width, 68);
+    } else {
+      accMenu.size = Size(accMenu.size.width, 36);
+    }
+
     Offset realOffset = acc.getRealOffset();
     double dx = realOffset.dx;
     double dy = realOffset.dy;
@@ -185,15 +198,12 @@ class ACCManager extends ChangeNotifier {
     dx = dx - (accMenu.size.width / 2.0);
     // widget 의 하단에 자리를 잡는다.
     dy = dy + realSize.height;
-    dy = dy + 10; // offset
 
     // 그런데, 아래에 자리가 없으면 어떻게 할것인가 ?
-
-    if (await acc.getCurrentContentsType() == ContentsType.video ||
-        await acc.getCurrentContentsType() == ContentsType.image) {
-      accMenu.size = Size(accMenu.size.width, 68);
+    if (acc.accModel.fullscreen.value) {
+      dy = dy - accMenu.size.height - 10;
     } else {
-      accMenu.size = Size(accMenu.size.width, 36);
+      dy = dy + 10;
     }
 
     accMenu.position = Offset(dx, dy);
@@ -217,7 +227,9 @@ class ACCManager extends ChangeNotifier {
 
     accMenu.size = Size(accMenu.size.width, height);
     accMenu.setType(type);
-    accMenu.setState();
+    if (accMenu.isShow()) {
+      accMenu.setState();
+    }
   }
 
   bool isMenuVisible() {

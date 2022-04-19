@@ -110,6 +110,7 @@ class PageSwipListState extends State<PageSwipList> {
                   children: [
                     Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       IconButton(
+                        // 순환 버튼
                         padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
                         iconSize: MySizes.smallIcon,
                         onPressed: () {
@@ -148,10 +149,11 @@ class PageSwipListState extends State<PageSwipList> {
                         ),
                       ),
                       IconButton(
+                        // 삭제 버튼
                         iconSize: MySizes.smallIcon,
                         onPressed: () {
                           setState(() {
-                            pageManager.removePage(model.mid);
+                            pageManager.removePage(context, model.mid);
                           });
                         },
                         icon: Icon(Icons.delete_outline),

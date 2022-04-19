@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:creta00/model/contents.dart';
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 
 import 'package:creta00/common/buttons/basic_button.dart';
 import 'package:creta00/common/buttons/hover_buttons.dart';
@@ -13,7 +12,6 @@ import 'package:creta00/common/util/my_utils.dart';
 import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/acc/acc.dart';
-import 'package:creta00/widgets/base_widget.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 
 class MenuModel {
@@ -44,7 +42,7 @@ class MyMenuStickState extends State<MyMenuStick> {
   bool isExpanded = false;
   bool isSubMenuOpen = false;
 
-  static int _keyIdx = 0;
+  //static int _keyIdx = 0;
 
   static List<MenuModel> menuModelList = [
     // MenuModel(Icons.grid_view, "Control", []),
@@ -61,12 +59,7 @@ class MyMenuStickState extends State<MyMenuStick> {
   ];
 
   static void createACC(BuildContext context, ContentsModel model) {
-    const uuid = Uuid();
-    _keyIdx = accManagerHolder!.accMap.length;
-    GlobalObjectKey<BaseWidgetState> baseWidgetKey = GlobalObjectKey<BaseWidgetState>(uuid.v4());
-    ACC acc = accManagerHolder!.createACC(_keyIdx, context,
-        BaseWidget(baseWidgetKey: baseWidgetKey), pageManagerHolder!.getSelected()!);
-    _keyIdx++;
+    ACC acc = accManagerHolder!.createACC(context, pageManagerHolder!.getSelected()!);
     model.parentMid.set(acc.accModel.mid);
     acc.accChild.playManager.push(acc, model);
   }
@@ -344,12 +337,7 @@ class MyMenuStickState extends State<MyMenuStick> {
 
   void framePressed() {
     logHolder.log('frame Pressed');
-    _keyIdx = accManagerHolder!.accMap.length;
-    const uuid = Uuid();
-    GlobalObjectKey<BaseWidgetState> baseWidgetKey = GlobalObjectKey<BaseWidgetState>(uuid.v4());
-    accManagerHolder!.createACC(_keyIdx, context, BaseWidget(baseWidgetKey: baseWidgetKey),
-        pageManagerHolder!.getSelected()!);
-    _keyIdx++;
+    accManagerHolder!.createACC(context, pageManagerHolder!.getSelected()!);
   }
 
   void textPressed() {

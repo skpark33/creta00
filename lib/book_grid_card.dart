@@ -1,5 +1,8 @@
 import 'package:creta00/book_manager.dart';
+import 'package:creta00/common/util/logger.dart';
 import 'package:flutter/material.dart';
+import 'common/buttons/basic_button.dart';
+import 'common/util/my_utils.dart';
 import 'constants/styles.dart';
 import 'model/book.dart';
 import 'main_util.dart';
@@ -10,6 +13,7 @@ class BookGridCard extends StatefulWidget {
   final BookModel book;
   final String durationStr;
   final void Function() onTapdown;
+  final void Function() onDelete;
 
   const BookGridCard({
     Key? key,
@@ -17,6 +21,7 @@ class BookGridCard extends StatefulWidget {
     required this.book,
     required this.durationStr,
     required this.onTapdown,
+    required this.onDelete,
   }) : super(key: key);
 
   @override
@@ -27,6 +32,8 @@ class _BookGridCardState extends State<BookGridCard> {
   final double gridWidth = 328;
   final double gridHeight = 210;
   final double gridTitle = 48;
+
+  bool deleteBook = false;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +57,8 @@ class _BookGridCardState extends State<BookGridCard> {
                 height: gridHeight - gridTitle,
                 child: MainUtil.drawBackground(gridWidth, gridHeight - gridTitle, widget.book),
               ),
-              SizedBox(
+              Container(
+                padding: const EdgeInsets.only(right: 10),
                 height: gridTitle,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -83,6 +91,76 @@ class _BookGridCardState extends State<BookGridCard> {
               book: widget.book,
               onTapdown: widget.onTapdown,
             ),
+            Positioned(
+              bottom: 15,
+              right: 10,
+              height: 30,
+              width: 30,
+              child: IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () {
+                  logHolder.log('Delete Book pressed', level: 6);
+                  setState(() {
+                    deleteBook = true;
+                  });
+                },
+                color: MyColors.mainColor,
+              ),
+            ),
+            deleteBook
+                ? frostedEdged(
+                    child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                  text: widget.book.name.value,
+                                  style: MyTextStyles.subtitle1.copyWith(
+                                      fontSize: 20,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text: '을  정말로 삭제하시겠습니까 ?',
+                                  style: MyTextStyles.subtitle1.copyWith(
+                                      fontSize: 20,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          basicButton(
+                              name: "Yes",
+                              iconData: Icons.done_outlined,
+                              onPressed: () {
+                                logHolder.log('Yes pressed', level: 6);
+                                setState(() {
+                                  deleteBook = false;
+                                  bookManagerHolder!.removeBook(widget.book, widget.onDelete);
+                                });
+                              }),
+                          basicButton(
+                              name: "No",
+                              iconData: Icons.close_outlined,
+                              onPressed: () {
+                                logHolder.log('No pressed', level: 6);
+                                setState(() {
+                                  deleteBook = false;
+                                });
+                              }),
+                        ],
+                      )
+                    ],
+                  ))
+                : Container(),
           ]),
 
           //height: 200,

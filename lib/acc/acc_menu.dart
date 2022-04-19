@@ -26,8 +26,11 @@ class ACCMenu {
   double buttonHeight = 30.0;
 
   void setState() {
+    logHolder.log("ACCMenu::setState()", level: 6);
     entry!.markNeedsBuild();
   }
+
+  bool isShow() => _visible;
 
   void unshow(BuildContext context) {
     if (_visible == true) {
@@ -79,6 +82,8 @@ class ACCMenu {
     // double radiusTopLeft = 10;
     // double radiusBottomRight = 10;
     // double radiusBottomLeft = 10;
+
+    logHolder.log('showOverlay', level: 6);
 
     return Visibility(
       visible: _visible,
@@ -183,8 +188,13 @@ class ACCMenu {
   }
 
   Widget menuByContentType(BuildContext context, ACC? acc) {
+    if (acc == null) {
+      return Container();
+    }
+    logHolder.log('menuByContentType', level: 6);
+
     return FutureBuilder(
-        future: acc!.accChild.playManager.getCurrentData(),
+        future: acc.accChild.playManager.getCurrentData(),
         builder: (BuildContext context, AsyncSnapshot<CurrentData> snapshot) {
           if (snapshot.hasData == false) {
             //해당 부분은 data를 아직 받아 오지 못했을때 실행되는 부분을 의미한다.
@@ -194,17 +204,19 @@ class ACCMenu {
             //error가 발생하게 될 경우 반환하게 되는 부분
             return errMsgWidget(snapshot);
           }
-          if (_type == ContentsType.video || snapshot.data!.type == ContentsType.video) {
-            return videoMenu(context, snapshot.data!.state, snapshot.data!.mute, acc);
-          } else if (_type == ContentsType.image || snapshot.data!.type == ContentsType.image) {
-            return imageMenu(context, snapshot.data!.state, snapshot.data!.mute);
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (_type == ContentsType.video || snapshot.data!.type == ContentsType.video) {
+              return videoMenu(context, snapshot.data!.state, snapshot.data!.mute, acc);
+            } else if (_type == ContentsType.image || snapshot.data!.type == ContentsType.image) {
+              return imageMenu(context, snapshot.data!.state, snapshot.data!.mute);
+            }
           }
           return Container();
         });
   }
 
   Widget videoMenu(BuildContext context, PlayState state, bool mute, ACC? acc) {
-    logHolder.log('videoMenu() $state', level: 6);
+    logHolder.log('videoMenu() $state ${acc!.accModel.mid}', level: 6);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -242,7 +254,7 @@ class ACCMenu {
             },
             icon: Icon(state != PlayState.start ? Icons.play_arrow : Icons.pause)),
         //icon: const Icon(Icons.pause)),
-        acc != null ? getProgressWidget(context, acc) : Container(),
+        getProgressWidget(context, acc),
         HoverButton(
             onEnter: () {},
             onExit: () {},
@@ -308,7 +320,7 @@ class ACCMenu {
 
   Widget getProgressWidget(BuildContext context, ACC? acc) {
     return FutureBuilder(
-        future: acc!.getCurrentVideoController(),
+        future: acc!.getCurrentVideoProgress(),
         builder: (context, AsyncSnapshot<Widget?> snapshot) {
           if (snapshot.hasError) {
             logHolder.log("snapshot.hasError", level: 7);

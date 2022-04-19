@@ -25,28 +25,28 @@ samples, guidance on mobile development, and a full API reference.
 ## skpark
 ## run way
 ## build directory configuration
-flutter config --build-dir=../release/cretaTest00  
+flutter config --build-dir=../release/cretaTest01  
 
 #visual code 를 재기동한다.
 ## flutter run -d web-server --web-renderer html
 flutter run -d chrome --web-renderer html
 
 ## build and release process
-flutter build web --web-renderer html --release --base-href="/cretaTest00/"
+flutter build web --web-renderer html --release --base-href="/cretaTest01/"
 
 ## first time after create repository
-cd ../release/cretaTest00/web
-echo "# cretaTest00" >> README.md
+cd ../release/cretaTest01/web
+echo "# cretaTest01" >> README.md
 git init
 git add .
 git commit -m "first commit"
 git branch -M main
-git remote add origin https://github.com/skpark33/cretaTest00.git
+git remote add origin https://github.com/skpark33/cretaTest01.git
 git push -u origin main
 
 ## GitHub 페이지에서 Settings 에서 GitHub pages 'click it out here' 를 누른다.
 # Source choice 박스에서 main 을 고른뒤 save 를 눌러주면 웹페이지가 생기다.
-# https://skpark33.github.io/accTest0390/
+# https://skpark33.github.io/cretaTest01/
 
 # for windows configuration
 

@@ -103,7 +103,7 @@ class MainScreenState extends State<StudioMainScreen> {
         focusNode: FocusNode(),
         onKey: keyEventHandler,
         child: FutureBuilder<List<PageModel>>(
-            future: DbActions.getPages(bookManagerHolder!.defaultBook!),
+            future: DbActions.getPages(bookManagerHolder!.defaultBook!.mid),
             builder: (context, AsyncSnapshot<List<PageModel>> snapshot) {
               if (snapshot.hasError) {
                 //error가 발생하게 될 경우 반환하게 되는 부분

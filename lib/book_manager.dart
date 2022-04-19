@@ -1,3 +1,4 @@
+import 'package:creta00/db/db_actions.dart';
 import 'package:creta00/model/book.dart';
 import 'package:flutter/material.dart';
 
@@ -53,6 +54,18 @@ class BookManager extends ChangeNotifier {
     //DbActions.save(book.mid);
     // set 에서 이미 pushChanged 를 하고 있으므로, pushChanged 를 할 필요가 없다.
     // saveManagerHolder!.pushChanged(book.mid, 'setBookThumbnail');
+  }
+
+  bool removeBook(BookModel book, void Function() onComplete) {
+    DbActions.removeBook(book);
+    if (defaultBook!.mid == book.mid) {
+      // Default book 이 삭제되는 경우.
+      bookList.removeWhere((item) => item.mid == book.mid);
+      defaultBook = bookList[0];
+    }
+    bookList.removeWhere((item) => item.mid == book.mid);
+    onComplete.call();
+    return true;
   }
 
   bool makeCopy(String newName) {

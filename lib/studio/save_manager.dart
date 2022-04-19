@@ -145,6 +145,7 @@ class SaveManager extends ChangeNotifier {
           logHolder.log('autoSave------------start(${_dataChangedQue.length})', level: 5);
           while (_dataChangedQue.isNotEmpty) {
             final mid = _dataChangedQue.first;
+            logHolder.log('autoSave------------', level: 6);
             if (!await DbActions.save(mid)) {
               _errMsg = MyStrings.saveError;
             }

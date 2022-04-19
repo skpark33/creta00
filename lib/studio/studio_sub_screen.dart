@@ -54,8 +54,8 @@ class StudioSubScreenState extends State<StudioSubScreen> {
       logHolder.log('afterBuild StudioSubScreen', level: 6);
       if (accManagerHolder!.registerOverayAll(context)) {
         //setState(() {});
+        saveManagerHolder!.initTimer();
       }
-      saveManagerHolder!.initTimer();
     });
   }
 
@@ -174,13 +174,20 @@ class StudioSubScreenState extends State<StudioSubScreen> {
         style: MyTextStyles.h5,
       ),
       leadingWidth: isNarrow ? 200 : 400,
-      leading: isNarrow
-          ? logoIconButton(onPressed: () {
-              goBackHome(context);
-            })
-          : appBarLeading(),
+      leading: isNarrow ? logoIcon() : appBarLeading(),
       actions: isNarrow ? [] : appBarAction(),
     );
+  }
+
+  Widget logoIcon() {
+    return IconOnlyButton(
+        iconPath: "assets/logo_en.png",
+        padding: const EdgeInsets.only(left: 15, right: 10),
+        width: 110,
+        height: 50,
+        onPressed: () {
+          goBackHome(context);
+        });
   }
 
   Future<void> goBackHome(BuildContext context) async {
@@ -203,9 +210,7 @@ class StudioSubScreenState extends State<StudioSubScreen> {
 
   Widget appBarLeading() {
     return Row(children: [
-      logoIconButton(onPressed: () {
-        goBackHome(context);
-      }),
+      logoIcon(),
       IconButton(
         icon: const Icon(Icons.undo),
         onPressed: () {

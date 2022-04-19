@@ -1,11 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:creta00/book_sliver_grid.dart';
 import 'package:creta00/constants/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/model/users.dart';
 
-import 'book_grid_card.dart';
 import 'book_manager.dart';
 import 'common/buttons/basic_button.dart';
 import 'common/buttons/hover_buttons.dart';
@@ -13,7 +13,6 @@ import 'common/util/my_utils.dart';
 import 'db/db_actions.dart';
 import 'main_util.dart';
 import 'model/book.dart';
-import 'constants/strings.dart';
 import 'studio/save_manager.dart';
 
 CretaMainScreen? cretaMainHolder;
@@ -62,6 +61,11 @@ class CretaMainScreenState extends State<CretaMainScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Color getColor(
     int index,
   ) {
@@ -99,97 +103,6 @@ class CretaMainScreenState extends State<CretaMainScreen> {
         );
       }, childCount: 1),
     );
-  }
-
-  SliverGrid renderSliverGrid() {
-    return SliverGrid(
-        delegate: SliverChildBuilderDelegate((context, index) {
-          // 첫번째 카드
-          if (index == 0) {
-            return Container(
-              padding: const EdgeInsets.all(4),
-              child: HoverWidget(
-                index: index,
-                width: gridWidth,
-                height: gridHeight,
-                normalOpacity: 0.2,
-                hoverOpacity: 0.5,
-                hoverWidget: Center(
-                    child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.add_outlined,
-                      size: 100,
-                      color: MyColors.primaryColor,
-                    ),
-                    Text(
-                      MyStrings.newContentsBook,
-                      style: MyTextStyles.buttonText2,
-                    )
-                  ],
-                )),
-                onTapdown: () {
-                  logHolder.log("New button Pressed", level: 5);
-                  bookManagerHolder!.createDefaultBook();
-                  MainUtil.goToStudio(context, widget.user);
-                },
-              ),
-            );
-          }
-          if (index >= bookManagerHolder!.bookList.length) {
-            return Container(
-              padding: const EdgeInsets.all(4),
-              child: HoverWidget(
-                index: index,
-                width: gridWidth,
-                height: gridHeight,
-                normalOpacity: 0.2,
-                hoverOpacity: 0.5,
-                onTapdown: () {
-                  // logHolder.log("New button Pressed", level: 5);
-                  // widget.defaultBook = MainUtil.createDefaultBook();
-                  // MainUtil.goToStudio(context, widget.user);
-                },
-              ),
-            );
-          }
-
-          BookModel book = bookManagerHolder!.bookList[index - 1];
-          return BookGridCard(
-              index: index,
-              book: book,
-              durationStr: _dateToDurationString(book.updateTime),
-              onTapdown: () {
-                bookManagerHolder!.setDefaultBook(book);
-                MainUtil.goToStudio(context, widget.user);
-              });
-          //return _emptyGridCard(index);
-        }, childCount: maxCard),
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: gridWidth + 8,
-          mainAxisExtent: gridHeight + 8,
-          //mainAxisSpacing: 15,
-          //crossAxisSpacing: 15
-        ));
-  }
-
-  String _dateToDurationString(DateTime updateTime) {
-    Duration duration = DateTime.now().difference(updateTime);
-    if (duration.inDays >= 365) {
-      return '${((duration.inDays / 365) * 10).round()} ${MyStrings.yearBefore}';
-    }
-    if (duration.inDays >= 30) {
-      return '${((duration.inDays / 30) * 10).round()} ${MyStrings.monthBefore}';
-    }
-    if (duration.inDays >= 1) {
-      return '${duration.inDays} ${MyStrings.dayBefore}';
-    }
-    if (duration.inHours >= 1) {
-      return '${duration.inHours} ${MyStrings.hourBefore}';
-    }
-
-    return '${duration.inMinutes} ${MyStrings.minBefore}';
   }
 
   // Widget _emptyGridCard(int index) {
@@ -310,7 +223,12 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                       slivers: [
                         //renderSliverAppbar(appHeight),
                         renderSliverList(marginHeight), // 마진 부위
-                        renderSliverGrid(),
+                        BookSliverGrid(
+                          gridHeight: gridHeight,
+                          gridWidth: gridWidth,
+                          user: widget.user,
+                          maxCard: maxCard,
+                        ),
                       ],
                     ),
                   ),
@@ -326,8 +244,8 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                           Container(
                               //color: Colors.white,
                               padding: EdgeInsets.only(left: 103, top: 81),
-                              child: Image.asset('assets/logo.png',
-                                  color: Colors.white, fit: BoxFit.cover, width: 230, height: 60)),
+                              child: Image.asset('assets/logo_en.png',
+                                  fit: BoxFit.cover, width: 230, height: 60)),
                           // 우측 상단 메뉴
                           Container(
                             alignment: Alignment.topRight,

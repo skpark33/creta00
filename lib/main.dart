@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
           tabBarTheme: TabBarTheme(
             labelStyle: MyTextStyles.body2, // color for text
           ),
-          hoverColor: Colors.red.shade100,
+          hoverColor: MyColors.hover,
           colorScheme: ThemeData()
               .colorScheme
               .copyWith(primary: MyColors.primaryColor)

@@ -945,7 +945,14 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
   }
 
   @override
+  void dispose() {
+    logHolder.log('_VideoProgressIndicatorState dispose', level: 6);
+    super.dispose();
+  }
+
+  @override
   void deactivate() {
+    logHolder.log('_VideoProgressIndicatorState deactivate', level: 6);
     controller.removeListener(listener);
     super.deactivate();
   }
