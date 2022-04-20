@@ -1082,4 +1082,8 @@ class ACC {
     }
     return false;
   }
+
+  void removeContents(String mid) {
+    accChild.playManager.removeById(mid);
+  }
 }

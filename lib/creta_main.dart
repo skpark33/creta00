@@ -383,6 +383,13 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                           ),
                         ],
                       )),
+                  Positioned(
+                      top: 10,
+                      left: 10,
+                      child: Text(
+                        "ver 0.097",
+                        style: MyTextStyles.body1.copyWith(color: Colors.white),
+                      )),
                 ],
               );
             });

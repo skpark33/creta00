@@ -14,7 +14,6 @@ import 'package:creta00/acc/acc.dart';
 import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/player/video/video_player_widget.dart';
 import 'package:creta00/player/image/image_player_widget.dart';
-import 'package:creta00/common/undo/undo.dart';
 import 'package:creta00/model/contents.dart';
 //import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/widgets/base_widget.dart';
@@ -76,7 +75,8 @@ class PlayManager {
   }
 
   BaseWidget baseWidget;
-  final UndoAbleList<AbsPlayWidget> _playList = UndoAbleList([]);
+  //final UndoAbleList<AbsPlayWidget> _playList = UndoAbleList([]);
+  final List<AbsPlayWidget> _playList = [];
   int _currentIndex = -1;
   final Lock _lock = Lock();
   double _currentPlaySec = 0.0;
@@ -91,7 +91,7 @@ class PlayManager {
   final Lock _animelock = Lock();
 
   bool isValid() {
-    return currentIndex >= 0 && _playList.value.isNotEmpty;
+    return currentIndex >= 0 && _playList.isNotEmpty;
   }
 
   Future<AbsPlayWidget> waitBuild() async {
@@ -103,8 +103,8 @@ class PlayManager {
     bool isReady = false;
     while (!isReady) {
       await _lock.synchronized(() async {
-        if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-          if (_playList.value[_currentIndex].isInit()) {
+        if (_currentIndex >= 0 && _currentIndex < _playList.length) {
+          if (_playList[_currentIndex].isInit()) {
             isReady = true;
             return;
           }
@@ -112,7 +112,7 @@ class PlayManager {
         return;
       });
       if (isReady) {
-        retval = _playList.value[_currentIndex];
+        retval = _playList[_currentIndex];
         break;
       }
       await Future.delayed(const Duration(seconds: 1));
@@ -129,7 +129,7 @@ class PlayManager {
   }
 
   void clear() {
-    _playList.value.clear();
+    _playList.clear();
     if (_timer != null) {
       _timer!.cancel();
     }
@@ -144,10 +144,10 @@ class PlayManager {
   Future<void> resetCarousel() async {
     await _lock.synchronized(() async {
       if (currentIndex >= 0) {
-        int len = _playList.value.length;
+        int len = _playList.length;
         for (int i = 0; i < len; i++) {
           if (bookManagerHolder!.isAutoPlay()) {
-            _playList.value[i].autoStart = (i == currentIndex);
+            _playList[i].autoStart = (i == currentIndex);
           }
         }
       }
@@ -158,7 +158,7 @@ class PlayManager {
     await _lock.synchronized(() async {
       if (_currentIndex >= 0) {
         if (bookManagerHolder!.isAutoPlay()) {
-          _playList.value[_currentIndex].autoStart = true;
+          _playList[_currentIndex].autoStart = true;
         }
       }
     });
@@ -175,8 +175,8 @@ class PlayManager {
   Future<ContentsType> getCurrentContentsType() async {
     ContentsType type = ContentsType.free;
     await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-        type = _playList.value[_currentIndex].model!.contentsType;
+      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
+        type = _playList[_currentIndex].model!.contentsType;
       }
     });
     return type;
@@ -185,8 +185,8 @@ class PlayManager {
   Future<bool> getCurrentDynmicSize() async {
     bool state = false;
     await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-        state = _playList.value[_currentIndex].model!.isDynamicSize.value;
+      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
+        state = _playList[_currentIndex].model!.isDynamicSize.value;
       }
     });
     return state;
@@ -195,8 +195,8 @@ class PlayManager {
   Future<double> getCurrentAspectRatio() async {
     double aspectRatio = -1;
     await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-        aspectRatio = _playList.value[_currentIndex].model!.aspectRatio.value;
+      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
+        aspectRatio = _playList[_currentIndex].model!.aspectRatio.value;
       }
     });
     return aspectRatio;
@@ -204,16 +204,16 @@ class PlayManager {
 
   Future<void> setCurrentDynmicSize(bool isDynamicSize) async {
     await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-        _playList.value[_currentIndex].model!.isDynamicSize.set(isDynamicSize);
+      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
+        _playList[_currentIndex].model!.isDynamicSize.set(isDynamicSize);
       }
     });
   }
 
   Future<PlayState> getCurrentPlayState() async {
     return await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-        return _playList.value[_currentIndex].model!.playState;
+      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
+        return _playList[_currentIndex].model!.playState;
       }
       logHolder.log('getCurrentPlayState currentIdex is invalid $_currentIndex', level: 6);
       return PlayState.none;
@@ -222,13 +222,13 @@ class PlayManager {
 
   Future<Widget?> getCurrentVideoProgress() async {
     return await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-        if (_playList.value[_currentIndex].model!.contentsType == ContentsType.video) {
-          // if (_playList.value[_currentIndex].model!.playState != PlayState.start) {
+      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
+        if (_playList[_currentIndex].model!.contentsType == ContentsType.video) {
+          // if (_playList[_currentIndex].model!.playState != PlayState.start) {
           //   Future.delayed(const Duration(milliseconds: 100));
           //   // player 가 start 할때까지 기다려 줘야 한다.
           // }
-          VideoPlayerWidget aVideo = _playList.value[_currentIndex] as VideoPlayerWidget;
+          VideoPlayerWidget aVideo = _playList[_currentIndex] as VideoPlayerWidget;
           return BasicOverayWidget(
               key: ValueKey<String>(aVideo.model!.mid),
               controller: aVideo.wcontroller!,
@@ -245,8 +245,8 @@ class PlayManager {
   Future<bool> getCurrentMute() async {
     bool mute = false;
     await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-        mute = _playList.value[_currentIndex].model!.mute.value;
+      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
+        mute = _playList[_currentIndex].model!.mute.value;
       }
     });
     return mute;
@@ -255,8 +255,8 @@ class PlayManager {
   Future<bool> getCurrentAutoStart() async {
     bool autoStart = false;
     await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-        autoStart = _playList.value[_currentIndex].autoStart;
+      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
+        autoStart = _playList[_currentIndex].autoStart;
       }
     });
     return autoStart;
@@ -265,7 +265,7 @@ class PlayManager {
   Future<void> _timerExpired(Timer timer) async {
     ContentsModel? currentModel;
     await _lock.synchronized(() async {
-      if (_playList.value.isEmpty) return;
+      if (_playList.isEmpty) return;
 
       // 아무것도 돌고 있지 않다면,
       if (_currentIndex < 0) {
@@ -273,12 +273,12 @@ class PlayManager {
         return;
       }
 
-      if (false == _playList.value[_currentIndex].isInit()) {
+      if (false == _playList[_currentIndex].isInit()) {
         logHolder.log('Not yet inited');
         return;
       }
 
-      currentModel = _playList.value[_currentIndex].getModel();
+      currentModel = _playList[_currentIndex].getModel();
       if (currentModel!.isImage()) {
         // playTime 이 영구히로 잡혀있다.
         if (0 > currentModel!.playTime.value) {
@@ -324,7 +324,7 @@ class PlayManager {
       if (invalidate) {
         // push 순서에 따라 order 가 결정된다.
         // 마우스로 끌어다 놓은 경우이다.
-        int order = _playList.value.length;
+        int order = _playList.length;
         model.order.set(order, save: false); // save 는 어차피 아래에서 되므로, 여기서는 save 하지 않는다.
       }
       AbsPlayWidget? aWidget;
@@ -366,7 +366,7 @@ class PlayManager {
           logHolder.log('Invalid Contents Type error');
           return;
         }
-        _playList.value.add(aWidget);
+        _playList.add(aWidget);
       } catch (e) {
         logHolder.log('Contents Player widget exception $e');
       }
@@ -375,7 +375,7 @@ class PlayManager {
         // 애니타입인 경우, 새로운 데이터를 이해시키기 위해
         baseWidget.invalidate();
       }
-      logHolder.log('push(${model.mid})=${_playList.value.length}');
+      logHolder.log('push(${model.mid})=${_playList.length}');
       selectedModelHolder!.setModel(model, invalidate: invalidate);
       if (invalidate) {
         accManagerHolder!.setState();
@@ -386,13 +386,13 @@ class PlayManager {
 
   void onVideoAfterEvent() {
     // 타이머에서 처리하므로 여기서는 아무것도 하지 않는다.
-    // if (_playList.value.isEmpty) return;
+    // if (_playList.isEmpty) return;
     // // 아무것도 돌고 있지 않다면,
     // if (_currentIndex < 0) {
     //   _currentIndex = 0;
     //   return;
     // }
-    // // if (false == _playList.value[_currentIndex].isInit()) {
+    // // if (false == _playList[_currentIndex].isInit()) {
     // //   logHolder.log('Not yet inited ($_currentIndex)');
     // //   return;
     // // }
@@ -401,13 +401,13 @@ class PlayManager {
   }
 
   void onImageAfterEvent() {
-    // if (_playList.value.isEmpty) return;
+    // if (_playList.isEmpty) return;
     // // 아무것도 돌고 있지 않다면,
     // if (_currentIndex < 0) {
     //   _currentIndex = 0;
     //   return;
     // }
-    // // if (false == _playList.value[_currentIndex].isInit()) {
+    // // if (false == _playList[_currentIndex].isInit()) {
     // //   logHolder.log('Not yet inited');
     // //   return;
     // // }
@@ -417,10 +417,10 @@ class PlayManager {
 
   Future<void> remove(int i) async {
     await _lock.synchronized(() async {
-      if (_playList.value.isNotEmpty) {
-        if (i < _playList.value.length && i >= 0) {
-          _playList.value[i].close();
-          _playList.value.removeAt(i);
+      if (_playList.isNotEmpty) {
+        if (i < _playList.length && i >= 0) {
+          _playList[i].close();
+          _playList.removeAt(i);
         }
       }
     });
@@ -428,19 +428,17 @@ class PlayManager {
 
   Future<void> removeCurrent() async {
     await _lock.synchronized(() async {
-      if (_playList.value.isNotEmpty && _currentIndex >= 0) {
+      if (_playList.isNotEmpty && _currentIndex >= 0) {
         remove(_currentIndex);
       }
     });
   }
 
-  Future<void> removeByModel(ContentsModel model) async {
+  Future<void> removeById(String mid) async {
     await _lock.synchronized(() async {
-      int len = _playList.value.length;
-      for (int i = 0; i < len; i++) {
-        ContentsModel ele = _playList.value[i].getModel();
-        if (model.mid == ele.mid) {
-          remove(i);
+      for (AbsPlayWidget playWidget in _playList) {
+        if (mid == playWidget.model!.mid) {
+          playWidget.model!.isRemoved.set(true);
           return;
         }
       }
@@ -452,19 +450,19 @@ class PlayManager {
       _shouldChaneAnimePage = true;
     });
     if (currentIndex >= 0) {
-      int len = _playList.value.length;
+      int len = _playList.length;
       for (int i = 0; i < len; i++) {
         if (i == _currentIndex) {
           if (bookManagerHolder!.isAutoPlay()) {
-            _playList.value[i].autoStart = true;
+            _playList[i].autoStart = true;
           }
-          await _playList.value[i].play();
-          logHolder.log('anime play ${_playList.value[i].model!.name}', level: 5);
+          await _playList[i].play();
+          logHolder.log('anime play ${_playList[i].model!.name}', level: 5);
         } else {
           if (bookManagerHolder!.isAutoPlay()) {
-            _playList.value[i].autoStart = false;
+            _playList[i].autoStart = false;
           }
-          await _playList.value[i].pause();
+          await _playList[i].pause();
         }
       }
     }
@@ -483,9 +481,9 @@ class PlayManager {
 
   Future<void> play() async {
     await _lock.synchronized(() async {
-      if (_playList.value.isNotEmpty) {
+      if (_playList.isNotEmpty) {
         if (_currentIndex >= 0) {
-          await _playList.value[_currentIndex].play();
+          await _playList[_currentIndex].play();
         }
       }
     });
@@ -494,10 +492,10 @@ class PlayManager {
   Future<void> next({bool pause = false, int until = -1}) async {
     await _lock.synchronized(() async {
       //ContentsType prevContentsType = ContentsType.free;
-      if (_playList.value.isNotEmpty) {
+      if (_playList.isNotEmpty) {
         int prevIndex = _currentIndex;
         if (_currentIndex >= 0) {
-          AbsPlayWidget prevPlayer = _playList.value[_currentIndex];
+          AbsPlayWidget prevPlayer = _playList[_currentIndex];
           if (pause) {
             logHolder.log('pause($_currentIndex)');
             await prevPlayer.pause();
@@ -509,12 +507,12 @@ class PlayManager {
         } else {
           _currentIndex++;
         }
-        if (_currentIndex >= _playList.value.length) {
+        if (_currentIndex >= _playList.length) {
           _currentIndex = 0;
         }
         //logHolder.log('play($_currentIndex)--');
         _currentPlaySec = 0;
-        AbsPlayWidget currentPlayer = _playList.value[_currentIndex];
+        AbsPlayWidget currentPlayer = _playList[_currentIndex];
         if (!baseWidget.isAnime()) {
           //skpark carousel problem
           if (prevIndex != _currentIndex) {
@@ -542,10 +540,10 @@ class PlayManager {
     await _lock.synchronized(() async {
       //ContentsType prevContentsType = ContentsType.free;
 
-      if (_playList.value.isNotEmpty) {
+      if (_playList.isNotEmpty) {
         int prevIndex = _currentIndex;
         if (_currentIndex >= 0) {
-          AbsPlayWidget prevPlayer = _playList.value[_currentIndex];
+          AbsPlayWidget prevPlayer = _playList[_currentIndex];
           if (pause) {
             logHolder.log('pause($_currentIndex)');
             await prevPlayer.pause();
@@ -554,12 +552,12 @@ class PlayManager {
         }
         _currentIndex--;
         if (_currentIndex < 0) {
-          _currentIndex = _playList.value.length - 1;
+          _currentIndex = _playList.length - 1;
         }
 //        logHolder.log('play($_currentIndex)');
         _currentPlaySec = 0;
 
-        AbsPlayWidget currentPlayer = _playList.value[_currentIndex];
+        AbsPlayWidget currentPlayer = _playList[_currentIndex];
         if (!baseWidget.isAnime()) {
           //skpark carousel problem
           if (prevIndex != _currentIndex) {
@@ -585,21 +583,21 @@ class PlayManager {
 
   Future<void> mute() async {
     await _lock.synchronized(() async {
-      await _playList.value[_currentIndex].mute();
+      await _playList[_currentIndex].mute();
     });
   }
 
   Future<void> pause() async {
     await _lock.synchronized(() async {
-      await _playList.value[_currentIndex].pause();
+      await _playList[_currentIndex].pause();
     });
   }
 
   Future<void> invalidate() async {
     await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.value.length) {
-        if (_playList.value[_currentIndex].isInit()) {
-          _playList.value[_currentIndex].invalidate();
+      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
+        if (_playList[_currentIndex].isInit()) {
+          _playList[_currentIndex].invalidate();
         }
       }
     });
@@ -607,33 +605,33 @@ class PlayManager {
 
   Future<void> pauseAllExceptCurrent() async {
     await _lock.synchronized(() async {
-      int len = _playList.value.length;
+      int len = _playList.length;
       for (int i = 0; i < len; i++) {
         if (i == currentIndex) {
           continue;
         }
-        await _playList.value[i].pause();
+        await _playList[i].pause();
       }
     });
   }
 
   bool isValidCarousel() {
-    return _playList.value.length >= minCarouselCount;
+    return _playList.length >= minCarouselCount;
   }
 
   bool isNotEmpty() {
-    return _playList.value.isNotEmpty;
+    return _playList.isNotEmpty;
   }
 
   bool isEmpty() {
-    return _playList.value.isEmpty;
+    return _playList.isEmpty;
   }
 
   Future<ContentsModel?> getCurrentModel() async {
     ContentsModel? retval;
     await _lock.synchronized(() async {
       if (_currentIndex >= 0) {
-        retval = _playList.value[_currentIndex].model;
+        retval = _playList[_currentIndex].model;
       }
     });
     return retval;
@@ -642,21 +640,21 @@ class PlayManager {
   Future<ContentsModel?> getModel(int contentsIdx) async {
     ContentsModel? retval;
     await _lock.synchronized(() async {
-      if (contentsIdx >= 0 && contentsIdx < _playList.value.length) {
-        retval = _playList.value[contentsIdx].model;
+      if (contentsIdx >= 0 && contentsIdx < _playList.length) {
+        retval = _playList[contentsIdx].model;
       }
     });
     return retval;
   }
 
   List<AbsPlayWidget> getPlayWidgetList() {
-    return _playList.value;
+    return _playList;
   }
 
   List<Node> toNodes(PageModel model) {
     List<Node> conNodes = [];
     int idx = 0;
-    for (AbsPlayWidget playWidget in _playList.value) {
+    for (AbsPlayWidget playWidget in _playList) {
       //playWidget.model!.order.set(idx);
       conNodes.add(Node<AbsModel>(
           key: '${model.mid}/${baseWidget.acc!.accModel.mid}/${playWidget.model!.mid}',
@@ -670,14 +668,14 @@ class PlayManager {
 
   List<ContentsModel> getModelList() {
     List<ContentsModel> list = [];
-    for (AbsPlayWidget playWidget in _playList.value) {
+    for (AbsPlayWidget playWidget in _playList) {
       list.add(playWidget.model!);
     }
     return list;
   }
 
   void removeAll() {
-    for (AbsPlayWidget playWidget in _playList.value) {
+    for (AbsPlayWidget playWidget in _playList) {
       playWidget.model!.isRemoved.set(true);
     }
   }

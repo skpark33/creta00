@@ -393,7 +393,18 @@ class ACCManager extends ChangeNotifier {
     if (acc == null) {
       return;
     }
+    _removeACC(context, acc);
+  }
 
+  void removeACCByMid(BuildContext context, String mid) {
+    ACC? acc = accMap[mid];
+    if (acc == null) {
+      return;
+    }
+    _removeACC(context, acc);
+  }
+
+  void _removeACC(BuildContext context, ACC acc) {
     mychangeStack.startTrans();
     acc.accModel.isRemoved.set(true);
     acc.accChild.playManager.removeAll(); // 자식도 모두 삭제해줌.
@@ -681,5 +692,13 @@ List<ACC> accList = accManagerHolder!.getAccList(model.id);
       }
     }
     return accNodes;
+  }
+
+  void removeContents(BuildContext context, UndoAble<String> parentMid, String mid) {
+    ACC? acc = accMap[parentMid];
+    if (acc == null) {
+      return;
+    }
+    acc.removeContents(mid);
   }
 }

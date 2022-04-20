@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables
 //import 'package:flutter/cupertino.dart';
+import 'package:creta00/model/model_enums.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_treeview/flutter_treeview.dart';
 //import 'package:provider/provider.dart';
@@ -12,6 +13,8 @@ import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/acc/acc.dart';
 import 'package:creta00/constants/constants.dart';
 import 'package:creta00/common/util/logger.dart';
+
+import '../../constants/styles.dart';
 
 // import 'package:creta00/model/pages.dart';
 
@@ -215,9 +218,42 @@ class _MyTreeViewState extends State<MyTreeView> {
             onNodeDoubleTap: (key) {
               logHolder.log('onNodeDoubleTap', level: 6);
             },
-            // nodeBuilder: (context, node) {
-            //   return Text(node.label);
-            // },
+            nodeBuilder: (context, node) {
+              AbsModel model = node.data!;
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                      width: 200,
+                      child: Text(node.label),
+                      padding: EdgeInsets.only(
+                          top: 3 + (model.type == ModelType.page ? 6 : 0), bottom: 3)),
+                  IconButton(
+                    constraints: BoxConstraints.tight(Size(MySizes.smallIcon, MySizes.smallIcon)),
+                    iconSize: MySizes.smallIcon,
+                    padding: EdgeInsets.zero,
+                    onPressed: () {
+                      setState(() {
+                        if (model.type == ModelType.page) {
+                          widget.pageManager.removePage(context, model.mid);
+                          return;
+                        }
+                        if (model.type == ModelType.acc) {
+                          accManagerHolder!.removeACCByMid(context, model.mid);
+                          return;
+                        }
+                        if (model.type == ModelType.contents) {
+                          accManagerHolder!.removeContents(context, model.parentMid, model.mid);
+                          return;
+                        }
+                      });
+                    },
+                    icon: Icon(Icons.delete_outline),
+                    color: MyColors.icon,
+                  ),
+                ],
+              );
+            },
             // nodeBuilder: (context, node) {
             //   PageModel model = node.data;
             //   String pageNo = (model.pageNo.value + 1).toString().padLeft(2, '0');

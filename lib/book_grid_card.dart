@@ -93,7 +93,7 @@ class _BookGridCardState extends State<BookGridCard> {
             ),
             Positioned(
               bottom: 15,
-              right: 10,
+              right: 4,
               height: 30,
               width: 30,
               child: IconButton(
