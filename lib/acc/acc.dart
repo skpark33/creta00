@@ -37,7 +37,7 @@ class ACC {
   PageModel? page;
   OverlayEntry? entry;
 
-  bool? isVisible;
+  //bool? isVisible;
   bool actionStart = false;
   bool radiusActionStart = false;
   bool sizeActionStart = false;
@@ -106,8 +106,8 @@ class ACC {
       });
       final overlay = Overlay.of(context)!;
       overlay.insert(entry!, below: menuStickEntry);
-    } else {
-      isVisible = true;
+      // } else {
+      //   isVisible = true;
     }
     if (overlayWidget != null) {
       return overlayWidget!;
@@ -245,10 +245,9 @@ class ACC {
     bool isAccSelected = accManagerHolder!.isCurrentIndex(accModel.mid);
     double mouseMargin = resizeButtonSize / 2;
     Size marginSize = Size(realSize.width + resizeButtonSize, realSize.height + resizeButtonSize);
-    isVisible = getVisibility();
-    logHolder.log("showOverlay($isVisible, $realOffset, ${accModel.mid}", level: 6);
+    //isVisible = getVisibility();
     return Visibility(
-        visible: isVisible!,
+        visible: getVisibility(),
         child: Positioned(
           // left: realOffset.dx,
           // top: realOffset.dy,
@@ -804,7 +803,11 @@ class ACC {
   }
 
   void setState() {
-    entry!.markNeedsBuild();
+    if (entry != null) {
+      entry!.markNeedsBuild();
+    } else {
+      logHolder.log("Entry is null ${accModel.mid}", level: 7);
+    }
   }
 
   Future<ContentsType> getCurrentContentsType() {

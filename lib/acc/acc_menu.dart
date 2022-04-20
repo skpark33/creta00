@@ -152,7 +152,7 @@ class ACCMenu {
                           onEnter: () {},
                           onExit: () {},
                           onPressed: () {
-                            accManagerHolder!.remove(context);
+                            accManagerHolder!.removeACC(context);
                           },
                           icon: const Icon(Icons.delete)),
                       HoverButton(

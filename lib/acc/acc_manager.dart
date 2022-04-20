@@ -40,6 +40,10 @@ class ACCManager extends ChangeNotifier {
   String _currentAccMid = '';
   bool isInitOverlay = false;
 
+  ACC? getACC(String mid) {
+    return accMap[mid];
+  }
+
   //static int get currentAccIndex => _currentAccMid;
   Future<void> setCurrentMid(String mid, {bool setAsAcc = true}) async {
     _currentAccMid = mid;
@@ -47,6 +51,13 @@ class ACCManager extends ChangeNotifier {
       pageManagerHolder!.setAsAcc();
     }
     setState();
+  }
+
+  void unsetCurrentMid() {
+    _currentAccMid = '';
+    if (pageManagerHolder != null) {
+      pageManagerHolder!.setAsPage();
+    }
   }
 
   bool isCurrentIndex(String mid) {
@@ -63,7 +74,7 @@ class ACCManager extends ChangeNotifier {
   }
 
   ACC? selectLastACC() {
-    int maxOrder = getMaxOrder();
+    int maxOrder = getLastOrder();
     if (maxOrder < 0) {
       return null;
     }
@@ -80,21 +91,54 @@ class ACCManager extends ChangeNotifier {
     return retval;
   }
 
+  int getLastOrder() {
+    int retval = -1;
+    for (int order in orderMap.keys) {
+      if (orderMap[order]!.accModel.isRemoved.value == true) continue;
+      retval = order;
+    }
+    return retval;
+  }
+
   ACC createACC(BuildContext context, PageModel page) {
     int order = getMaxOrder() + 1;
     BaseWidget widget =
         BaseWidget(baseWidgetKey: GlobalObjectKey<BaseWidgetState>(const Uuid().v4()));
 
-    logHolder.log("createACC($order)");
-
     ACC acc = ACC(page: page, accChild: widget, idx: order);
+
+    MyChange<ACC> c = MyChange<ACC>.withContext(acc, context, () {
+      accManagerHolder!.redoCreateACC(context, acc);
+    }, (ACC old) {
+      accManagerHolder!.undoCreateACC(context, old);
+    });
+    mychangeStack.add(c);
+    widget.setParentAcc(acc);
+    return acc;
+  }
+
+  ACC redoCreateACC(BuildContext context, ACC acc) {
+    logHolder.log("redoCreateACC(${acc.accModel.order.value})", level: 6);
     acc.initSizeAndPosition();
     acc.registerOverlay(context);
     accMap[acc.accModel.mid] = acc;
     setCurrentMid(acc.accModel.mid);
     orderMap[acc.accModel.order.value] = acc;
+    acc.accModel.isRemoved.set(false, noUndo: true);
+    return acc;
+  }
 
-    widget.setParentAcc(acc);
+  ACC undoCreateACC(BuildContext context, ACC acc) {
+    logHolder.log("undoCreateACC(${acc.accModel.order.value})", level: 6);
+    acc.accModel.isRemoved.set(true, noUndo: true);
+
+    acc.entry!.remove();
+    acc.entry = null;
+
+    String mid = acc.accModel.mid;
+    orderMap.remove(acc.accModel.order.value);
+    unsetCurrentMid();
+    accMap.remove(mid);
     return acc;
   }
 
@@ -131,6 +175,7 @@ class ACCManager extends ChangeNotifier {
       logHolder.log('registerOverayAll', level: 5);
       isInitOverlay = true;
       for (ACC acc in orderMap.values) {
+        if (acc.accModel.isRemoved.value == true) continue;
         acc.registerOverlay(context);
       }
       return true;
@@ -253,14 +298,17 @@ class ACCManager extends ChangeNotifier {
   void applyOrder(BuildContext context) {
     reorderMap();
     for (ACC acc in orderMap.values) {
-      // if (acc.removed.value == true) {
-      //   continue;
-      // }
       // if (acc.dirty == false) {
       //  continue;
       //}
-      acc.entry!.remove();
-      acc.entry = null;
+      if (acc.entry != null) {
+        acc.entry!.remove();
+        acc.entry = null;
+      }
+      // if (acc.accModel.isRemoved.value == true) {
+      //   continue;
+      // }
+      // 리무브 된것도 다 register 는 해야 한다.  다만 보이지를 않는다.
       acc.registerOverlay(context);
       //acc.setDirty(false);
     }
@@ -339,7 +387,7 @@ class ACCManager extends ChangeNotifier {
     }
   }
 
-  void remove(BuildContext context) {
+  void removeACC(BuildContext context) {
     if (_currentAccMid.isEmpty) return;
     ACC? acc = accMap[_currentAccMid];
     if (acc == null) {
@@ -348,45 +396,45 @@ class ACCManager extends ChangeNotifier {
 
     mychangeStack.startTrans();
     acc.accModel.isRemoved.set(true);
-    int removedOrder = acc.accModel.order.value;
-    for (ACC ele in accMap.values) {
-      if (ele.accModel.isRemoved.value == true) {
-        continue;
-      }
-
-      if (ele.accModel.order.value > removedOrder) {
-        ele.accModel.order.set(ele.accModel.order.value - 1);
-      }
-    }
-    reorderMap();
+    acc.accChild.playManager.removeAll(); // 자식도 모두 삭제해줌.
+    // int removedOrder = acc.accModel.order.value;
+    // for (ACC ele in accMap.values) {
+    //   if (ele.accModel.isRemoved.value == true) {
+    //     continue;
+    //   }
+    //   if (ele.accModel.order.value > removedOrder) {
+    //     ele.accModel.order.set(ele.accModel.order.value - 1);
+    //   }
+    // }
+    //reorderMap();
     mychangeStack.endTrans();
     setState();
 
     accManagerHolder!.unshowMenu(context);
   }
 
-  void realRemove(int index, BuildContext context) {
-    ACC? acc = accMap[index];
-    if (acc == null) {
-      return;
-    }
-    // int removedOrder = acc.order.value;
-    // for (ACC ele in accMap.values) {
-    //   if (acc.removed.value == true) {
-    //     continue;
-    //   }
+  // void realRemove(int index, BuildContext context) {
+  //   ACC? acc = accMap[index];
+  //   if (acc == null) {
+  //     return;
+  //   }
+  //   // int removedOrder = acc.order.value;
+  //   // for (ACC ele in accMap.values) {
+  //   //   if (acc.removed.value == true) {
+  //   //     continue;
+  //   //   }
 
-    //   if (ele.order.value > removedOrder) {
-    //     ele.order.set(ele.order.value - 1);
-    //   }
-    // }
+  //   //   if (ele.order.value > removedOrder) {
+  //   //     ele.order.set(ele.order.value - 1);
+  //   //   }
+  //   // }
 
-    acc.entry!.remove();
-    accMap.remove(index);
-    //orderMap.clear();
-    reorderMap();
-    setState();
-  }
+  //   acc.entry!.remove();
+  //   accMap.remove(index);
+  //   //orderMap.clear();
+  //   //reorderMap();
+  //   setState();
+  // }
 
   void destroyEntry(BuildContext context) {
     logHolder.log('destroyEntry', level: 6);
@@ -413,9 +461,14 @@ class ACCManager extends ChangeNotifier {
     int newOrder = -1;
 
     for (int order in orderMap.keys) {
-      // if (orderMap[order]!.removed.value == true) {
-      //   continue;
-      // }
+      if (orderMap[order]!.accModel.isRemoved.value == true) {
+        continue;
+      }
+      // 같은 페이지에 있는 것만 비교한다.
+      if (orderMap[order]!.accModel.parentMid.value != target.accModel.parentMid.value) {
+        continue;
+      }
+
       if (order > oldOrder) {
         newOrder = order;
         break;
@@ -458,9 +511,13 @@ class ACCManager extends ChangeNotifier {
     int newOrder = -1;
 
     for (int order in orderMap.keys) {
-      // if (orderMap[order]!.removed.value == true) {
-      //   continue;
-      // }
+      if (orderMap[order]!.accModel.isRemoved.value == true) {
+        continue;
+      }
+      // 같은 페이지에 있는 것만 비교한다.
+      if (orderMap[order]!.accModel.parentMid.value != target.accModel.parentMid.value) {
+        continue;
+      }
       if (order >= oldOrder) {
         break;
       }
@@ -522,6 +579,9 @@ class ACCManager extends ChangeNotifier {
 
     int nextOrder = 0;
     for (int order in orderMap.keys) {
+      if (orderMap[order]!.accModel.isRemoved.value == true) {
+        continue;
+      }
       if (order > acc.accModel.order.value) {
         nextOrder = order;
         break;
@@ -556,19 +616,20 @@ class ACCManager extends ChangeNotifier {
       if (acc.accModel.isRemoved.value == true) {
         continue;
       }
-      if (acc.page!.mid == modelId) {
-        if (acc.isVisible == null || !acc.isVisible!) {
-          logHolder.log('showPages $modelId', level: 6);
-          acc.isVisible = true;
-          acc.setState();
-        }
-      } else {
-        if (acc.isVisible == null || acc.isVisible!) {
-          logHolder.log('un-showPages $modelId', level: 6);
-          acc.isVisible = false;
-          acc.setState();
-        }
-      }
+      acc.setState();
+      // if (acc.page!.mid == modelId) {
+      //   if (acc.isVisible == null || !acc.isVisible!) {
+      //     logHolder.log('showPages $modelId', level: 6);
+      //     acc.isVisible = true;
+      //     acc.setState();
+      //   }
+      // } else {
+      //   if (acc.isVisible == null || acc.isVisible!) {
+      //     logHolder.log('un-showPages $modelId', level: 6);
+      //     acc.isVisible = false;
+      //     acc.setState();
+      //   }
+      // }
     }
     accMenu.unshow(context);
   }
@@ -607,6 +668,7 @@ List<ACC> accList = accManagerHolder!.getAccList(model.id);
   List<Node> toNodes(PageModel model) {
     List<Node> accNodes = [];
     for (ACC acc in orderMap.values) {
+      if (acc.accModel.isRemoved.value == true) continue;
       if (acc.page!.mid == model.mid) {
         List<Node> conNodes = acc.accChild.playManager.toNodes(model);
         accNodes.add(Node<AbsModel>(

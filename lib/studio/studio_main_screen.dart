@@ -134,7 +134,7 @@ class MainScreenState extends State<StudioMainScreen> {
       if (keys.contains(key)) return;
       if (event.isKeyPressed(LogicalKeyboardKey.delete)) {
         logHolder.log('delete pressed');
-        accManagerHolder!.remove(context);
+        accManagerHolder!.removeACC(context);
       }
       if (event.isKeyPressed(LogicalKeyboardKey.tab)) {
         logHolder.log('tab pressed');

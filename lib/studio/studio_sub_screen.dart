@@ -60,15 +60,25 @@ class StudioSubScreenState extends State<StudioSubScreen> {
   }
 
   @override
-  void dispose() {
-    logHolder.log('disposeq StudioSubScreen', level: 6);
-    if (saveManagerHolder != null) {
-      saveManagerHolder!.stopTimer();
-    }
+  void deactivate() {
+    logHolder.log('deactivate StudioSubScreen', level: 6);
     if (accManagerHolder != null) {
       accManagerHolder!.unshowMenu(context);
       accManagerHolder!.destroyEntry(context);
     }
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    logHolder.log('dispose StudioSubScreen', level: 6);
+    if (saveManagerHolder != null) {
+      saveManagerHolder!.stopTimer();
+    }
+    // if (accManagerHolder != null) {
+    //   accManagerHolder!.unshowMenu(context);
+    //   accManagerHolder!.destroyEntry(context);
+    // }
     super.dispose();
   }
 

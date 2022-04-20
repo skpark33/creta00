@@ -1,10 +1,12 @@
 import 'package:creta00/common/util/logger.dart';
+import 'package:creta00/model/acc_property.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_treeview/flutter_treeview.dart';
 import 'package:sortedmap/sortedmap.dart';
 
 import 'package:creta00/acc/acc_manager.dart';
 //import 'package:creta00/constants/strings.dart';
+import '../../acc/acc.dart';
 import '../../book_manager.dart';
 import '../../model/pages.dart';
 import '../../model/models.dart';
@@ -130,7 +132,7 @@ class PageManager extends ChangeNotifier {
     logHolder.log('undoCreatePage $pageIndex', level: 6);
     page.isRemoved.set(true, noUndo: true);
     String mid = page.mid;
-    orderMap.remove(mid);
+    orderMap.remove(page.order.value);
     pageMap.remove(mid);
     return mid;
   }
@@ -177,20 +179,27 @@ class PageManager extends ChangeNotifier {
     return '';
   }
 
+  int getLength() {
+    int count = 0;
+    for (PageModel model in orderMap.values) {
+      if (model.isRemoved.value == false) {
+        count++;
+      }
+    }
+    return count;
+  }
+
   void removePage(BuildContext context, String mid) {
     if (pageMap[mid] == null) {
       logHolder.log('removePage($mid) is null', level: 5);
       return;
     }
-    String firstMid = getFirstPage();
-    if (firstMid == mid) {
+    if (getLength() <= 1) {
       logHolder.log('last page ($mid) cant be deleted', level: 7);
       return;
     }
     logHolder.log('removePage($mid)', level: 5);
-    if (isPageSelected(mid)) {
-      setSelectedIndex(context, firstMid);
-    }
+
     mychangeStack.startTrans();
     for (PageModel model in pageMap.values) {
       if (model.order.value > pageMap[mid]!.order.value) {
@@ -198,7 +207,18 @@ class PageManager extends ChangeNotifier {
       }
     }
     pageMap[mid]!.isRemoved.set(true);
+    for (ACCProperty accProperty in pageMap[mid]!.accPropertyList) {
+      accProperty.isRemoved.set(true);
+      ACC? acc = accManagerHolder!.getACC(accProperty.mid);
+      if (acc != null) {
+        acc.accChild.playManager.removeAll();
+      }
+    } // 아래의 모든 acc 를 삭제.
     mychangeStack.endTrans();
+    if (isPageSelected(mid)) {
+      setSelectedIndex(context, getFirstPage());
+    }
+    accManagerHolder!.setState();
   }
 
   changeOrder(int newIndex, int oldIndex) {
@@ -233,7 +253,12 @@ class PageManager extends ChangeNotifier {
 
   String setSelectedFirst() {
     _selectedMid = getFirstPage();
-    pageManagerHolder!.setAsPage(); //setAsPage contain setState()
+    if (pageManagerHolder != null) {
+      pageManagerHolder!.setAsPage();
+    } //setAsPage contain setState()
+    if (accManagerHolder != null) {
+      accManagerHolder!.notify();
+    } //setAsPage contain setState()
     return _selectedMid;
   }
 

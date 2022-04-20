@@ -675,4 +675,10 @@ class PlayManager {
     }
     return list;
   }
+
+  void removeAll() {
+    for (AbsPlayWidget playWidget in _playList.value) {
+      playWidget.model!.isRemoved.set(true);
+    }
+  }
 }

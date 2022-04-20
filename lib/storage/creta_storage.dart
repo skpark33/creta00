@@ -57,7 +57,7 @@ class CretaStorage {
 
   static Future<void> uploadThumbnail(
       ContentsModel contents, void Function() onComplete, void Function() onError) async {
-    logHolder.log('uploadThumbnail', level: 5);
+    logHolder.log('uploadThumbnail', level: 6);
 
     if (contents.thumbnail == null) {
       if (contents.contentsType == ContentsType.video) {

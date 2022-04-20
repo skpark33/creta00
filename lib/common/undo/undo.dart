@@ -2,6 +2,8 @@ import 'dart:core';
 import 'dart:collection';
 //import 'package:flutter/foundation.dart';
 //import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+
 import '../util/logger.dart';
 import '../../studio/save_manager.dart';
 //import '../../model/models.dart';
@@ -284,11 +286,21 @@ class MyChange<T> {
     this.transState = TransState.none,
   });
 
+  MyChange.withContext(
+    this._oldValue,
+    this.context,
+    this._execute(),
+    this._undo(T oldValue), {
+    this.monitored = false,
+    this.transState = TransState.none,
+  });
+
   TransState transState = TransState.none;
   bool monitored = false;
 
   final void Function() _execute;
   final T _oldValue;
+  BuildContext? context;
 
   final void Function(T oldValue) _undo;
 

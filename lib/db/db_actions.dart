@@ -256,6 +256,7 @@ class DbActions {
 
     if (isContents(mid)) {
       for (ACC acc in accManagerHolder!.orderMap.values) {
+        if (acc.accModel.isRemoved.value == true) continue;
         for (ContentsModel contents in acc.accChild.playManager.getModelList()) {
           if (contents.mid != mid) {
             continue;
