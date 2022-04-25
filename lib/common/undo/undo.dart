@@ -32,23 +32,36 @@ class UndoAble<T> {
     _mid = mid;
   }
 
-  void set(T val, {bool save = true, bool noUndo = false}) {
+  void set(T val,
+      {bool save = true,
+      bool noUndo = false,
+      void Function(T val)? doComplete,
+      void Function(T val)? undoComplete}) {
     if (val == _value) return; // 값이 동일하다면, 할 필요가 없다.
+
     if (noUndo) {
       _value = val;
       return;
     }
-    MyChange<T> c = MyChange<T>(_value, () {
+
+    MyChange<T> c = MyChange<T>(_value, execute: () {
       _value = val;
-      if (save && saveManagerHolder != null) {
+      if (save && saveManagerHolder != null && _mid.isNotEmpty) {
         saveManagerHolder!.pushChanged(_mid, 'redo');
       }
-    }, (T old) {
+    }, redo: () {
+      _value = val;
+      if (save && saveManagerHolder != null && _mid.isNotEmpty) {
+        saveManagerHolder!.pushChanged(_mid, 'redo');
+      }
+      if (doComplete != null) doComplete(_value);
+    }, undo: (T old) {
       if (old == _value) return; // 값이 동일하다면, 할 필요가 없다.
       _value = old;
-      if (save && saveManagerHolder != null) {
+      if (save && saveManagerHolder != null && _mid.isNotEmpty) {
         saveManagerHolder!.pushChanged(_mid, 'undo');
       }
+      if (undoComplete != null) undoComplete(_value);
     });
     mychangeStack.add(c);
   }
@@ -74,106 +87,106 @@ class UndoAble<T> {
 //   }
 // }
 
-class UndoAbleList<T> {
-  late List<T> _value;
+// class UndoAbleList<T> {
+//   late List<T> _value;
 
-  UndoAbleList(List<T> val) {
-    _value = val;
-  }
+//   UndoAbleList(List<T> val) {
+//     _value = val;
+//   }
 
-  List<T> get value => _value;
+//   List<T> get value => _value;
 
-  void set(List<T> val) {
-    MyChange<List<T>> c = MyChange<List<T>>(_value, () {
-      _value = val;
-    }, (List<T> old) {
-      _value = old;
-    });
-    mychangeStack.add(c);
-  }
+//   void set(List<T> val) {
+//     MyChange<List<T>> c = MyChange<List<T>>(_value, () {
+//       _value = val;
+//     }, (List<T> old) {
+//       _value = old;
+//     });
+//     mychangeStack.add(c);
+//   }
 
-  void add(T val) {
-    MyChange<List<T>> c = MyChange<List<T>>(_value, () {
-      _value.add(val);
-    }, (List<T> old) {
-      _value.remove(val);
-    });
-    mychangeStack.add(c);
-  }
+//   void add(T val) {
+//     MyChange<List<T>> c = MyChange<List<T>>(_value, () {
+//       _value.add(val);
+//     }, (List<T> old) {
+//       _value.remove(val);
+//     });
+//     mychangeStack.add(c);
+//   }
 
-  void remove(T val) {
-    MyChange<List<T>> c = MyChange<List<T>>(_value, () {
-      _value.remove(val);
-    }, (List<T> old) {
-      _value.add(val);
-    });
-    mychangeStack.add(c);
-  }
+//   void remove(T val) {
+//     MyChange<List<T>> c = MyChange<List<T>>(_value, () {
+//       _value.remove(val);
+//     }, (List<T> old) {
+//       _value.add(val);
+//     });
+//     mychangeStack.add(c);
+//   }
 
-  T removeAt(int index) {
-    T? retval;
-    MyChange<List<T>> c = MyChange<List<T>>(_value, () {
-      retval = _value.removeAt(index);
-    }, (List<T> old) {
-      _value = List.from(old);
-    });
-    mychangeStack.add(c);
-    return retval!;
-  }
+//   T removeAt(int index) {
+//     T? retval;
+//     MyChange<List<T>> c = MyChange<List<T>>(_value, () {
+//       retval = _value.removeAt(index);
+//     }, (List<T> old) {
+//       _value = List.from(old);
+//     });
+//     mychangeStack.add(c);
+//     return retval!;
+//   }
 
-  void insert(int index, T val) {
-    MyChange<List<T>> c = MyChange<List<T>>(_value, () {
-      _value.insert(index, val);
-    }, (List<T> old) {
-      _value = List.from(old);
-    });
-    mychangeStack.add(c);
-  }
-}
+//   void insert(int index, T val) {
+//     MyChange<List<T>> c = MyChange<List<T>>(_value, () {
+//       _value.insert(index, val);
+//     }, (List<T> old) {
+//       _value = List.from(old);
+//     });
+//     mychangeStack.add(c);
+//   }
+// }
 
-class UndoAbleMap<String, T> {
-  late Map<String, T> _value;
+// class UndoAbleMap<String, T> {
+//   late Map<String, T> _value;
 
-  UndoAbleMap(Map<String, T> val) {
-    _value = Map.from(val);
-  }
+//   UndoAbleMap(Map<String, T> val) {
+//     _value = Map.from(val);
+//   }
 
-  Map<String, T> get value => _value;
+//   Map<String, T> get value => _value;
 
-  void set(Map<String, T> val) {
-    MyChange<Map<String, T>> c = MyChange<Map<String, T>>(_value, () {
-      _value = Map.from(val);
-    }, (Map<String, T> old) {
-      _value = Map.from(old);
-    });
-    mychangeStack.add(c);
-  }
+//   void set(Map<String, T> val) {
+//     MyChange<Map<String, T>> c = MyChange<Map<String, T>>(_value, () {
+//       _value = Map.from(val);
+//     }, (Map<String, T> old) {
+//       _value = Map.from(old);
+//     });
+//     mychangeStack.add(c);
+//   }
 
-  void add(String key, T val) {
-    MyChange<Map<String, T>> c = MyChange<Map<String, T>>(_value, () {
-      _value[key] = val;
-    }, (Map<String, T> old) {
-      //_value = Map.from(old);
-      if (old[key] != null) {
-        _value[key] = old[key]!;
-      } else {
-        _value.remove(key);
-      }
-    });
-    mychangeStack.add(c);
-  }
+//   void add(String key, T val) {
+//     MyChange<Map<String, T>> c = MyChange<Map<String, T>>(_value, () {
+//       _value[key] = val;
+//     }, (Map<String, T> old) {
+//       //_value = Map.from(old);
+//       if (old[key] != null) {
+//         _value[key] = old[key]!;
+//       } else {
+//         _value.remove(key);
+//       }
+//     });
+//     mychangeStack.add(c);
+//   }
 
-  void remove(String key) {
-    MyChange<Map<String, T>> c = MyChange<Map<String, T>>(_value, () {
-      _value.remove(key);
-    }, (Map<String, T> old) {
-      if (old[key] != null) {
-        _value[key] = old[key]!;
-      }
-    });
-    mychangeStack.add(c);
-  }
-}
+//   void remove(String key) {
+//     MyChange<Map<String, T>> c = MyChange<Map<String, T>>(_value, () {
+//       _value.remove(key);
+//     }, (Map<String, T> old) {
+//       if (old[key] != null) {
+//         _value[key] = old[key]!;
+//       }
+//     });
+//     mychangeStack.add(c);
+//   }
+// }
 
 class MyChangeStack {
   /// Changes to keep track of
@@ -219,9 +232,9 @@ class MyChangeStack {
   //   _moveForward();
   // }
 
-  void _applyChanges(MyChange change) {
-    change.execute();
-  }
+  // void _applyChanges(MyChange change) {
+  //   change.execute();
+  // }
 
   /// Clear Undo History
   void clear() => clearHistory();
@@ -239,7 +252,7 @@ class MyChangeStack {
         break;
       }
       final change = _redos.removeFirst();
-      _applyChanges(change);
+      change.redoExecute();
       _history.addLast(change);
       if (change.transState == TransState.none || change.transState == TransState.end) {
         break;
@@ -255,7 +268,7 @@ class MyChangeStack {
       }
       final change = _history.removeLast();
       logHolder.log('TransState=${change.transState}');
-      change.undo();
+      change.undoExecute();
       _redos.addFirst(change);
       if (change.transState == TransState.none || change.transState == TransState.start) {
         break;
@@ -279,18 +292,20 @@ class MyChangeStack {
 
 class MyChange<T> {
   MyChange(
-    this._oldValue,
-    this._execute(),
-    this._undo(T oldValue), {
+    this._oldValue, {
+    required this.execute(),
+    required this.redo(),
+    required this.undo(T oldValue),
     this.monitored = false,
     this.transState = TransState.none,
   });
 
   MyChange.withContext(
     this._oldValue,
-    this.context,
-    this._execute(),
-    this._undo(T oldValue), {
+    this.context, {
+    required this.execute(),
+    required this.redo(),
+    required this.undo(T oldValue),
     this.monitored = false,
     this.transState = TransState.none,
   });
@@ -298,19 +313,20 @@ class MyChange<T> {
   TransState transState = TransState.none;
   bool monitored = false;
 
-  final void Function() _execute;
   final T _oldValue;
   BuildContext? context;
 
-  final void Function(T oldValue) _undo;
+  final void Function() execute;
+  final void Function() redo;
+  final void Function(T oldValue) undo;
 
-  void execute() {
-    _execute();
+  void redoExecute() {
+    redo();
     if (monitored) {}
   }
 
-  void undo() {
-    _undo(_oldValue);
+  void undoExecute() {
+    undo(_oldValue);
     if (monitored) {}
   }
 }

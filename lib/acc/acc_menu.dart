@@ -83,7 +83,7 @@ class ACCMenu {
     // double radiusBottomRight = 10;
     // double radiusBottomLeft = 10;
 
-    logHolder.log('showOverlay', level: 6);
+    //logHolder.log('showOverlay', level: 6);
 
     return Visibility(
       visible: _visible,

@@ -105,16 +105,20 @@ class StudioSubScreenState extends State<StudioSubScreen> {
               (constraints.maxHeight <= (isNarrow ? minWindowHeight : minWindowHeight / 2));
 
           return SafeArea(
-            child: Column(children: [
-              Expanded(
-                flex: 9,
-                child: Stack(children: [
-                  isNarrow ? narrowLayout(isShort) : wideLayout(isShort),
-                  SideBar(user: widget.user),
-                ]),
-              ),
-              logHolder.showLog ? DebugBar(key: logHolder.veiwerKey) : const SizedBox(height: 1),
+            child: Stack(children: [
+              isNarrow ? narrowLayout(isShort) : wideLayout(isShort),
+              SideBar(user: widget.user),
             ]),
+            // child: Column(children: [
+            //   Expanded(
+            //     flex: 9,
+            //     child: Stack(children: [
+            //       isNarrow ? narrowLayout(isShort) : wideLayout(isShort),
+            //       SideBar(user: widget.user),
+            //     ]),
+            //   ),
+            //   logHolder.showLog ? DebugBar(key: logHolder.veiwerKey) : const SizedBox(height: 1),
+            // ]),
           );
         }),
       );

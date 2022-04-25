@@ -239,6 +239,7 @@ class ACC {
   }
 
   Widget showOverlay(BuildContext context) {
+    //logHolder.log('showOverlay', level: 6);
     Size ratio = getRealRatio();
     Offset realOffset = getRealOffsetWithGivenRatio(ratio);
     Size realSize = getRealSize();
@@ -470,7 +471,8 @@ class ACC {
                       accId: accModel.mid,
                       onDroppedFile: (model) {
                         logHolder.log('contents added  ${model.mid}');
-                        accChild.playManager.push(this, model);
+                        accChild.playManager.pushFromDropZone(this, model);
+                        accChild.invalidate();
                       },
                     ),
                   ),
@@ -481,15 +483,15 @@ class ACC {
         ));
   }
 
-  void selectContents(BuildContext context, String accMid, {int contentsIdx = -1}) {
-    if (contentsIdx >= 0) {
-      accChild.playManager.getModel(contentsIdx).then((model) {
+  void selectContents(BuildContext context, String accMid, {int order = -1}) {
+    if (order >= 0) {
+      accChild.playManager.getModel(order: order).then((model) {
         if (model != null) {
           logHolder.log('Its contents click!!! ${model.mid}', level: 5);
           selectedModelHolder!.setModel(model);
           pageManagerHolder!.setAsContents();
           accManagerHolder!.setCurrentMid(accMid, setAsAcc: false);
-          accChild.playManager.next(pause: true, until: contentsIdx);
+          accChild.playManager.next(pause: true, until: order);
         } else {
           accManagerHolder!.setCurrentMid(accMid);
         }
@@ -999,9 +1001,9 @@ class ACC {
     if (hasContents) {
       return false;
     }
-    if (accModel.bgColor.value != Colors.transparent && accModel.bgColor.value != MyColors.pageBg) {
-      return false;
-    }
+    // if (accModel.bgColor.value != Colors.transparent && accModel.bgColor.value != MyColors.pageBg) {
+    //   return false;
+    // }
     if (accModel.borderWidth.value > 0 &&
         accModel.borderColor.value != Colors.transparent &&
         accModel.borderColor.value != MyColors.pageBg) {
@@ -1084,6 +1086,10 @@ class ACC {
   }
 
   void removeContents(String mid) {
-    accChild.playManager.removeById(mid);
+    accChild.playManager.removeById(mid).then<bool>((value) {
+      pageManagerHolder!.setState();
+      accChild.invalidate();
+      return value;
+    });
   }
 }

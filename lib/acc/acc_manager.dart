@@ -107,9 +107,11 @@ class ACCManager extends ChangeNotifier {
 
     ACC acc = ACC(page: page, accChild: widget, idx: order);
 
-    MyChange<ACC> c = MyChange<ACC>.withContext(acc, context, () {
+    MyChange<ACC> c = MyChange<ACC>.withContext(acc, context, execute: () {
       accManagerHolder!.redoCreateACC(context, acc);
-    }, (ACC old) {
+    }, redo: () {
+      accManagerHolder!.redoCreateACC(context, acc);
+    }, undo: (ACC old) {
       accManagerHolder!.undoCreateACC(context, old);
     });
     mychangeStack.add(c);
@@ -164,7 +166,7 @@ class ACCManager extends ChangeNotifier {
       for (ContentsModel contents in accModel.contentsMap.values) {
         logHolder.log('pushACCs(${contents.order.value})->pushcontents(${contents.name})',
             level: 5);
-        acc.accChild.playManager.push(acc, contents, invalidate: false);
+        acc.accChild.playManager.pushFromDropZone(acc, contents);
       }
     }
     logHolder.log('pushACCs end', level: 5);
@@ -396,15 +398,15 @@ class ACCManager extends ChangeNotifier {
     _removeACC(context, acc);
   }
 
-  void removeACCByMid(BuildContext context, String mid) {
+  bool removeACCByMid(BuildContext context, String mid) {
     ACC? acc = accMap[mid];
     if (acc == null) {
-      return;
+      return false;
     }
-    _removeACC(context, acc);
+    return _removeACC(context, acc);
   }
 
-  void _removeACC(BuildContext context, ACC acc) {
+  bool _removeACC(BuildContext context, ACC acc) {
     mychangeStack.startTrans();
     acc.accModel.isRemoved.set(true);
     acc.accChild.playManager.removeAll(); // 자식도 모두 삭제해줌.
@@ -422,6 +424,7 @@ class ACCManager extends ChangeNotifier {
     setState();
 
     accManagerHolder!.unshowMenu(context);
+    return true;
   }
 
   // void realRemove(int index, BuildContext context) {
@@ -684,7 +687,7 @@ List<ACC> accList = accManagerHolder!.getAccList(model.id);
         List<Node> conNodes = acc.accChild.playManager.toNodes(model);
         accNodes.add(Node<AbsModel>(
             key: model.mid + '/' + acc.accModel.mid,
-            label: 'Frame ${acc.accModel.mid.substring(acc.accModel.mid.length - 4)}',
+            label: 'Frame ${acc.accModel.order.value}',
             data: acc.accModel,
             expanded: acc.accModel.expanded ||
                 (accManagerHolder != null && accManagerHolder!.isCurrentIndex(acc.accModel.mid)),
@@ -694,11 +697,13 @@ List<ACC> accList = accManagerHolder!.getAccList(model.id);
     return accNodes;
   }
 
-  void removeContents(BuildContext context, UndoAble<String> parentMid, String mid) {
-    ACC? acc = accMap[parentMid];
+  bool removeContents(BuildContext context, UndoAble<String> parentMid, String mid) {
+    logHolder.log('removeContents(parent=${parentMid.value})', level: 6);
+    ACC? acc = accMap[parentMid.value];
     if (acc == null) {
-      return;
+      return false;
     }
     acc.removeContents(mid);
+    return true;
   }
 }

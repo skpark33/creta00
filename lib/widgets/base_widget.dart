@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 
 import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/constants/constants.dart';
-import 'package:creta00/common/util/my_utils.dart';
 import 'package:creta00/player/play_manager.dart';
 //import 'package:creta00/model/contents.dart';
 import 'package:creta00/player/abs_player.dart';
@@ -95,7 +94,7 @@ class BaseWidgetState extends State<BaseWidget> {
 
   @override
   Widget build(BuildContext context) {
-    logHolder.log('baseWidget build', level: 5);
+    logHolder.log('baseWidget build', level: 6);
 
     if (widget.isCarousel()) {
       widget.playManager.resetCarousel();
@@ -106,14 +105,14 @@ class BaseWidgetState extends State<BaseWidget> {
       color: Colors.transparent,
       child: FutureBuilder(
           future: widget.playManager.waitBuild(),
-          builder: (BuildContext context, AsyncSnapshot<AbsPlayWidget> snapshot) {
-            if (snapshot.hasData == false) {
+          builder: (BuildContext context, AsyncSnapshot<AbsPlayWidget?> snapshot) {
+            if (snapshot.hasData == false || snapshot.data == null) {
               //해당 부분은 data를 아직 받아 오지 못했을때 실행되는 부분을 의미한다.
               return Container();
             }
             if (snapshot.hasError) {
               //error가 발생하게 될 경우 반환하게 되는 부분
-              return errMsgWidget(snapshot);
+              return const Text('error');
             }
             logHolder.log(
                 'playTime===${snapshot.data!.model!.playTime.value} sec, ${snapshot.data!.model!.name}');
@@ -128,7 +127,7 @@ class BaseWidgetState extends State<BaseWidget> {
 
             switch (widget.getAnimeType()) {
               case AnimeType.carousel:
-                logHolder.log('AnimeType.carousel start ${widget.playManager.currentIndex}');
+                //logHolder.log('AnimeType.carousel start ${widget.playManager.currentIndex}');
                 //return carousel!.carouselWidget(
                 return carouselWidget(
                     context,
@@ -137,7 +136,7 @@ class BaseWidgetState extends State<BaseWidget> {
                     (index, reason) {}, // onPageChanged
                     widget.playManager.animePageChanger,
                     maxInteger, // 가장 큰 수를 넣는다.
-                    widget.playManager.currentIndex); // 0은 첫번째 index(즉 0번째)가 가운데로 들어오라는 뜻이다.
+                    widget.playManager.currentOrder); // 0은 첫번째 index(즉 0번째)가 가운데로 들어오라는 뜻이다.
 
               case AnimeType.flip:
                 logHolder.log('AnimeType.flip');

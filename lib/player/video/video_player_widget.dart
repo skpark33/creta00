@@ -54,7 +54,8 @@ class VideoPlayerWidget extends AbsPlayWidget {
         //setState(() {});
         logHolder.log('initialize complete(${wcontroller!.value.duration.inMilliseconds})');
 
-        model!.videoPlayTime.set(wcontroller!.value.duration.inMilliseconds.toDouble());
+        model!.videoPlayTime
+            .set(wcontroller!.value.duration.inMilliseconds.toDouble(), noUndo: true);
         wcontroller!.setLooping(false);
 
         wcontroller!.onAfterVideoEvent = (event) {
@@ -149,7 +150,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   Future<void> afterBuild() async {
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       logHolder.log('afterBuild video', level: 5);
-      widget.model!.aspectRatio.set(widget.wcontroller!.value.aspectRatio);
+      widget.model!.aspectRatio.set(widget.wcontroller!.value.aspectRatio, noUndo: true);
       widget.afterBuild();
     });
   }
@@ -187,7 +188,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     Size outSize = widget.getOuterSize(widget.wcontroller!.value.aspectRatio);
     if (bookManagerHolder!.isSilent()) {
       widget.wcontroller!.setVolume(0.0);
-      widget.model!.mute.set(true, save: false);
+      widget.model!.mute.set(true, save: false, noUndo: true);
     }
     return FutureBuilder(
         future: waitInit(),

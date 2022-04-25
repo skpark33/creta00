@@ -143,7 +143,7 @@ class ResiablePainter extends CustomPainter {
       //     ),
       //     linePaintBg);
     } else if (isInvisibleColorACC) {
-      dotRect(canvas, rect, strokeWidth: 2, color: MyColors.accBg, gap: 5);
+      dotRect(canvas, rect, strokeWidth: 1, color: MyColors.primaryColor, gap: 5);
     }
 
     if (isHover || isCornered) {

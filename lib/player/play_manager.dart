@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:creta00/player/abs_player.dart';
+import 'package:sortedmap/sortedmap.dart';
 
 //import 'package:creta00/acc/acc_property.dart';
 import 'package:creta00/book_manager.dart';
@@ -9,7 +11,6 @@ import 'package:flutter_treeview/flutter_treeview.dart';
 
 import 'package:creta00/common/util/logger.dart';
 //import 'package:creta00/common/util/my_utils.dart';
-import 'package:creta00/player/abs_player.dart';
 import 'package:creta00/acc/acc.dart';
 import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/player/video/video_player_widget.dart';
@@ -21,6 +22,9 @@ import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:creta00/model/pages.dart';
 import 'package:creta00/model/models.dart';
 import 'package:creta00/model/model_enums.dart';
+
+//import '../common/undo/undo.dart';
+import 'abs_player.dart';
 
 //import 'package:creta00/constants/constants.dart';
 
@@ -76,48 +80,81 @@ class PlayManager {
 
   BaseWidget baseWidget;
   //final UndoAbleList<AbsPlayWidget> _playList = UndoAbleList([]);
-  final List<AbsPlayWidget> _playList = [];
-  int _currentIndex = -1;
+  //final List<AbsPlayWidget> _playList = [];
+  final SortedMap<int, AbsPlayWidget> _orderMap = SortedMap<int, AbsPlayWidget>();
+  // ignore: prefer_final_fields
+  int _currentOrder = -1;
   final Lock _lock = Lock();
   double _currentPlaySec = 0.0;
   Timer? _timer;
-  final int _timeGap = 100; // 0.
+  final int _timeGap = 100; //
 
-  int get currentIndex {
-    return _currentIndex;
+  // 안전하지 않은 함수들 시작 [
+
+  int get currentOrder {
+    return _currentOrder;
+  }
+
+  List<AbsPlayWidget> getPlayWidgetList() {
+    return _orderMap.values.toList();
+  }
+
+  bool isValidCarousel() {
+    return _orderMap.length >= minCarouselCount;
+  }
+
+  bool isNotEmpty() {
+    return _orderMap.isNotEmpty;
+  }
+
+  // bool isEmpty() {
+  //   return _playList.isEmpty;
+  // }
+
+  // 안전하지 않은 함수들 끝 ]
+
+  bool _isRemoved(AbsPlayWidget playWidget) {
+    return playWidget.model!.isRemoved.value;
   }
 
   bool _shouldChaneAnimePage = false;
   final Lock _animelock = Lock();
 
-  bool isValid() {
-    return currentIndex >= 0 && _playList.isNotEmpty;
-  }
+  // bool isValid() {
+  //   return _currentIndex >= 0 && _playList.isNotEmpty;
+  // }
 
-  Future<AbsPlayWidget> waitBuild() async {
+  Future<AbsPlayWidget?> waitBuild() async {
     // const uuid = Uuid();
     // GlobalObjectKey<EmptyPlayWidgetState> key =
     //     GlobalObjectKey<EmptyPlayWidgetState>(uuid.v4());
     //AbsPlayWidget retval = EmptyPlayWidget(key: key, acc: baseWidget.acc!);
+    logHolder.log('waitBuild $_currentOrder', level: 6);
     AbsPlayWidget? retval;
+    if (_currentOrder < 0) {
+      return retval;
+    }
     bool isReady = false;
     while (!isReady) {
       await _lock.synchronized(() async {
-        if (_currentIndex >= 0 && _currentIndex < _playList.length) {
-          if (_playList[_currentIndex].isInit()) {
+        AbsPlayWidget? player = _orderMap[_currentOrder];
+        if (player != null) {
+          if (player.isInit()) {
             isReady = true;
             return;
           }
+        } else {
+          //logHolder.log('waitBuild $_currentOrder is invalid', level: 7);
         }
         return;
       });
       if (isReady) {
-        retval = _playList[_currentIndex];
+        retval = _orderMap[_currentOrder];
         break;
       }
       await Future.delayed(const Duration(seconds: 1));
     }
-    return retval!;
+    return retval;
   }
 
   Lock getLock() {
@@ -129,7 +166,7 @@ class PlayManager {
   }
 
   void clear() {
-    _playList.clear();
+    _orderMap.clear();
     if (_timer != null) {
       _timer!.cancel();
     }
@@ -143,22 +180,18 @@ class PlayManager {
 
   Future<void> resetCarousel() async {
     await _lock.synchronized(() async {
-      if (currentIndex >= 0) {
-        int len = _playList.length;
-        for (int i = 0; i < len; i++) {
-          if (bookManagerHolder!.isAutoPlay()) {
-            _playList[i].autoStart = (i == currentIndex);
-          }
-        }
+      for (int order in _orderMap.keys) {
+        _orderMap[order]!.autoStart = (order == _currentOrder);
       }
     });
   }
 
   Future<void> setAutoStart() async {
     await _lock.synchronized(() async {
-      if (_currentIndex >= 0) {
+      AbsPlayWidget? player = _orderMap[_currentOrder];
+      if (player != null) {
         if (bookManagerHolder!.isAutoPlay()) {
-          _playList[_currentIndex].autoStart = true;
+          player.autoStart = true;
         }
       }
     });
@@ -175,8 +208,9 @@ class PlayManager {
   Future<ContentsType> getCurrentContentsType() async {
     ContentsType type = ContentsType.free;
     await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
-        type = _playList[_currentIndex].model!.contentsType;
+      AbsPlayWidget? player = _orderMap[_currentOrder];
+      if (player != null) {
+        type = player.model!.contentsType;
       }
     });
     return type;
@@ -185,8 +219,9 @@ class PlayManager {
   Future<bool> getCurrentDynmicSize() async {
     bool state = false;
     await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
-        state = _playList[_currentIndex].model!.isDynamicSize.value;
+      AbsPlayWidget? player = _orderMap[_currentOrder];
+      if (player != null) {
+        state = player.model!.isDynamicSize.value;
       }
     });
     return state;
@@ -195,8 +230,9 @@ class PlayManager {
   Future<double> getCurrentAspectRatio() async {
     double aspectRatio = -1;
     await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
-        aspectRatio = _playList[_currentIndex].model!.aspectRatio.value;
+      AbsPlayWidget? player = _orderMap[_currentOrder];
+      if (player != null) {
+        aspectRatio = player.model!.aspectRatio.value;
       }
     });
     return aspectRatio;
@@ -204,31 +240,33 @@ class PlayManager {
 
   Future<void> setCurrentDynmicSize(bool isDynamicSize) async {
     await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
-        _playList[_currentIndex].model!.isDynamicSize.set(isDynamicSize);
+      AbsPlayWidget? player = _orderMap[_currentOrder];
+      if (player != null) {
+        player.model!.isDynamicSize.set(isDynamicSize);
       }
     });
   }
 
   Future<PlayState> getCurrentPlayState() async {
     return await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
-        return _playList[_currentIndex].model!.playState;
+      AbsPlayWidget? player = _orderMap[_currentOrder];
+      if (player != null) {
+        return _orderMap[_currentOrder]!.model!.playState;
       }
-      logHolder.log('getCurrentPlayState currentIdex is invalid $_currentIndex', level: 6);
       return PlayState.none;
     });
   }
 
   Future<Widget?> getCurrentVideoProgress() async {
     return await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
-        if (_playList[_currentIndex].model!.contentsType == ContentsType.video) {
+      AbsPlayWidget? player = _orderMap[_currentOrder];
+      if (player != null) {
+        if (player.model!.contentsType == ContentsType.video) {
           // if (_playList[_currentIndex].model!.playState != PlayState.start) {
           //   Future.delayed(const Duration(milliseconds: 100));
           //   // player 가 start 할때까지 기다려 줘야 한다.
           // }
-          VideoPlayerWidget aVideo = _playList[_currentIndex] as VideoPlayerWidget;
+          VideoPlayerWidget aVideo = player as VideoPlayerWidget;
           return BasicOverayWidget(
               key: ValueKey<String>(aVideo.model!.mid),
               controller: aVideo.wcontroller!,
@@ -245,8 +283,9 @@ class PlayManager {
   Future<bool> getCurrentMute() async {
     bool mute = false;
     await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
-        mute = _playList[_currentIndex].model!.mute.value;
+      AbsPlayWidget? player = _orderMap[_currentOrder];
+      if (player != null) {
+        mute = player.model!.mute.value;
       }
     });
     return mute;
@@ -255,8 +294,9 @@ class PlayManager {
   Future<bool> getCurrentAutoStart() async {
     bool autoStart = false;
     await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
-        autoStart = _playList[_currentIndex].autoStart;
+      AbsPlayWidget? player = _orderMap[_currentOrder];
+      if (player != null) {
+        autoStart = player.autoStart;
       }
     });
     return autoStart;
@@ -265,20 +305,26 @@ class PlayManager {
   Future<void> _timerExpired(Timer timer) async {
     ContentsModel? currentModel;
     await _lock.synchronized(() async {
-      if (_playList.isEmpty) return;
+      if (_orderMap.isEmpty) return;
 
       // 아무것도 돌고 있지 않다면,
-      if (_currentIndex < 0) {
-        _currentIndex = 0;
+      if (_currentOrder < 0) {
+        //_currentOrder = 0;
         return;
       }
 
-      if (false == _playList[_currentIndex].isInit()) {
-        logHolder.log('Not yet inited');
+      AbsPlayWidget? player = _orderMap[_currentOrder];
+      if (player == null) {
+        logHolder.log('$_currentOrder is invalid', level: 7);
+        _toNext(noUndo: true);
+        return;
+      }
+      if (false == player.isInit()) {
+        logHolder.log('Not yet inited', level: 7);
         return;
       }
 
-      currentModel = _playList[_currentIndex].getModel();
+      currentModel = player.getModel();
       if (currentModel!.isImage()) {
         // playTime 이 영구히로 잡혀있다.
         if (0 > currentModel!.playTime.value) {
@@ -293,7 +339,7 @@ class PlayManager {
         }
         // 교체 시간이 되었다
         //if (currentModel!.playState == PlayState.start) {
-        next();
+        next(noUndo: true);
         //}
         //_currentPlaySec = 0;
         //baseWidget.invalidate();
@@ -307,7 +353,7 @@ class PlayManager {
           currentModel!.setPlayState(PlayState.none);
           logHolder.log('before next', level: 6);
 
-          next();
+          next(noUndo: true);
           // 비디오가 마무리 작업을 할 시간을 준다.
           Future.delayed(Duration(milliseconds: (_timeGap / 4).round()));
           //_currentPlaySec = 0;
@@ -319,69 +365,108 @@ class PlayManager {
     });
   }
 
-  Future<void> push(ACC acc, ContentsModel model, {bool invalidate = true}) async {
-    await _lock.synchronized(() async {
-      if (invalidate) {
-        // push 순서에 따라 order 가 결정된다.
-        // 마우스로 끌어다 놓은 경우이다.
-        int order = _playList.length;
-        model.order.set(order, save: false); // save 는 어차피 아래에서 되므로, 여기서는 save 하지 않는다.
+  int getLastOrder() {
+    int retval = -1;
+    for (AbsPlayWidget player in _orderMap.values) {
+      if (retval < player.model!.order.value) {
+        retval = player.model!.order.value;
       }
-      AbsPlayWidget? aWidget;
-      bool isAutoPlay = bookManagerHolder!.isAutoPlay();
-      if (!isAutoPlay) {
-        model.setPlayState(PlayState.pause);
-      }
-      try {
-        if (model.isVideo()) {
-          logHolder.log('push video');
-          GlobalObjectKey<VideoPlayerWidgetState> key =
-              GlobalObjectKey<VideoPlayerWidgetState>(model.mid);
-          aWidget = VideoPlayerWidget(
-            globalKey: key,
-            onAfterEvent: onVideoAfterEvent,
-            model: model,
-            acc: acc,
-            autoStart: isAutoPlay, // (_currentIndex < 0) ? true : false,
-          );
-          await aWidget.init();
-          // aWidget.videoProgress = BasicOverayWidget(
-          //     key: ValueKey<String>(model.mid),
-          //     controller: (aWidget as VideoPlayerWidget).wcontroller!,
-          //     width: 200,
-          //     height: 20);
-          if (_currentIndex < 0) _currentIndex = 0;
-        } else if (model.isImage()) {
-          GlobalObjectKey<ImagePlayerWidgetState> key =
-              GlobalObjectKey<ImagePlayerWidgetState>(model.mid);
-          aWidget = ImagePlayerWidget(
-            key: key,
-            model: model,
-            acc: acc,
-            autoStart: isAutoPlay, // (_currentIndex < 0) ? true : false,
-          );
-          await aWidget.init();
-          if (_currentIndex < 0) _currentIndex = 0;
-        } else {
-          logHolder.log('Invalid Contents Type error');
-          return;
-        }
-        _playList.add(aWidget);
-      } catch (e) {
-        logHolder.log('Contents Player widget exception $e');
-      }
+    }
+    return (retval);
+  }
 
-      if (invalidate && baseWidget.isAnime()) {
+  Future<void> push(ACC acc, ContentsModel model) async {
+    await _lock.synchronized(() async {
+      await _push(acc, model);
+      logHolder.log('push(${model.mid})=${model.order.value}', level: 6);
+      selectedModelHolder!.setModel(model, invalidate: false);
+    });
+  }
+
+  Future<void> pushFromDropZone(ACC acc, ContentsModel model) async {
+    await _lock.synchronized(() async {
+      // push 순서에 따라 order 가 결정된다.
+      // 마우스로 끌어다 놓은 경우이다.
+      int order = getLastOrder();
+      model.order
+          .set(order + 1, save: false, noUndo: true); // save 는 어차피 아래에서 되므로, 여기서는 save 하지 않는다.
+
+      await _push(acc, model);
+
+      if (baseWidget.isAnime()) {
         // 애니타입인 경우, 새로운 데이터를 이해시키기 위해
         baseWidget.invalidate();
       }
-      logHolder.log('push(${model.mid})=${_playList.length}');
-      selectedModelHolder!.setModel(model, invalidate: invalidate);
-      if (invalidate) {
+      logHolder.log('pushFromDropZone(${model.mid})=${model.order.value}', level: 6);
+      selectedModelHolder!.setModel(model, invalidate: true);
+      _currentOrder = model.order.value;
+      accManagerHolder!.setState();
+      pageManagerHolder!.setState();
+      model.isRemoved.set(true, noUndo: true); // 처음 생성될때 false 이므로 true 로 해놔야 undo 가된다.
+      model.isRemoved.set(false, doComplete: (val) {
+        if (_currentOrder < 0) {
+          // 생성시
+          _currentOrder = model.order.value;
+        }
+        baseWidget.invalidate();
         accManagerHolder!.setState();
         pageManagerHolder!.setState();
-      }
+      }, undoComplete: (val) {
+        // 삭제시
+        if (model.order.value == _currentOrder) {
+          _toNext();
+        }
+        baseWidget.invalidate();
+        accManagerHolder!.setState();
+        pageManagerHolder!.setState();
+      });
     });
+  }
+
+  Future<void> _push(ACC acc, ContentsModel model) async {
+    AbsPlayWidget? aWidget;
+    bool isAutoPlay = bookManagerHolder!.isAutoPlay();
+    if (!isAutoPlay) {
+      model.setPlayState(PlayState.pause);
+    }
+    try {
+      if (model.isVideo()) {
+        logHolder.log('push video');
+        GlobalObjectKey<VideoPlayerWidgetState> key =
+            GlobalObjectKey<VideoPlayerWidgetState>(model.mid);
+        aWidget = VideoPlayerWidget(
+          globalKey: key,
+          onAfterEvent: onVideoAfterEvent,
+          model: model,
+          acc: acc,
+          autoStart: isAutoPlay, // (_currentIndex < 0) ? true : false,
+        );
+        await aWidget.init();
+        // aWidget.videoProgress = BasicOverayWidget(
+        //     key: ValueKey<String>(model.mid),
+        //     controller: (aWidget as VideoPlayerWidget).wcontroller!,
+        //     width: 200,
+        //     height: 20);
+        if (_currentOrder < 0) _currentOrder = 0;
+      } else if (model.isImage()) {
+        GlobalObjectKey<ImagePlayerWidgetState> key =
+            GlobalObjectKey<ImagePlayerWidgetState>(model.mid);
+        aWidget = ImagePlayerWidget(
+          key: key,
+          model: model,
+          acc: acc,
+          autoStart: isAutoPlay, // (_currentIndex < 0) ? true : false,
+        );
+        await aWidget.init();
+        if (_currentOrder < 0) _currentOrder = 0;
+      } else {
+        logHolder.log('Invalid Contents Type error');
+        return;
+      }
+      _orderMap[model.order.value] = aWidget;
+    } catch (e) {
+      logHolder.log('Contents Player widget exception $e');
+    }
   }
 
   void onVideoAfterEvent() {
@@ -415,33 +500,52 @@ class PlayManager {
     // return;
   }
 
-  Future<void> remove(int i) async {
-    await _lock.synchronized(() async {
-      if (_playList.isNotEmpty) {
-        if (i < _playList.length && i >= 0) {
-          _playList[i].close();
-          _playList.removeAt(i);
-        }
-      }
-    });
-  }
+  // Future<void> remove(int i) async {
+  //   await _lock.synchronized(() async {
+  //     if (_playList.isNotEmpty) {
+  //       if (i < _playList.length && i >= 0) {
+  //         _playList[i].close();
+  //         _playList.removeAt(i);
+  //       }
+  //     }
+  //   });
+  // }
 
-  Future<void> removeCurrent() async {
-    await _lock.synchronized(() async {
-      if (_playList.isNotEmpty && _currentIndex >= 0) {
-        remove(_currentIndex);
-      }
-    });
-  }
+  // Future<void> removeCurrent() async {
+  //   await _lock.synchronized(() async {
+  //     if (_playList.isNotEmpty && _currentIndex >= 0) {
+  //       remove(_currentIndex);
+  //     }
+  //   });
+  // }
 
-  Future<void> removeById(String mid) async {
-    await _lock.synchronized(() async {
-      for (AbsPlayWidget playWidget in _playList) {
+  Future<bool> removeById(String mid) async {
+    logHolder.log("removeById($mid)", level: 6);
+    return await _lock.synchronized(() async {
+      for (AbsPlayWidget playWidget in _orderMap.values) {
         if (mid == playWidget.model!.mid) {
-          playWidget.model!.isRemoved.set(true);
-          return;
+          //mychangeStack.startTrans();
+          playWidget.model!.isRemoved.set(true, doComplete: (val) {
+            if (playWidget.model!.order.value == _currentOrder) {
+              _toNext();
+            }
+            baseWidget.invalidate();
+          }, undoComplete: (val) {
+            if (_currentOrder < 0) {
+              _currentOrder = playWidget.model!.order.value;
+            }
+            baseWidget.invalidate();
+          });
+          if (playWidget.model!.order.value == _currentOrder) {
+            bool retval = _toNext();
+            //mychangeStack.endTrans();
+            return retval;
+          }
+          //mychangeStack.endTrans();
+          return true;
         }
       }
+      return false;
     });
   }
 
@@ -449,20 +553,19 @@ class PlayManager {
     await _animelock.synchronized(() async {
       _shouldChaneAnimePage = true;
     });
-    if (currentIndex >= 0) {
-      int len = _playList.length;
-      for (int i = 0; i < len; i++) {
-        if (i == _currentIndex) {
+    if (_currentOrder >= 0) {
+      for (int order in _orderMap.keys) {
+        if (order == _currentOrder) {
           if (bookManagerHolder!.isAutoPlay()) {
-            _playList[i].autoStart = true;
+            _orderMap[order]!.autoStart = true;
           }
-          await _playList[i].play();
-          logHolder.log('anime play ${_playList[i].model!.name}', level: 5);
+          await _orderMap[order]!.play();
+          logHolder.log('anime play ${_orderMap[order]!.model!.name}', level: 5);
         } else {
           if (bookManagerHolder!.isAutoPlay()) {
-            _playList[i].autoStart = false;
+            _orderMap[order]!.autoStart = false;
           }
-          await _playList[i].pause();
+          await _orderMap[order]!.pause();
         }
       }
     }
@@ -472,7 +575,7 @@ class PlayManager {
     int retval = -1;
     await _animelock.synchronized(() async {
       if (_shouldChaneAnimePage) {
-        retval = _currentIndex;
+        retval = _currentOrder;
         _shouldChaneAnimePage = false;
       }
     });
@@ -481,41 +584,94 @@ class PlayManager {
 
   Future<void> play() async {
     await _lock.synchronized(() async {
-      if (_playList.isNotEmpty) {
-        if (_currentIndex >= 0) {
-          await _playList[_currentIndex].play();
-        }
+      AbsPlayWidget? player = _orderMap[_currentOrder];
+      if (player != null) {
+        await player.play();
       }
     });
   }
 
-  Future<void> next({bool pause = false, int until = -1}) async {
+  bool _toNext({bool noUndo = false}) {
+    logHolder.log('_toNext($_currentOrder)', level: 6);
+    int counter = 0;
+    int lastOrder = getLastOrder();
+    while (counter <= lastOrder) {
+      int newOrder = _currentOrder + 1;
+      if (newOrder > lastOrder) {
+        newOrder = 0;
+      }
+      AbsPlayWidget? player = _orderMap[newOrder];
+      if (player != null) {
+        if (!_isRemoved(player)) {
+          logHolder.log('return _toNext($newOrder)', level: 6);
+          _currentOrder = newOrder;
+          return true;
+        }
+      }
+      counter++;
+    }
+    logHolder.log('invalid order $counter', level: 7);
+    _currentOrder = -1;
+    return false;
+  }
+
+  bool _toPrev() {
+    int counter = 0;
+    int lastOrder = getLastOrder();
+    while (counter <= lastOrder) {
+      int newOrder = _currentOrder - 1;
+      if (newOrder < 0) {
+        newOrder = lastOrder;
+      }
+      AbsPlayWidget? player = _orderMap[newOrder];
+      if (player != null) {
+        if (!_isRemoved(player)) {
+          _currentOrder = newOrder;
+          return true;
+        }
+      }
+      counter++;
+    }
+    logHolder.log('invalid order $counter', level: 7);
+    _currentOrder = -1;
+    return false;
+  }
+
+  Future<void> next({bool pause = false, int until = -1, bool noUndo = false}) async {
     await _lock.synchronized(() async {
       //ContentsType prevContentsType = ContentsType.free;
-      if (_playList.isNotEmpty) {
-        int prevIndex = _currentIndex;
-        if (_currentIndex >= 0) {
-          AbsPlayWidget prevPlayer = _playList[_currentIndex];
+      if (_orderMap.isEmpty) {
+        return;
+      }
+      int prevIndex = _currentOrder;
+
+      if (_currentOrder >= 0) {
+        AbsPlayWidget? prevPlayer = _orderMap[_currentOrder];
+        if (prevPlayer != null) {
           if (pause) {
-            logHolder.log('pause($_currentIndex)');
+            logHolder.log('pause($_currentOrder)');
             await prevPlayer.pause();
           }
-          //prevContentsType = prevPlayer.model!.contentsType;
         }
-        if (until >= 0) {
-          _currentIndex = until;
+        //prevContentsType = prevPlayer.model!.contentsType;
+      }
+      if (until >= 0) {
+        int lastOrder = getLastOrder();
+        if (until > lastOrder) {
+          _currentOrder = 0;
         } else {
-          _currentIndex++;
+          _currentOrder = until;
         }
-        if (_currentIndex >= _playList.length) {
-          _currentIndex = 0;
-        }
-        //logHolder.log('play($_currentIndex)--');
-        _currentPlaySec = 0;
-        AbsPlayWidget currentPlayer = _playList[_currentIndex];
+      } else {
+        if (!_toNext(noUndo: noUndo)) return;
+      }
+      //logHolder.log('play($_currentIndex)--');
+      _currentPlaySec = 0;
+      AbsPlayWidget? currentPlayer = _orderMap[_currentOrder];
+      if (currentPlayer != null) {
         if (!baseWidget.isAnime()) {
           //skpark carousel problem
-          if (prevIndex != _currentIndex) {
+          if (prevIndex != _currentOrder) {
             baseWidget.invalidate();
           } else {
             if (bookManagerHolder!.isAutoPlay()) {
@@ -529,10 +685,10 @@ class PlayManager {
             accManagerHolder!.isCurrentIndex(baseWidget.acc!.accModel.mid)) {
           selectedModelHolder!.setModel(currentPlayer.model!);
         }
-        //if (currentPlayer.model!.contentsType != prevContentsType) {
-        //accManagerHolder!.resizeMenu(currentPlayer.model!.contentsType);
-        //}
       }
+      //if (currentPlayer.model!.contentsType != prevContentsType) {
+      //accManagerHolder!.resizeMenu(currentPlayer.model!.contentsType);
+      //}
     });
   }
 
@@ -540,27 +696,31 @@ class PlayManager {
     await _lock.synchronized(() async {
       //ContentsType prevContentsType = ContentsType.free;
 
-      if (_playList.isNotEmpty) {
-        int prevIndex = _currentIndex;
-        if (_currentIndex >= 0) {
-          AbsPlayWidget prevPlayer = _playList[_currentIndex];
+      if (_orderMap.isEmpty) {
+        return;
+      }
+      int prevIndex = _currentOrder;
+      if (_currentOrder >= 0) {
+        AbsPlayWidget? prevPlayer = _orderMap[_currentOrder];
+        if (prevPlayer != null) {
           if (pause) {
-            logHolder.log('pause($_currentIndex)');
+            logHolder.log('pause($_currentOrder)');
             await prevPlayer.pause();
           }
-          //prevContentsType = prevPlayer.model!.contentsType;
         }
-        _currentIndex--;
-        if (_currentIndex < 0) {
-          _currentIndex = _playList.length - 1;
-        }
-//        logHolder.log('play($_currentIndex)');
-        _currentPlaySec = 0;
+        //prevContentsType = prevPlayer.model!.contentsType;
+      }
 
-        AbsPlayWidget currentPlayer = _playList[_currentIndex];
+      if (!_toPrev()) return;
+
+//        logHolder.log('play($_currentIndex)');
+      _currentPlaySec = 0;
+
+      AbsPlayWidget? currentPlayer = _orderMap[_currentOrder];
+      if (currentPlayer != null) {
         if (!baseWidget.isAnime()) {
           //skpark carousel problem
-          if (prevIndex != _currentIndex) {
+          if (prevIndex != _currentOrder) {
             baseWidget.invalidate();
           } else {
             if (bookManagerHolder!.isAutoPlay()) {
@@ -574,92 +734,83 @@ class PlayManager {
             accManagerHolder!.isCurrentIndex(baseWidget.acc!.accModel.mid)) {
           selectedModelHolder!.setModel(currentPlayer.model!);
         }
-        //if (currentPlayer.model!.contentsType != prevContentsType) {
-        //accManagerHolder!.resizeMenu(currentPlayer.model!.contentsType);
-        //}
       }
+      //if (currentPlayer.model!.contentsType != prevContentsType) {
+      //accManagerHolder!.resizeMenu(currentPlayer.model!.contentsType);
+      //}
     });
   }
 
   Future<void> mute() async {
     await _lock.synchronized(() async {
-      await _playList[_currentIndex].mute();
+      AbsPlayWidget? player = _orderMap[_currentOrder];
+      if (player != null) {
+        await player.mute();
+      }
     });
   }
 
   Future<void> pause() async {
     await _lock.synchronized(() async {
-      await _playList[_currentIndex].pause();
+      AbsPlayWidget? player = _orderMap[_currentOrder];
+      if (player != null) {
+        await player.pause();
+      }
     });
   }
 
   Future<void> invalidate() async {
     await _lock.synchronized(() async {
-      if (_currentIndex >= 0 && _currentIndex < _playList.length) {
-        if (_playList[_currentIndex].isInit()) {
-          _playList[_currentIndex].invalidate();
-        }
+      AbsPlayWidget? player = _orderMap[_currentOrder];
+      if (player != null && player.isInit()) {
+        player.invalidate();
       }
     });
   }
 
   Future<void> pauseAllExceptCurrent() async {
     await _lock.synchronized(() async {
-      int len = _playList.length;
-      for (int i = 0; i < len; i++) {
-        if (i == currentIndex) {
+      for (int i in _orderMap.keys) {
+        if (i == _currentOrder) {
           continue;
         }
-        await _playList[i].pause();
+        await _orderMap[i]!.pause();
       }
     });
-  }
-
-  bool isValidCarousel() {
-    return _playList.length >= minCarouselCount;
-  }
-
-  bool isNotEmpty() {
-    return _playList.isNotEmpty;
-  }
-
-  bool isEmpty() {
-    return _playList.isEmpty;
   }
 
   Future<ContentsModel?> getCurrentModel() async {
     ContentsModel? retval;
     await _lock.synchronized(() async {
-      if (_currentIndex >= 0) {
-        retval = _playList[_currentIndex].model;
+      AbsPlayWidget? player = _orderMap[_currentOrder];
+      if (player != null) {
+        retval = player.model;
       }
     });
     return retval;
   }
 
-  Future<ContentsModel?> getModel(int contentsIdx) async {
+  Future<ContentsModel?> getModel({required int order}) async {
     ContentsModel? retval;
     await _lock.synchronized(() async {
-      if (contentsIdx >= 0 && contentsIdx < _playList.length) {
-        retval = _playList[contentsIdx].model;
+      AbsPlayWidget? player = _orderMap[order];
+      if (player != null) {
+        retval = player.model;
       }
     });
     return retval;
-  }
-
-  List<AbsPlayWidget> getPlayWidgetList() {
-    return _playList;
   }
 
   List<Node> toNodes(PageModel model) {
     List<Node> conNodes = [];
     int idx = 0;
-    for (AbsPlayWidget playWidget in _playList) {
+    for (AbsPlayWidget playWidget in _orderMap.values) {
+      if (_isRemoved(playWidget)) continue;
       //playWidget.model!.order.set(idx);
       conNodes.add(Node<AbsModel>(
           key: '${model.mid}/${baseWidget.acc!.accModel.mid}/${playWidget.model!.mid}',
-          label: playWidget.model!.name,
-          expanded: playWidget.model!.expanded || (currentIndex == idx),
+          label: '${playWidget.model!.order.value}. ${playWidget.model!.name}',
+          expanded: playWidget.model!.expanded || (_currentOrder == idx),
           data: playWidget.model!));
       idx++;
     }
@@ -668,14 +819,15 @@ class PlayManager {
 
   List<ContentsModel> getModelList() {
     List<ContentsModel> list = [];
-    for (AbsPlayWidget playWidget in _playList) {
+    for (AbsPlayWidget playWidget in _orderMap.values) {
+      //if (_isRemoved(playWidget)) continue;
       list.add(playWidget.model!);
     }
     return list;
   }
 
   void removeAll() {
-    for (AbsPlayWidget playWidget in _playList) {
+    for (AbsPlayWidget playWidget in _orderMap.values) {
       playWidget.model!.isRemoved.set(true);
     }
   }

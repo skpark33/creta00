@@ -105,9 +105,11 @@ class PageManager extends ChangeNotifier {
   String createPage() {
     String retval = '';
     PageModel page = PageModel(bookManagerHolder!.defaultBook!.mid);
-    MyChange<PageModel> c = MyChange<PageModel>(page, () {
+    MyChange<PageModel> c = MyChange<PageModel>(page, execute: () {
       retval = pageManagerHolder!.redoCreatePage(page);
-    }, (PageModel old) {
+    }, redo: () {
+      retval = pageManagerHolder!.redoCreatePage(page);
+    }, undo: (PageModel old) {
       retval = pageManagerHolder!.undoCreatePage(old); // 값이 동일하다면, 할 필요가 없다.
     });
     mychangeStack.add(c);
@@ -189,14 +191,14 @@ class PageManager extends ChangeNotifier {
     return count;
   }
 
-  void removePage(BuildContext context, String mid) {
+  bool removePage(BuildContext context, String mid) {
     if (pageMap[mid] == null) {
       logHolder.log('removePage($mid) is null', level: 5);
-      return;
+      return false;
     }
     if (getLength() <= 1) {
       logHolder.log('last page ($mid) cant be deleted', level: 7);
-      return;
+      return false;
     }
     logHolder.log('removePage($mid)', level: 5);
 
@@ -219,6 +221,7 @@ class PageManager extends ChangeNotifier {
       setSelectedIndex(context, getFirstPage());
     }
     accManagerHolder!.setState();
+    return true;
   }
 
   changeOrder(int newIndex, int oldIndex) {

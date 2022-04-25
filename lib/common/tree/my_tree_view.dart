@@ -209,8 +209,8 @@ class _MyTreeViewState extends State<MyTreeView> {
                   ACC? acc = accManagerHolder!.getCurrentACC();
                   if (acc != null) {
                     int order = node.data.order.value;
-                    debugPrint('selectContents: $order');
-                    acc.selectContents(context, mid, contentsIdx: order);
+                    logHolder.log('selectContents: $order', level: 6);
+                    acc.selectContents(context, mid, order: order);
                   }
                 }
               });
@@ -228,25 +228,30 @@ class _MyTreeViewState extends State<MyTreeView> {
                       child: Text(node.label),
                       padding: EdgeInsets.only(
                           top: 3 + (model.type == ModelType.page ? 6 : 0), bottom: 3)),
+                  // 삭제 버튼
                   IconButton(
                     constraints: BoxConstraints.tight(Size(MySizes.smallIcon, MySizes.smallIcon)),
                     iconSize: MySizes.smallIcon,
                     padding: EdgeInsets.zero,
                     onPressed: () {
-                      setState(() {
-                        if (model.type == ModelType.page) {
-                          widget.pageManager.removePage(context, model.mid);
-                          return;
+                      //setState(() {
+                      if (model.type == ModelType.page) {
+                        widget.pageManager.removePage(context, model.mid);
+                        widget.pageManager.setState();
+                        return;
+                      }
+                      if (model.type == ModelType.acc) {
+                        if (accManagerHolder!.removeACCByMid(context, model.mid)) {
+                          widget.pageManager.setState();
                         }
-                        if (model.type == ModelType.acc) {
-                          accManagerHolder!.removeACCByMid(context, model.mid);
-                          return;
-                        }
-                        if (model.type == ModelType.contents) {
-                          accManagerHolder!.removeContents(context, model.parentMid, model.mid);
-                          return;
-                        }
-                      });
+                        return;
+                      }
+                      if (model.type == ModelType.contents) {
+                        accManagerHolder!.removeContents(context, model.parentMid, model.mid);
+
+                        return;
+                      }
+                      //});
                     },
                     icon: Icon(Icons.delete_outline),
                     color: MyColors.icon,
