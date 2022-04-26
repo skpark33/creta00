@@ -242,7 +242,7 @@ class PlayManager {
     await _lock.synchronized(() async {
       AbsPlayWidget? player = _orderMap[_currentOrder];
       if (player != null) {
-        player.model!.isDynamicSize.set(isDynamicSize);
+        player.model!.isDynamicSize.set(isDynamicSize, noUndo: true);
       }
     });
   }
