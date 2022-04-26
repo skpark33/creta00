@@ -46,7 +46,12 @@ class BookManager extends ChangeNotifier {
   void setBookThumbnail(String path, ContentsType contentsType, double aspectRatio) {
     if (defaultBook == null) return;
     mychangeStack.startTrans();
-    logHolder.log("setBookThumbnail $path, $contentsType", level: 5);
+    int len = path.length;
+    if (len > 4 && path.substring(len - 4, len) == ".jpg") {
+      contentsType = ContentsType.image;
+    }
+
+    logHolder.log("setBookThumbnail $path, $contentsType", level: 6);
     defaultBook!.thumbnailUrl.set(path);
     defaultBook!.thumbnailType.set(contentsType);
     defaultBook!.thumbnailAspectRatio.set(aspectRatio);

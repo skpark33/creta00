@@ -26,16 +26,16 @@ class SaveManager extends ChangeNotifier {
   final Lock _datalock = Lock();
   final Lock _dataCreatedlock = Lock();
   final Lock _contentslock = Lock();
-  final Lock _thumbnaillock = Lock();
+  //final Lock _thumbnaillock = Lock();
   bool _autoSaveFlag = true;
   bool _isContentsUploading = false;
-  bool _isThumbnailUploading = false;
+  //bool _isThumbnailUploading = false;
 
   String _errMsg = '';
   String get errMsg => _errMsg;
 
   final Queue<ContentsModel> _contentsChangedQue = Queue<ContentsModel>();
-  final Queue<ContentsModel> _thumbnailChangedQue = Queue<ContentsModel>();
+  //final Queue<ContentsModel> _thumbnailChangedQue = Queue<ContentsModel>();
   final Queue<String> _dataChangedQue = Queue<String>();
   final Queue<AbsModel> _dataCreatedQue = Queue<AbsModel>();
 
@@ -85,12 +85,12 @@ class SaveManager extends ChangeNotifier {
     });
   }
 
-  Future<void> pushUploadThumbnail(ContentsModel contents) async {
-    await _thumbnaillock.synchronized(() async {
-      _thumbnailChangedQue.add(contents);
-      notifyListeners();
-    });
-  }
+  // Future<void> _pushUploadThumbnail(ContentsModel contents) async {
+  //   await _thumbnaillock.synchronized(() async {
+  //     _thumbnailChangedQue.add(contents);
+  //     notifyListeners();
+  //   });
+  // }
 
   Future<bool> isInSaving() async {
     return await _datalock.synchronized(() async {
@@ -110,11 +110,11 @@ class SaveManager extends ChangeNotifier {
     });
   }
 
-  Future<bool> isInThumbnailUploding() async {
-    return await _thumbnaillock.synchronized(() async {
-      return _thumbnailChangedQue.isNotEmpty;
-    });
-  }
+  // Future<bool> isInThumbnailUploding() async {
+  //   return await _thumbnaillock.synchronized(() async {
+  //     return _thumbnailChangedQue.isNotEmpty;
+  //   });
+  // }
 
   Future<InProgressType> isInProgress() async {
     if (await isInSaving()) {
@@ -126,9 +126,9 @@ class SaveManager extends ChangeNotifier {
     if (await isInContentsUploding()) {
       return InProgressType.contentsUploading;
     }
-    if (await isInThumbnailUploding()) {
-      return InProgressType.thumbnailUploading;
-    }
+    // if (await isInThumbnailUploding()) {
+    //   return InProgressType.thumbnailUploading;
+    // }
     return InProgressType.done;
   }
 
@@ -180,30 +180,34 @@ class SaveManager extends ChangeNotifier {
               ContentsModel contents = _contentsChangedQue.first;
               logHolder.log('autoUploadContents1------------start', level: 5);
               _isContentsUploading = true;
-              CretaStorage.upload(contents, () {
-                logHolder.log('Upload complete ${contents.remoteUrl!}', level: 5);
-                if (contents.thumbnail == null || contents.thumbnail!.isEmpty) {
-                  pushUploadThumbnail(contents);
-                }
+              CretaStorage server = CretaStorage();
+              server.upload(contents, (remoteUrl, thumbnail) {
+                contents.remoteUrl = remoteUrl;
+                contents.thumbnail = thumbnail;
+                logHolder.log('Upload complete ${contents.remoteUrl!}', level: 6);
+                logHolder.log('Upload complete ${contents.thumbnail!}', level: 6);
                 pushChanged(contents.mid, 'upload');
                 _contentsChangedQue.removeFirst();
                 _isContentsUploading = false;
                 notifyListeners();
-              }, () {
+                if (contents.thumbnail != null) {
+                  bookManagerHolder!.setBookThumbnail(
+                      contents.thumbnail!, contents.contentsType, contents.aspectRatio.value);
+                }
+              }, (errMsg) {
                 // onError
                 _contentsChangedQue.removeFirst();
                 _isContentsUploading = false;
                 notifyListeners();
-                _errMsg = MyStrings.uploadError + "(${contents.name})";
+                _errMsg = MyStrings.uploadError + "(${contents.name}) : " + errMsg;
+                logHolder.log('Upload failed $_errMsg', level: 6);
               });
-              // CretaUploader.upload(contents, () {
-              //   // onComplete
+              // CretaStorage.upload(contents, () {
               //   logHolder.log('Upload complete ${contents.remoteUrl!}', level: 5);
               //   if (contents.thumbnail == null || contents.thumbnail!.isEmpty) {
-              //     pushUploadThumbnail(contents);
+              //     _pushUploadThumbnail(contents);
               //   }
               //   pushChanged(contents.mid, 'upload');
-
               //   _contentsChangedQue.removeFirst();
               //   _isContentsUploading = false;
               //   notifyListeners();
@@ -214,38 +218,39 @@ class SaveManager extends ChangeNotifier {
               //   notifyListeners();
               //   _errMsg = MyStrings.uploadError + "(${contents.name})";
               // });
+
             }
             logHolder.log('autoUploadContents------------end', level: 5);
           }
         });
       }
-      if (_isThumbnailUploading == false) {
-        await _thumbnaillock.synchronized(() async {
-          _errMsg = "";
-          if (_thumbnailChangedQue.isNotEmpty) {
-            logHolder.log('autoUploadThumbnail------------start', level: 5);
-            if (_thumbnailChangedQue.isNotEmpty) {
-              // 하나씩 업로드 해야 한다.
-              notifyListeners();
-              ContentsModel contents = _thumbnailChangedQue.first;
-              _isThumbnailUploading = true;
-              CretaStorage.uploadThumbnail(contents, () {
-                // onComplete
-                _thumbnailChangedQue.removeFirst();
-                notifyListeners();
-                _isThumbnailUploading = false;
-              }, () {
-                //onError
-                _thumbnailChangedQue.removeFirst();
-                notifyListeners();
-                _isThumbnailUploading = false;
-                _errMsg = MyStrings.thumbnailError + "(${contents.name})";
-              });
-              logHolder.log('autoUploadThumbmnail------------end', level: 5);
-            }
-          }
-        });
-      }
+      // if (_isThumbnailUploading == false) {
+      //   await _thumbnaillock.synchronized(() async {
+      //     _errMsg = "";
+      //     if (_thumbnailChangedQue.isNotEmpty) {
+      //       logHolder.log('autoUploadThumbnail------------start', level: 5);
+      //       if (_thumbnailChangedQue.isNotEmpty) {
+      //         // 하나씩 업로드 해야 한다.
+      //         notifyListeners();
+      //         ContentsModel contents = _thumbnailChangedQue.first;
+      //         _isThumbnailUploading = true;
+      //         CretaStorage.uploadThumbnail(contents, () {
+      //           // onComplete
+      //           _thumbnailChangedQue.removeFirst();
+      //           notifyListeners();
+      //           _isThumbnailUploading = false;
+      //         }, () {
+      //           //onError
+      //           _thumbnailChangedQue.removeFirst();
+      //           notifyListeners();
+      //           _isThumbnailUploading = false;
+      //           _errMsg = MyStrings.thumbnailError + "(${contents.name})";
+      //         });
+      //         logHolder.log('autoUploadThumbmnail------------end', level: 5);
+      //       }
+      //     }
+      //   });
+      // }
     });
   }
 

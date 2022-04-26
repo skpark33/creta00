@@ -208,7 +208,7 @@ class ACCMenu {
             if (_type == ContentsType.video || snapshot.data!.type == ContentsType.video) {
               return videoMenu(context, snapshot.data!.state, snapshot.data!.mute, acc);
             } else if (_type == ContentsType.image || snapshot.data!.type == ContentsType.image) {
-              return imageMenu(context, snapshot.data!.state, snapshot.data!.mute);
+              return imageMenu(context, snapshot.data!.state, snapshot.data!.mute, acc);
             }
           }
           return Container();
@@ -269,7 +269,7 @@ class ACCMenu {
     );
   }
 
-  Widget imageMenu(BuildContext context, PlayState state, bool mute) {
+  Widget imageMenu(BuildContext context, PlayState state, bool mute, ACC? acc) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -305,6 +305,7 @@ class ACCMenu {
               setState();
             },
             icon: Icon(state != PlayState.start ? Icons.play_arrow : Icons.pause)),
+        getProgressWidget(context, acc),
         HoverButton(
             onEnter: () {},
             onExit: () {},

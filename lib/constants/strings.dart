@@ -146,9 +146,9 @@ class MyStrings {
   static String contentsUploading = Locale.isKr()
       ? '콘텐츠를 업로드 중입니다...화면을 닫지 마십시오.'
       : "Content is being uploaded...Do not close the screen.";
-  static String thumbnailUploading = Locale.isKr()
-      ? '썸네일을 업로드 중입니다...화면을 닫지 마십시오.'
-      : "Thumbnail is being uploadedl...Do not close the screen.";
+  // static String thumbnailUploading = Locale.isKr()
+  //     ? '썸네일을 업로드 중입니다...화면을 닫지 마십시오.'
+  //     : "Thumbnail is being uploadedl...Do not close the screen.";
   static String downloding =
       Locale.isKr() ? '다운로드 중입니다...화면을 닫지 마십시오.' : "Downloading...Do not close the screen.";
 

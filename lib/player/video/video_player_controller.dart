@@ -19,6 +19,7 @@ export 'package:video_player_platform_interface/video_player_platform_interface.
 //export 'src/closed_caption_file.dart';
 
 import '../../common/util/logger.dart';
+import '../../constants/styles.dart';
 
 VideoPlayerPlatform? _lastVideoPlayerPlatform;
 
@@ -794,9 +795,9 @@ class VideoProgressColors {
   /// color behind both [playedColor] and [bufferedColor] to denote the total
   /// size of the video compared to either of those values.
   const VideoProgressColors({
-    this.playedColor = const Color.fromRGBO(255, 0, 0, 0.7),
-    this.bufferedColor = const Color.fromRGBO(50, 50, 200, 0.2),
-    this.backgroundColor = const Color.fromRGBO(200, 200, 200, 0.5),
+    this.playedColor = MyColors.playedColor,
+    this.bufferedColor = MyColors.bufferedColor,
+    this.backgroundColor = MyColors.pgBackgroundColor,
   });
 
   /// [playedColor] defaults to red at 70% opacity. This fills up a portion of

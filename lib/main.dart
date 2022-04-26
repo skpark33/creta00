@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'common/util/config.dart';
 import 'creta_main.dart';
 //import 'studio/studio_main_screen.dart';
 import 'model/users.dart';
@@ -9,7 +10,7 @@ import 'constants/styles.dart';
 import 'db/creta_db.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized(); //for firebase
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
       options: const FirebaseOptions(
           apiKey: FirebaseConfig.apiKey,
@@ -27,6 +28,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    CretaConfig.loadAsset(context); //for server
+
     cretaMainHolder = CretaMainScreen(
         mainScreenKey: GlobalKey<CretaMainScreenState>(), user: UserModel(id: 'b49@sqisoft.com'));
 

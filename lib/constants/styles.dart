@@ -170,6 +170,10 @@ class MyTextStyles {
 }
 
 class MyColors {
+  static const Color playedColor = Color.fromRGBO(255, 0, 0, 0.7);
+  static const Color bufferedColor = Color.fromRGBO(50, 50, 200, 0.2);
+  static const Color pgBackgroundColor = Color.fromRGBO(200, 200, 200, 0.5);
+
   static const Color hover = Color(0xffD9D9D9);
   static const Color border = Color(0xff722ED1);
   static const Color divide = Color(0xffD9D9D9);

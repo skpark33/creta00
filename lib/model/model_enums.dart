@@ -225,7 +225,11 @@ BoxType intToBoxType(int t) {
   }
 }
 
-enum InProgressType { done, saving, contentsUploading, thumbnailUploading }
+enum InProgressType {
+  done,
+  saving,
+  contentsUploading, /*thumbnailUploading*/
+}
 
 String inProgressTypeToMsg(InProgressType type) {
   switch (type) {
@@ -235,8 +239,8 @@ String inProgressTypeToMsg(InProgressType type) {
       return MyStrings.saving;
     case InProgressType.contentsUploading:
       return MyStrings.contentsUploading;
-    case InProgressType.thumbnailUploading:
-      return MyStrings.thumbnailUploading;
+    // case InProgressType.thumbnailUploading:
+    //   return MyStrings.thumbnailUploading;
   }
 }
 

@@ -166,7 +166,7 @@ class ACCManager extends ChangeNotifier {
       for (ContentsModel contents in accModel.contentsMap.values) {
         logHolder.log('pushACCs(${contents.order.value})->pushcontents(${contents.name})',
             level: 5);
-        acc.accChild.playManager.pushFromDropZone(acc, contents);
+        acc.accChild.playManager.push(acc, contents);
       }
     }
     logHolder.log('pushACCs end', level: 5);

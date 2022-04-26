@@ -24,6 +24,7 @@ import 'package:creta00/model/models.dart';
 import 'package:creta00/model/model_enums.dart';
 
 //import '../common/undo/undo.dart';
+import '../constants/styles.dart';
 import 'abs_player.dart';
 
 //import 'package:creta00/constants/constants.dart';
@@ -274,6 +275,18 @@ class PlayManager {
               height: 20);
 
           //return aVideo.videoProgress;
+        } else if (player.model!.contentsType == ContentsType.image) {
+          double playTime = player.model!.playTime.value;
+          double value = playTime <= 0 ? 0 : _currentPlaySec / playTime;
+          return SizedBox(
+            width: 200,
+            height: 20,
+            child: LinearProgressIndicator(
+              value: value,
+              valueColor: const AlwaysStoppedAnimation<Color>(MyColors.playedColor),
+              backgroundColor: Colors.transparent,
+            ),
+          );
         }
       }
       return Container();
@@ -320,7 +333,7 @@ class PlayManager {
         return;
       }
       if (false == player.isInit()) {
-        logHolder.log('Not yet inited', level: 7);
+        //logHolder.log('Not yet inited', level: 7);
         return;
       }
 

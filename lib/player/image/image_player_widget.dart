@@ -1,5 +1,6 @@
 // ignore: implementation_imports
 // ignore_for_file: prefer_final_fields
+
 import 'dart:ui';
 import 'package:creta00/book_manager.dart';
 import 'package:http/http.dart' as http;
@@ -84,12 +85,18 @@ class ImagePlayerWidgetState extends State<ImagePlayerWidget> {
 //Future<Image> _getImageInfo(String url) async {
 
   Future<double> _getImageInfo(String url) async {
+    logHolder.log("_getImageInfo 111111");
+
     var response = await http.get(Uri.parse(url));
+    logHolder.log("_getImageInfo 22222");
 
     final bytes = response.bodyBytes;
     final Codec codec = await instantiateImageCodec(bytes);
+    logHolder.log("_getImageInfo 33333");
     final FrameInfo frame = await codec.getNextFrame();
+    logHolder.log("_getImageInfo 44444");
     final uiImage = frame.image; // a ui.Image object, not to be confused with the Image widget
+    logHolder.log("_getImageInfo 55555");
 
     return uiImage.width / uiImage.height;
     // Image _image;
@@ -99,7 +106,10 @@ class ImagePlayerWidgetState extends State<ImagePlayerWidget> {
 
   Future<void> afterBuild() async {
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      widget.model!.aspectRatio.set(await _getImageInfo(widget.model!.url), noUndo: true);
+      String uri = widget.getURI(widget.model!);
+      double ratio = await _getImageInfo(uri);
+      logHolder.log("afterBuild stop");
+      widget.model!.aspectRatio.set(ratio, noUndo: true);
       widget.afterBuild();
     });
   }
@@ -129,7 +139,7 @@ class ImagePlayerWidgetState extends State<ImagePlayerWidget> {
     if (uri.isEmpty) {
       logHolder.log(errMsg, level: 7);
     }
-    logHolder.log("uri=$uri", level: 5);
+    logHolder.log("uri=<$uri>", level: 5);
 
     return ClipRRect(
       borderRadius: BorderRadius.only(
@@ -160,6 +170,7 @@ class ImagePlayerWidgetState extends State<ImagePlayerWidget> {
         ),
       ),
     );
+
     // return Container(
     //   decoration: BoxDecoration(
     //       //shape: BoxShape.circle,

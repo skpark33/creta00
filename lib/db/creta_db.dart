@@ -1,6 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:creta00/common/util/logger.dart';
 
+class NRConfig {
+  static const String apiKey = "AIzaSyAy4Bvw7VBBklphDa9H1sbLZLLB9WE5Qk0";
+  static const String authDomain = "creta00-4c349.firebaseapp.com";
+  static const String projectId = "creta00-4c349";
+  static const String storageBucket = "creta00-4c349.appspot.com";
+  static const String messagingSenderId = "1022332856313";
+  static const String appId = "1:1022332856313:web:872be7560e0a039fb0bf28";
+}
+
 class FirebaseConfig {
   static const String apiKey = "AIzaSyAy4Bvw7VBBklphDa9H1sbLZLLB9WE5Qk0";
   static const String authDomain = "creta00-4c349.firebaseapp.com";

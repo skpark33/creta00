@@ -114,53 +114,57 @@ class BaseWidgetState extends State<BaseWidget> {
               //error가 발생하게 될 경우 반환하게 되는 부분
               return const Text('error');
             }
-            logHolder.log(
-                'playTime===${snapshot.data!.model!.playTime.value} sec, ${snapshot.data!.model!.name}');
 
-            // if (pageManagerHolder!.isContents() &&
-            //     accManagerHolder!.isCurrentIndex(snapshot.data!.acc.index)) {
-            //   selectedModelHolder!.setModel(snapshot.data!.model!);
-            // }
-            if (!widget.isAnime()) {
-              return snapshot.data!;
-            }
+            if (snapshot.connectionState == ConnectionState.done) {
+              logHolder.log(
+                  'playTime===${snapshot.data!.model!.playTime.value} sec, ${snapshot.data!.model!.name}');
 
-            switch (widget.getAnimeType()) {
-              case AnimeType.carousel:
-                //logHolder.log('AnimeType.carousel start ${widget.playManager.currentIndex}');
-                //return carousel!.carouselWidget(
-                return carouselWidget(
-                    context,
-                    widget.acc!.accModel.containerSize.value.height,
-                    widget.playManager.getPlayWidgetList(),
-                    (index, reason) {}, // onPageChanged
-                    widget.playManager.animePageChanger,
-                    maxInteger, // 가장 큰 수를 넣는다.
-                    widget.playManager.currentOrder); // 0은 첫번째 index(즉 0번째)가 가운데로 들어오라는 뜻이다.
-
-              case AnimeType.flip:
-                logHolder.log('AnimeType.flip');
+              // if (pageManagerHolder!.isContents() &&
+              //     accManagerHolder!.isCurrentIndex(snapshot.data!.acc.index)) {
+              //   selectedModelHolder!.setModel(snapshot.data!.model!);
+              // }
+              if (!widget.isAnime()) {
                 return snapshot.data!;
-              case AnimeType.enlarge:
-                logHolder.log('AnimeType.enlarge');
-                EnlargeWidget anime = EnlargeWidget(
-                  enlargeWidgetKey: GlobalObjectKey<EnlargeWidgetState>(widget.acc!.accModel.mid),
-                  millisec: 3000,
-                  child: snapshot.data!,
-                );
-                AbsAnime.push(widget.acc!.accModel.mid, anime);
-                return anime;
-              case AnimeType.scale:
-                logHolder.log('AnimeType.scale');
-                ScaleAnime anime = ScaleAnime(
-                  child: snapshot.data!,
-                );
-                AbsAnime.push(widget.acc!.accModel.mid, anime);
-                return anime;
-              default:
-                //logHolder.log('AnimeType.normal');
-                return snapshot.data!;
+              }
+
+              switch (widget.getAnimeType()) {
+                case AnimeType.carousel:
+                  //logHolder.log('AnimeType.carousel start ${widget.playManager.currentIndex}');
+                  //return carousel!.carouselWidget(
+                  return carouselWidget(
+                      context,
+                      widget.acc!.accModel.containerSize.value.height,
+                      widget.playManager.getPlayWidgetList(),
+                      (index, reason) {}, // onPageChanged
+                      widget.playManager.animePageChanger,
+                      maxInteger, // 가장 큰 수를 넣는다.
+                      widget.playManager.currentOrder); // 0은 첫번째 index(즉 0번째)가 가운데로 들어오라는 뜻이다.
+
+                case AnimeType.flip:
+                  logHolder.log('AnimeType.flip');
+                  return snapshot.data!;
+                case AnimeType.enlarge:
+                  logHolder.log('AnimeType.enlarge');
+                  EnlargeWidget anime = EnlargeWidget(
+                    enlargeWidgetKey: GlobalObjectKey<EnlargeWidgetState>(widget.acc!.accModel.mid),
+                    millisec: 3000,
+                    child: snapshot.data!,
+                  );
+                  AbsAnime.push(widget.acc!.accModel.mid, anime);
+                  return anime;
+                case AnimeType.scale:
+                  logHolder.log('AnimeType.scale');
+                  ScaleAnime anime = ScaleAnime(
+                    child: snapshot.data!,
+                  );
+                  AbsAnime.push(widget.acc!.accModel.mid, anime);
+                  return anime;
+                default:
+                  //logHolder.log('AnimeType.normal');
+                  return snapshot.data!;
+              }
             }
+            return Container();
           }),
 
       //imagePlayer.play(widget._currentModel!),

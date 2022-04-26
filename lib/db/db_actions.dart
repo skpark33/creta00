@@ -190,7 +190,13 @@ class DbActions {
       for (ContentsModel contents in acc.accChild.playManager.getModelList()) {
         if (contents.isRemoved.value == false) {
           if (1 == await _storeChangedDataOnly(contents, "creta_contents", contents.serialize())) {
-            saveManagerHolder!.pushUploadContents(contents);
+            if (contents.file != null &&
+                (contents.remoteUrl == null || contents.remoteUrl!.isEmpty)) {
+              // upload 되어 있지 않으므로 업로드한다.
+              if (saveManagerHolder != null) {
+                saveManagerHolder!.pushUploadContents(contents);
+              }
+            }
           }
         }
       }
@@ -263,7 +269,8 @@ class DbActions {
           }
           retval = await _storeChangedDataOnly(contents, "creta_contents", contents.serialize());
           if (1 == retval) {
-            if (contents.remoteUrl == null || contents.remoteUrl!.isEmpty) {
+            if (contents.file != null &&
+                (contents.remoteUrl == null || contents.remoteUrl!.isEmpty)) {
               // upload 되어 있지 않으므로 업로드한다.
               if (saveManagerHolder != null) {
                 saveManagerHolder!.pushUploadContents(contents);
