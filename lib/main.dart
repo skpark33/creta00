@@ -18,6 +18,7 @@ Future<void> main() async {
           storageBucket: FirebaseConfig.storageBucket,
           messagingSenderId: FirebaseConfig.messagingSenderId,
           projectId: FirebaseConfig.projectId)); // for firebase
+  //runApp(const ProviderScope(child: MyApp()));
   runApp(const MyApp());
 }
 

@@ -1,12 +1,16 @@
 // ignore_for_file: prefer_final_fields
 import 'dart:math';
+// ignore: avoid_web_libraries_in_flutter
+
 //import 'package:flutter/material.dart';
 import 'package:creta00/player/play_manager.dart';
 import 'package:flutter_neumorphic_null_safety/flutter_neumorphic.dart';
+
 import 'package:creta00/common/util/my_utils.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:creta00/studio/save_manager.dart';
 
+import '../common/cursor/right_click.dart';
 import '../widgets/abs_anime.dart';
 import 'resizable.dart';
 import '../model/acc_property.dart';
@@ -105,7 +109,7 @@ class ACC {
         return overlayWidget!;
       });
       final overlay = Overlay.of(context)!;
-      overlay.insert(entry!, below: menuStickEntry);
+      overlay.insert(entry!, below: stickMenuEntry);
       // } else {
       //   isVisible = true;
     }
@@ -259,225 +263,239 @@ class ACC {
           height: realSize.height + resizeButtonSize,
           width: realSize.width + resizeButtonSize,
 
-          child: GestureDetector(
-            onLongPressDown: (details) {
-              logHolder.log("onLongPressDown(${accModel.mid})", level: 7);
+          child: CrossPlatformClick(
+            onPointerDown: (context, event) {
+              accManagerHolder!.accRightMenu.show(context, this, event);
+            },
+            //onNormalTap: () {},
+            // parent: entry!,
+            // menuItems: const [
+            //   PopupMenuItem(
+            //       child: Text('Copy Name', style: TextStyle(fontSize: 16)), value: "copied"),
+            // ],
+            // onMenuItemTapped: (item) {
+            //   logHolder.log("item tapped: " + (item ?? "-no-item"), level: 6);
+            // },
+            child: GestureDetector(
+              onLongPressDown: (details) {
+                logHolder.log("onLongPressDown(${accModel.mid})", level: 7);
 
-              //saveManagerHolder!.blockAutoSave();
-              if (isCorners(details.localPosition, marginSize, resizeButtonSize) ||
-                  isRadius(details.localPosition, marginSize, resizeButtonSize / 2, realSize)) {
-                accManagerHolder!.setCurrentMid(accModel.mid);
-                return;
-              }
-              selectContents(context, accModel.mid);
-              if (accModel.animeType.value == AnimeType.enlarge) {
-                AbsAnime? anime = AbsAnime.get(accModel.mid);
-                if (anime != null) {
-                  anime.action(realSize);
+                //saveManagerHolder!.blockAutoSave();
+                if (isCorners(details.localPosition, marginSize, resizeButtonSize) ||
+                    isRadius(details.localPosition, marginSize, resizeButtonSize / 2, realSize)) {
+                  accManagerHolder!.setCurrentMid(accModel.mid);
+                  return;
                 }
-              }
-              //saveManagerHolder!.delayedReleaseAutoSave(500);
-            },
-            // onPanDown: (details) {
-            //   logHolder.log("onPanDown", level: 7);
-            // if (isCorners(details.localPosition, marginSize, resizeButtonSize) ||
-            //     isRadius(details.localPosition, marginSize, resizeButtonSize / 2, realSize)) {
-            //   accManagerHolder!.setCurrentIndex(index);
-            //   return;
-            // }
-            // accChild.playManager.getCurrentModel().then((model) {
-            //   if (model != null) {
-            //     logHolder.log('Its contents click!!! ${model.key}', level: 5);
-            //     selectedModelHolder!.setModel(model);
-            //     pageManagerHolder!.setAsContents();
-            //     accManagerHolder!.setCurrentIndex(index, setAsAcc: false);
-            //   } else {
-            //     accManagerHolder!.setCurrentIndex(index);
-            //     logHolder.log('onPanDown:${details.localPosition}', level: 5);
-            //   }
-            //   _showACCMenu(context);
-            // });
-            //},
-            onPanStart: (details) {
-              saveManagerHolder!.blockAutoSave(); // 자동 Save 를 막는다.
-              actionStart = true;
-              logHolder.log('onPanStart:${details.localPosition}', level: 5);
-              //if (isCorners(details.localPosition, realSize, resizeButtonSize)) {
-              if (isCorners(details.localPosition, marginSize, resizeButtonSize)) {
-                isHover = false;
-                isCornered = true;
-                isRadiused = false;
-                sizeActionStart = true;
-                //} else if (isRadius(details.localPosition, realSize, resizeButtonSize / 4)) {
-              } else if (isRadius(
-                  details.localPosition, marginSize, resizeButtonSize / 2, realSize)) {
-                isRadiused = true;
-                isHover = false;
-                isCornered = false;
-                radiusActionStart = true;
-              } else {
-                isCornered = false;
-                isRadiused = false;
-                isHover = true;
-                sizeActionStart = true;
+                selectContents(context, accModel.mid);
+                if (accModel.animeType.value == AnimeType.enlarge) {
+                  AbsAnime? anime = AbsAnime.get(accModel.mid);
+                  if (anime != null) {
+                    anime.action(realSize);
+                  }
+                }
+                //saveManagerHolder!.delayedReleaseAutoSave(500);
+              },
+              // onPanDown: (details) {
+              //   logHolder.log("onPanDown", level: 7);
+              // if (isCorners(details.localPosition, marginSize, resizeButtonSize) ||
+              //     isRadius(details.localPosition, marginSize, resizeButtonSize / 2, realSize)) {
+              //   accManagerHolder!.setCurrentIndex(index);
+              //   return;
+              // }
+              // accChild.playManager.getCurrentModel().then((model) {
+              //   if (model != null) {
+              //     logHolder.log('Its contents click!!! ${model.key}', level: 5);
+              //     selectedModelHolder!.setModel(model);
+              //     pageManagerHolder!.setAsContents();
+              //     accManagerHolder!.setCurrentIndex(index, setAsAcc: false);
+              //   } else {
+              //     accManagerHolder!.setCurrentIndex(index);
+              //     logHolder.log('onPanDown:${details.localPosition}', level: 5);
+              //   }
+              //   _showACCMenu(context);
+              // });
+              //},
+              onPanStart: (details) {
+                saveManagerHolder!.blockAutoSave(); // 자동 Save 를 막는다.
+                actionStart = true;
+                logHolder.log('onPanStart:${details.localPosition}', level: 5);
+                //if (isCorners(details.localPosition, realSize, resizeButtonSize)) {
+                if (isCorners(details.localPosition, marginSize, resizeButtonSize)) {
+                  isHover = false;
+                  isCornered = true;
+                  isRadiused = false;
+                  sizeActionStart = true;
+                  //} else if (isRadius(details.localPosition, realSize, resizeButtonSize / 4)) {
+                } else if (isRadius(
+                    details.localPosition, marginSize, resizeButtonSize / 2, realSize)) {
+                  isRadiused = true;
+                  isHover = false;
+                  isCornered = false;
+                  radiusActionStart = true;
+                } else {
+                  isCornered = false;
+                  isRadiused = false;
+                  isHover = true;
+                  sizeActionStart = true;
+                  radiusActionStart = false;
+                }
+                logHolder.log('onPanStart : ${details.localPosition}');
+                mychangeStack.startTrans();
+                //entry!.markNeedsBuild();
+                accManagerHolder!.unshowMenu(context);
+              },
+              onPanUpdate: (details) {
+                double dx = (details.delta.dx / ratio.width);
+                double dy = (details.delta.dy / ratio.height);
+                if (!resizeWidget(dx, dy, realSize, ratio, isAccSelected)) {
+                  if (_validationCheck(false, dx, dy, cursor, isAccSelected, ratio)) {
+                    _setContainerOffset(Offset((accModel.containerOffset.value.dx + dx),
+                        (accModel.containerOffset.value.dy + dy)));
+                    accManagerHolder!.notifyAsync();
+                  }
+                }
+                entry!.markNeedsBuild();
+                //invalidateContents();
+              },
+              onPanEnd: (details) async {
+                await saveManagerHolder!.releaseAutoSave(); // 자동 Save를 풀어준다.
+                actionStart = false;
+                sizeActionStart = false;
                 radiusActionStart = false;
-              }
-              logHolder.log('onPanStart : ${details.localPosition}');
-              mychangeStack.startTrans();
-              //entry!.markNeedsBuild();
-              accManagerHolder!.unshowMenu(context);
-            },
-            onPanUpdate: (details) {
-              double dx = (details.delta.dx / ratio.width);
-              double dy = (details.delta.dy / ratio.height);
-              if (!resizeWidget(dx, dy, realSize, ratio, isAccSelected)) {
-                if (_validationCheck(false, dx, dy, cursor, isAccSelected, ratio)) {
-                  _setContainerOffset(Offset((accModel.containerOffset.value.dx + dx),
-                      (accModel.containerOffset.value.dy + dy)));
-                  accManagerHolder!.notifyAsync();
-                }
-              }
-              entry!.markNeedsBuild();
-              //invalidateContents();
-            },
-            onPanEnd: (details) async {
-              await saveManagerHolder!.releaseAutoSave(); // 자동 Save를 풀어준다.
-              actionStart = false;
-              sizeActionStart = false;
-              radiusActionStart = false;
-              logHolder.log('onPanEnd:', level: 5);
-              mychangeStack.endTrans();
-              accManagerHolder!.notify();
-              invalidateContents();
-            },
-            child: Stack(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(mouseMargin),
-                  child: Transform.rotate(
-                    angle: accModel.contentRotate.value ? 0 : accModel.rotate.value * (pi / 180),
-                    child: Opacity(
-                      opacity: accModel.opacity.value,
-                      child: Stack(children: [
-                        glassMorphic(
-                          isGlass: accModel.glass.value,
-                          child: myNeumorphicButton(
-                            boxShape: _getBoxShape(realSize),
-                            borderColor: accModel.borderColor.value,
-                            borderWidth: accModel.borderWidth.value,
-                            intensity: accModel.intensity.value,
-                            lightSource: accModel.lightSource.value,
-                            depth: accModel.depth.value,
-                            bgColor: accModel.glass.value
-                                ? accModel.bgColor.value.withOpacity(0.5)
-                                : accModel.bgColor.value,
-                            onPressed: () {},
-                            child: Transform.rotate(
-                              angle: accModel.contentRotate.value
-                                  ? accModel.rotate.value * (pi / 180)
-                                  : 0,
-                              child: accChild,
+                logHolder.log('onPanEnd:', level: 5);
+                mychangeStack.endTrans();
+                accManagerHolder!.notify();
+                invalidateContents();
+              },
+              child: Stack(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(mouseMargin),
+                    child: Transform.rotate(
+                      angle: accModel.contentRotate.value ? 0 : accModel.rotate.value * (pi / 180),
+                      child: Opacity(
+                        opacity: accModel.opacity.value,
+                        child: Stack(children: [
+                          glassMorphic(
+                            isGlass: accModel.glass.value,
+                            child: myNeumorphicButton(
+                              boxShape: _getBoxShape(realSize),
+                              borderColor: accModel.borderColor.value,
+                              borderWidth: accModel.borderWidth.value,
+                              intensity: accModel.intensity.value,
+                              lightSource: accModel.lightSource.value,
+                              depth: accModel.depth.value,
+                              bgColor: accModel.glass.value
+                                  ? accModel.bgColor.value.withOpacity(0.5)
+                                  : accModel.bgColor.value,
+                              onPressed: () {},
+                              child: Transform.rotate(
+                                angle: accModel.contentRotate.value
+                                    ? accModel.rotate.value * (pi / 180)
+                                    : 0,
+                                child: accChild,
+                              ),
                             ),
                           ),
-                        ),
-                        Visibility(
-                          visible: accManagerHolder!.orderVisible,
-                          child: Material(
-                              type: MaterialType.transparency,
-                              child: Container(
-                                  height: realSize.height,
-                                  width: realSize.width,
-                                  color: Colors.white.withOpacity(0.5),
-                                  child: Center(
-                                      child: Text(
-                                    '${accModel.order.value}',
-                                    style: MyTextStyles.h3Eng,
-                                  )))),
-                        ),
-                        Visibility(
-                          visible: accModel.primary.value,
-                          child: const Icon(
-                            Icons.star,
-                            color: MyColors.mainColor,
-                            semanticLabel: 'Primary',
+                          Visibility(
+                            visible: accManagerHolder!.orderVisible,
+                            child: Material(
+                                type: MaterialType.transparency,
+                                child: Container(
+                                    height: realSize.height,
+                                    width: realSize.width,
+                                    color: Colors.white.withOpacity(0.5),
+                                    child: Center(
+                                        child: Text(
+                                      '${accModel.order.value}',
+                                      style: MyTextStyles.h3Eng,
+                                    )))),
                           ),
-                        ),
-                      ]),
+                          Visibility(
+                            visible: accModel.primary.value,
+                            child: const Icon(
+                              Icons.star,
+                              color: MyColors.mainColor,
+                              semanticLabel: 'Primary',
+                            ),
+                          ),
+                        ]),
+                      ),
                     ),
                   ),
-                ),
-                CustomPaint(
-                  painter: ResiablePainter(
-                      cursor,
-                      isAccSelected, //accManagerHolder!.isCurrentIndex(index),
-                      accModel.isFixedRatio.value,
-                      isInvisibleColorACC(),
-                      accModel.bgColor.value,
-                      //borderColor.value,
-                      accModel.resizable.value,
-                      realSize,
-                      isCornered,
-                      isRadiused,
-                      isHover,
-                      isCornerHover,
-                      isRadiusHover,
-                      accModel.radiusTopLeft.value,
-                      accModel.radiusTopRight.value,
-                      accModel.radiusBottomLeft.value,
-                      accModel.radiusBottomRight.value),
-                  child: MouseRegion(
-                    onHover: (details) {
-                      //logHolder.log('Hover ${details.localPosition}',
-                      //    level: 5);
-                      //if (isCorners(details.localPosition, realSize, resizeButtonSize)) {
-                      if (isCorners(details.localPosition, marginSize, resizeButtonSize)) {
-                        isCornered = true;
-                        isRadiused = false;
-                        isHover = false;
+                  CustomPaint(
+                    painter: ResiablePainter(
+                        cursor,
+                        isAccSelected, //accManagerHolder!.isCurrentIndex(index),
+                        accModel.isFixedRatio.value,
+                        isInvisibleColorACC(),
+                        accModel.bgColor.value,
+                        //borderColor.value,
+                        accModel.resizable.value,
+                        realSize,
+                        isCornered,
+                        isRadiused,
+                        isHover,
+                        isCornerHover,
+                        isRadiusHover,
+                        accModel.radiusTopLeft.value,
+                        accModel.radiusTopRight.value,
+                        accModel.radiusBottomLeft.value,
+                        accModel.radiusBottomRight.value),
+                    child: MouseRegion(
+                      onHover: (details) {
+                        //logHolder.log('Hover ${details.localPosition}',
+                        //    level: 5);
+                        //if (isCorners(details.localPosition, realSize, resizeButtonSize)) {
+                        if (isCorners(details.localPosition, marginSize, resizeButtonSize)) {
+                          isCornered = true;
+                          isRadiused = false;
+                          isHover = false;
+                          entry!.markNeedsBuild();
+                          //} else if (isRadius(details.localPosition, realSize, resizeButtonSize / 4)) {
+                        } else if (isRadius(
+                            details.localPosition, marginSize, resizeButtonSize / 2, realSize)) {
+                          isCornered = false;
+                          isRadiused = true;
+                          isHover = false;
+                          entry!.markNeedsBuild();
+                        } else {
+                          isCornered = false;
+                          isRadiused = false;
+                          if (!isHover) {
+                            isHover = true;
+                            entry!.markNeedsBuild();
+                          }
+                        }
+                      },
+                      onEnter: (details) {
+                        //logHolder.log('Enter ${details.localPosition}',
+                        //    level: 5);
+                        isHover = true;
                         entry!.markNeedsBuild();
-                        //} else if (isRadius(details.localPosition, realSize, resizeButtonSize / 4)) {
-                      } else if (isRadius(
-                          details.localPosition, marginSize, resizeButtonSize / 2, realSize)) {
-                        isCornered = false;
-                        isRadiused = true;
-                        isHover = false;
-                        entry!.markNeedsBuild();
-                      } else {
-                        isCornered = false;
-                        isRadiused = false;
-                        if (!isHover) {
-                          isHover = true;
+                      },
+                      onExit: (details) {
+                        //logHolder.log('Exit', level: 5);
+                        if (!actionStart) {
+                          isHover = false;
+                          isCornered = false;
+                          isRadiused = false;
+                          clearCornerHover();
                           entry!.markNeedsBuild();
                         }
-                      }
-                    },
-                    onEnter: (details) {
-                      //logHolder.log('Enter ${details.localPosition}',
-                      //    level: 5);
-                      isHover = true;
-                      entry!.markNeedsBuild();
-                    },
-                    onExit: (details) {
-                      //logHolder.log('Exit', level: 5);
-                      if (!actionStart) {
-                        isHover = false;
-                        isCornered = false;
-                        isRadiused = false;
-                        clearCornerHover();
-                        entry!.markNeedsBuild();
-                      }
-                    },
-                    child: DropZoneWidget(
-                      accId: accModel.mid,
-                      onDroppedFile: (model) {
-                        logHolder.log('contents added  ${model.mid}');
-                        accChild.playManager.pushFromDropZone(this, model);
-                        accChild.invalidate();
                       },
+                      child: DropZoneWidget(
+                        accId: accModel.mid,
+                        onDroppedFile: (model) {
+                          logHolder.log('contents added  ${model.mid}');
+                          accChild.playManager.pushFromDropZone(this, model);
+                          accChild.invalidate();
+                        },
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ));
@@ -848,16 +866,16 @@ class ACC {
     await accChild.playManager.prev(pause: pause);
   }
 
-  Future<void> pause() async {
-    await accChild.playManager.pause();
+  Future<void> pause({bool byManual = false}) async {
+    await accChild.playManager.pause(byManual: byManual);
   }
 
   Future<void> mute() async {
     await accChild.playManager.mute();
   }
 
-  Future<void> play() async {
-    await accChild.playManager.play();
+  Future<void> play({bool byManual = false}) async {
+    await accChild.playManager.play(byManual: byManual);
   }
 
   void setBgColor(Color color) {

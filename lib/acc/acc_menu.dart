@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:creta00/model/model_enums.dart';
 import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/common/util/my_utils.dart';
@@ -6,6 +8,7 @@ import 'package:creta00/common/util/my_utils.dart';
 import 'package:creta00/common/buttons/hover_buttons.dart';
 import 'package:creta00/player/play_manager.dart';
 //import 'package:creta00/db/db_actions.dart';
+import '../common/notifiers/notifiers.dart';
 import 'acc_manager.dart';
 import 'acc.dart';
 
@@ -270,53 +273,58 @@ class ACCMenu {
   }
 
   Widget imageMenu(BuildContext context, PlayState state, bool mute, ACC? acc) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        HoverButton(
-            onEnter: () {},
-            onExit: () {},
-            width: buttonWidth,
-            height: buttonHeight,
-            onPressed: () {
-              accManagerHolder!.prev(context);
-            },
-            icon: const Icon(Icons.skip_previous)),
-        HoverButton(
-            onEnter: () {},
-            onExit: () {},
-            width: buttonWidth,
-            height: buttonHeight,
-            onPressed: () {
-              accManagerHolder!.next(context);
-            },
-            icon: const Icon(Icons.skip_next)),
-        HoverButton(
-            onEnter: () {},
-            onExit: () {},
-            width: buttonWidth,
-            height: buttonHeight,
-            onPressed: () {
-              if (state != PlayState.start) {
-                accManagerHolder!.play(context);
-              } else {
-                accManagerHolder!.pause(context);
-              }
-              setState();
-            },
-            icon: Icon(state != PlayState.start ? Icons.play_arrow : Icons.pause)),
-        getProgressWidget(context, acc),
-        HoverButton(
-            onEnter: () {},
-            onExit: () {},
-            width: buttonWidth,
-            height: buttonHeight,
-            onPressed: () {
-              // 누끼 버튼
-            },
-            icon: const Icon(Icons.person_remove_outlined)),
-      ],
-    );
+    // if (progressHolder != null) {
+    //   progressHolder!.setProgress(0);
+    // }
+    return ChangeNotifierProvider<ProgressNotifier>.value(
+        value: progressHolder!,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            HoverButton(
+                onEnter: () {},
+                onExit: () {},
+                width: buttonWidth,
+                height: buttonHeight,
+                onPressed: () {
+                  accManagerHolder!.prev(context);
+                },
+                icon: const Icon(Icons.skip_previous)),
+            HoverButton(
+                onEnter: () {},
+                onExit: () {},
+                width: buttonWidth,
+                height: buttonHeight,
+                onPressed: () {
+                  accManagerHolder!.next(context);
+                },
+                icon: const Icon(Icons.skip_next)),
+            HoverButton(
+                onEnter: () {},
+                onExit: () {},
+                width: buttonWidth,
+                height: buttonHeight,
+                onPressed: () {
+                  if (state != PlayState.start) {
+                    accManagerHolder!.play(context, byManual: true);
+                  } else {
+                    accManagerHolder!.pause(context, byManual: true);
+                  }
+                  setState();
+                },
+                icon: Icon(state != PlayState.start ? Icons.play_arrow : Icons.pause)),
+            getProgressWidget(context, acc),
+            HoverButton(
+                onEnter: () {},
+                onExit: () {},
+                width: buttonWidth,
+                height: buttonHeight,
+                onPressed: () {
+                  // 누끼 버튼
+                },
+                icon: const Icon(Icons.person_remove_outlined)),
+          ],
+        ));
   }
 
   Widget getProgressWidget(BuildContext context, ACC? acc) {

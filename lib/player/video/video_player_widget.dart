@@ -87,7 +87,7 @@ class VideoPlayerWidget extends AbsPlayWidget {
   }
 
   @override
-  Future<void> play() async {
+  Future<void> play({bool byManual = false}) async {
     // while (model!.state == PlayState.disposed) {
     //   await Future.delayed(const Duration(milliseconds: 100));
     // }
@@ -97,7 +97,7 @@ class VideoPlayerWidget extends AbsPlayWidget {
   }
 
   @override
-  Future<void> pause() async {
+  Future<void> pause({bool byManual = false}) async {
     // while (model!.state == PlayState.disposed) {
     //   await Future.delayed(const Duration(milliseconds: 100));
     // }

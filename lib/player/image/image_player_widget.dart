@@ -2,7 +2,10 @@
 // ignore_for_file: prefer_final_fields
 
 import 'dart:ui';
+import 'package:provider/provider.dart';
+
 import 'package:creta00/book_manager.dart';
+import 'package:creta00/common/notifiers/notifiers.dart';
 import 'package:http/http.dart' as http;
 import 'package:creta00/common/util/logger.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +15,43 @@ import 'package:creta00/acc/acc.dart';
 import 'package:creta00/player/abs_player.dart';
 
 import '../../common/util/my_utils.dart';
+import '../../constants/styles.dart';
+
+// ignore: must_be_immutable
+
+class ImagePlayerProgress extends StatefulWidget {
+  final double width;
+  final double height;
+  final GlobalKey<ImagePlayerProgressState> controllerKey;
+
+  const ImagePlayerProgress(
+      {required this.controllerKey, required this.width, required this.height})
+      : super(key: controllerKey);
+
+  @override
+  State<ImagePlayerProgress> createState() => ImagePlayerProgressState();
+}
+
+class ImagePlayerProgressState extends State<ImagePlayerProgress> {
+  void invalidate() {
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ProgressNotifier>(builder: (context, notifier, child) {
+      return SizedBox(
+        width: widget.width,
+        height: widget.height,
+        child: LinearProgressIndicator(
+          value: notifier.progress,
+          valueColor: const AlwaysStoppedAnimation<Color>(MyColors.playedColor),
+          backgroundColor: notifier.progress == 0 ? MyColors.pgBackgroundColor : Colors.transparent,
+        ),
+      );
+    });
+  }
+}
 
 // ignore: must_be_immutable
 class ImagePlayerWidget extends AbsPlayWidget {
@@ -28,13 +68,16 @@ class ImagePlayerWidget extends AbsPlayWidget {
   GlobalObjectKey<ImagePlayerWidgetState>? globalKey;
 
   @override
-  Future<void> play() async {
+  Future<void> play({bool byManual = false}) async {
     logHolder.log('image play');
     model!.setPlayState(PlayState.start);
+    if (byManual) {
+      model!.setManualState(PlayState.start);
+    }
   }
 
   @override
-  Future<void> pause() async {
+  Future<void> pause({bool byManual = false}) async {
     model!.setPlayState(PlayState.pause);
   }
 
@@ -84,19 +127,12 @@ class ImagePlayerWidgetState extends State<ImagePlayerWidget> {
 
 //Future<Image> _getImageInfo(String url) async {
 
-  Future<double> _getImageInfo(String url) async {
-    logHolder.log("_getImageInfo 111111");
-
+  Future<double> getImageInfo(String url) async {
     var response = await http.get(Uri.parse(url));
-    logHolder.log("_getImageInfo 22222");
-
     final bytes = response.bodyBytes;
     final Codec codec = await instantiateImageCodec(bytes);
-    logHolder.log("_getImageInfo 33333");
     final FrameInfo frame = await codec.getNextFrame();
-    logHolder.log("_getImageInfo 44444");
     final uiImage = frame.image; // a ui.Image object, not to be confused with the Image widget
-    logHolder.log("_getImageInfo 55555");
 
     return uiImage.width / uiImage.height;
     // Image _image;
@@ -106,10 +142,10 @@ class ImagePlayerWidgetState extends State<ImagePlayerWidget> {
 
   Future<void> afterBuild() async {
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      String uri = widget.getURI(widget.model!);
-      double ratio = await _getImageInfo(uri);
-      logHolder.log("afterBuild stop");
-      widget.model!.aspectRatio.set(ratio, noUndo: true);
+      // String uri = widget.getURI(widget.model!);
+      // double ratio = await _getImageInfo(uri);
+      // logHolder.log("afterBuild stop");
+      // widget.model!.aspectRatio.set(ratio, noUndo: true);
       widget.afterBuild();
     });
   }

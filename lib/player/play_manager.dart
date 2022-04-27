@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:creta00/player/abs_player.dart';
 import 'package:sortedmap/sortedmap.dart';
+//import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 //import 'package:creta00/acc/acc_property.dart';
 import 'package:creta00/book_manager.dart';
@@ -24,10 +25,9 @@ import 'package:creta00/model/models.dart';
 import 'package:creta00/model/model_enums.dart';
 
 //import '../common/undo/undo.dart';
-import '../constants/styles.dart';
+//import '../constants/styles.dart';
+import '../common/notifiers/notifiers.dart';
 import 'abs_player.dart';
-
-//import 'package:creta00/constants/constants.dart';
 
 class CurrentData {
   ContentsType type = ContentsType.free;
@@ -276,17 +276,8 @@ class PlayManager {
 
           //return aVideo.videoProgress;
         } else if (player.model!.contentsType == ContentsType.image) {
-          double playTime = player.model!.playTime.value;
-          double value = playTime <= 0 ? 0 : _currentPlaySec / playTime;
-          return SizedBox(
-            width: 200,
-            height: 20,
-            child: LinearProgressIndicator(
-              value: value,
-              valueColor: const AlwaysStoppedAnimation<Color>(MyColors.playedColor),
-              backgroundColor: Colors.transparent,
-            ),
-          );
+          return ImagePlayerProgress(
+              controllerKey: GlobalKey<ImagePlayerProgressState>(), width: 200, height: 15);
         }
       }
       return Container();
@@ -340,19 +331,29 @@ class PlayManager {
       currentModel = player.getModel();
       if (currentModel!.isImage()) {
         // playTime 이 영구히로 잡혀있다.
-        if (0 > currentModel!.playTime.value) {
+        double playTime = currentModel!.playTime.value;
+        if (0 > playTime) {
           return;
         }
         // 아직 교체시간이 되지 않았다.
-        if (_currentPlaySec < currentModel!.playTime.value) {
-          if (bookManagerHolder!.isAutoPlay() && currentModel!.playState != PlayState.pause) {
+        if (_currentPlaySec < playTime) {
+          if ((bookManagerHolder!.isAutoPlay() && currentModel!.playState != PlayState.pause) ||
+              currentModel!.manualState == PlayState.start) {
             _currentPlaySec += _timeGap;
+            double value = playTime <= 0 ? 0 : _currentPlaySec / playTime;
+            if (progressHolder != null) {
+              progressHolder!.setProgress(value);
+            }
           }
           return;
         }
         // 교체 시간이 되었다
         //if (currentModel!.playState == PlayState.start) {
+        if (progressHolder != null) {
+          progressHolder!.setProgress(0);
+        }
         next(noUndo: true);
+
         //}
         //_currentPlaySec = 0;
         //baseWidget.invalidate();
@@ -595,11 +596,11 @@ class PlayManager {
     return retval;
   }
 
-  Future<void> play() async {
+  Future<void> play({bool byManual = false}) async {
     await _lock.synchronized(() async {
       AbsPlayWidget? player = _orderMap[_currentOrder];
       if (player != null) {
-        await player.play();
+        await player.play(byManual: byManual);
       }
     });
   }
@@ -763,11 +764,11 @@ class PlayManager {
     });
   }
 
-  Future<void> pause() async {
+  Future<void> pause({bool byManual = false}) async {
     await _lock.synchronized(() async {
       AbsPlayWidget? player = _orderMap[_currentOrder];
       if (player != null) {
-        await player.pause();
+        await player.pause(byManual: byManual);
       }
     });
   }

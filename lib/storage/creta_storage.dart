@@ -17,6 +17,7 @@ class CretaStorage {
   String errMsg = "";
   String remoteUrl = '';
   String thumbnail = '';
+  String alreadyExist = 'false';
 
   Future<void> upload(ContentsModel contents, void Function(String, String) onComplete,
       void Function(String errMsg) onError) async {
@@ -93,6 +94,10 @@ class CretaStorage {
         // 실패
         return;
       }
+      if (alreadyExist == 'true') {
+        logHolder.log("alreadyExist ! $fileName", level: 6);
+        break;
+      }
       chunkId += 1;
     }
   }
@@ -126,6 +131,9 @@ class CretaStorage {
         }
         if (retval["thumbnail"] != null && retval["thumbnail"]!.isNotEmpty) {
           thumbnail = retval["thumbnail"]!;
+        }
+        if (retval["alreadyExist"] != null && retval["alreadyExist"]!.isNotEmpty) {
+          alreadyExist = retval["alreadyExist"]!;
         }
         return 1;
       }

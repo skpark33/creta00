@@ -16,7 +16,7 @@ import 'package:creta00/common/drag_and_drop/drop_zone_widget.dart';
 //import 'package:creta00/common/cursor/cursor_manager.dart';
 import 'package:creta00/studio/sidebar/my_widget_menu.dart';
 
-OverlayEntry? menuStickEntry;
+OverlayEntry? stickMenuEntry;
 
 class ArtBoardScreen extends StatefulWidget {
   final bool isFullScreen;
@@ -34,7 +34,7 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
   double pageHeight = 0;
   double pageWidth = 0;
 
-  Widget? menuStick;
+  Widget? _menuStick;
   Offset mousePosition = Offset.zero;
 
   //int _page = 0;
@@ -46,15 +46,15 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
     onPageSelected(pageManagerHolder!.getSelected());
 
     WidgetsBinding.instance!.addPostFrameCallback((_) {
-      registerMenuStickOverlay(context);
+      registerStickMenuOverlay(context);
     });
   }
 
   @override
   void dispose() {
-    if (menuStickEntry != null) {
-      menuStickEntry!.remove();
-      menuStickEntry = null;
+    if (stickMenuEntry != null) {
+      stickMenuEntry!.remove();
+      stickMenuEntry = null;
     }
     super.dispose();
   }
@@ -62,7 +62,7 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
   @override
   void setState(VoidCallback fn) {
     if (mounted) super.setState(fn);
-    if (widget.isFullScreen == false) menuStickEntry!.markNeedsBuild();
+    if (widget.isFullScreen == false) stickMenuEntry!.markNeedsBuild();
   }
 
   void onPageSelected(PageModel? selectedPage) {
@@ -74,21 +74,21 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
     }
   }
 
-  Widget registerMenuStickOverlay(BuildContext context) {
+  Widget registerStickMenuOverlay(BuildContext context) {
     logHolder.log('registerMenuStickOverlay', level: 6);
-    if (menuStickEntry == null) {
-      menuStickEntry = OverlayEntry(builder: (context) {
-        menuStick = MyMenuStick(
+    if (stickMenuEntry == null) {
+      stickMenuEntry = OverlayEntry(builder: (context) {
+        _menuStick = MyMenuStick(
           key: _widgetMenuKey,
           isVisible: !(widget.isFullScreen),
         );
-        return menuStick!;
+        return _menuStick!;
       });
       final overlay = Overlay.of(context)!;
-      overlay.insert(menuStickEntry!);
+      overlay.insert(stickMenuEntry!);
     }
-    if (menuStick != null) {
-      return menuStick!;
+    if (_menuStick != null) {
+      return _menuStick!;
     }
     return Container(color: Colors.red);
   }

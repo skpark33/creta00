@@ -143,6 +143,7 @@ enum PlayState {
   pause,
   end,
   disposed,
+  manualPlay,
 }
 
 enum AnimeType {

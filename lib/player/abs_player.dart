@@ -48,8 +48,8 @@ abstract class AbsPlayWidget extends StatefulWidget {
   void Function()? onAfterEvent;
 
   Future<void> init() async {}
-  Future<void> play() async {}
-  Future<void> pause() async {}
+  Future<void> play({bool byManual = false}) async {}
+  Future<void> pause({bool byManual = false}) async {}
   Future<void> mute() async {}
   Future<void> setSound(double val) async {}
   Future<void> close() async {}
@@ -182,12 +182,12 @@ class EmptyPlayWidget extends AbsPlayWidget {
   GlobalObjectKey<EmptyPlayWidgetState>? globalKey;
 
   @override
-  Future<void> play() async {
+  Future<void> play({bool byManual = false}) async {
     model!.setPlayState(PlayState.start);
   }
 
   @override
-  Future<void> pause() async {
+  Future<void> pause({bool byManual = false}) async {
     model!.setPlayState(PlayState.pause);
   }
 

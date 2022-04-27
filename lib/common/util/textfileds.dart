@@ -14,7 +14,7 @@ Widget myTextField(String value,
     int limit = 128,
     int maxValue = 360,
     int minValue = 0,
-    TextInputType keyboardType = TextInputType.none,
+    TextInputType keyboardType = TextInputType.text,
     TextStyle? style,
     bool hasDeleteButton = true,
     bool hasCounterButton = false,
@@ -28,6 +28,7 @@ Widget myTextField(String value,
     void Function(String)? onSubmitted}) {
   controller.text = value;
   return TextField(
+    autofocus: true,
     style: style,
     maxLines: maxLines,
     enabled: enabled,

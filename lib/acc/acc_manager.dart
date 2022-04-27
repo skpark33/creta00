@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:creta00/acc/acc_right_menu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:sortedmap/sortedmap.dart';
 import 'package:flutter/services.dart';
@@ -32,6 +33,7 @@ class ACCManager extends ChangeNotifier {
   Map<String, ACC> accMap = <String, ACC>{};
   SortedMap<int, ACC> orderMap = SortedMap<int, ACC>();
   ACCMenu accMenu = ACCMenu();
+  ACCRightMenu accRightMenu = ACCRightMenu();
   bool orderVisible = false;
   ui.Image? needleImage;
 
@@ -219,9 +221,12 @@ class ACCManager extends ChangeNotifier {
 
   Future<void> unshowMenu(BuildContext context) async {
     accMenu.unshow(context);
+    accRightMenu.unshow(context);
   }
 
   Future<void> showMenu(BuildContext context, ACC? acc) async {
+    accRightMenu.unshow(context);
+
     if (_currentAccMid.isEmpty) return;
     acc ??= accMap[_currentAccMid]!;
 
@@ -339,22 +344,22 @@ class ACCManager extends ChangeNotifier {
     acc.next(pause: true);
   }
 
-  void pause(BuildContext context) {
+  void pause(BuildContext context, {bool byManual = false}) {
     if (_currentAccMid.isEmpty) return;
     ACC? acc = accMap[_currentAccMid];
     if (acc == null) {
       return;
     }
-    acc.pause();
+    acc.pause(byManual: byManual);
   }
 
-  void play(BuildContext context) {
+  void play(BuildContext context, {bool byManual = false}) {
     if (_currentAccMid.isEmpty) return;
     ACC? acc = accMap[_currentAccMid];
     if (acc == null) {
       return;
     }
-    acc.play();
+    acc.play(byManual: byManual);
   }
 
   void prev(BuildContext context) {
@@ -646,6 +651,7 @@ class ACCManager extends ChangeNotifier {
       // }
     }
     accMenu.unshow(context);
+    accRightMenu.unshow(context);
   }
 
   void toggleFullscreen(BuildContext context) {

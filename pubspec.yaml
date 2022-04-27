@@ -84,9 +84,9 @@ dev_dependencies:
   wave: ^0.2.0
   loading_animations: ^2.1.0
   liquid_progress_indicator: ^0.4.0
-  webview_flutter_web: ^0.1.0+1
-  webviewx: ^0.2.1
- 
+  flutter_riverpod: ^1.0.3
+  flutter_menu: ^0.4.1
+  
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

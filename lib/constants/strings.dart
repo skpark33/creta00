@@ -42,6 +42,7 @@ class MyStrings {
 
   // Menus
   static String inputNewName = Locale.isKr() ? "복사본의 이름을 입력하세요" : 'input new name';
+  static String inputYoutube = Locale.isKr() ? "유투브 주소를 입력하세요" : 'input Youtube address';
   static String newBook = Locale.isKr() ? "새로만들기" : 'New Book';
   static String open = Locale.isKr() ? "열기" : 'Open Book';
   static String recent = Locale.isKr() ? "최근 파일 열기" : 'Open Recently Edited';
@@ -164,4 +165,6 @@ class MyStrings {
   static String minBefore = Locale.isKr() ? '분 전' : "Min before";
   static String tryNextTime = Locale.isKr() ? '잠시 후 다시 시도 하십시오' : 'Please try again later.';
   static String newContentsBook = Locale.isKr() ? '새 콘텐츠북 만들기' : 'Create New Contents Book';
+
+  static String menuYoutube = Locale.isKr() ? '유투브 콘텐츠 사용' : 'Insert Youtube';
 }

@@ -47,7 +47,8 @@ class BookManager extends ChangeNotifier {
     if (defaultBook == null) return;
     mychangeStack.startTrans();
     int len = path.length;
-    if (len > 4 && path.substring(len - 4, len) == ".jpg") {
+    //if (len > 4 && path.substring(len - 4, len) == ".jpg") {
+    if (len > 4 && path.contains("thumbnail")) {
       contentsType = ContentsType.image;
     }
 

@@ -13,6 +13,7 @@ import 'package:creta00/studio/save_manager.dart';
 import 'package:creta00/player/play_manager.dart';
 
 import '../book_manager.dart';
+import '../common/notifiers/notifiers.dart';
 import '../common/util/my_utils.dart';
 import '../model/pages.dart';
 import 'studio_sub_screen.dart';
@@ -76,6 +77,7 @@ class MainScreenState extends State<StudioMainScreen> {
     logHolder.log('build StudioMainScreen', level: 6);
     pageManagerHolder = PageManager();
     accManagerHolder = ACCManager();
+    progressHolder = ProgressNotifier();
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ACCManager>.value(
@@ -97,6 +99,9 @@ class MainScreenState extends State<StudioMainScreen> {
         ChangeNotifierProvider<BookManager>.value(
           value: bookManagerHolder!,
         ),
+        // ChangeNotifierProvider<ProgressNotifier>.value(
+        //   value: progressHolder!,
+        // ),
       ],
       child: RawKeyboardListener(
         autofocus: true,
