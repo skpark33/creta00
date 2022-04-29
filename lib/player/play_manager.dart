@@ -28,6 +28,7 @@ import 'package:creta00/model/model_enums.dart';
 //import '../constants/styles.dart';
 import '../common/notifiers/notifiers.dart';
 import 'abs_player.dart';
+import 'video/youtuve_player_widget.dart';
 
 class CurrentData {
   ContentsType type = ContentsType.free;
@@ -467,6 +468,32 @@ class PlayManager {
             GlobalObjectKey<ImagePlayerWidgetState>(model.mid);
         aWidget = ImagePlayerWidget(
           key: key,
+          model: model,
+          acc: acc,
+          autoStart: isAutoPlay, // (_currentIndex < 0) ? true : false,
+        );
+        await aWidget.init();
+        if (_currentOrder < 0) _currentOrder = 0;
+      } else if (model.isYoutube()) {
+        GlobalObjectKey<YoutubePlayerWidgetState> key =
+            GlobalObjectKey<YoutubePlayerWidgetState>(model.mid);
+        aWidget = YoutubePlayerWidget(
+          onInitialPlay: ((metadata) {
+            if (metadata.title.isNotEmpty) {
+              model.name = metadata.title;
+              double millisec = metadata.duration.inDays * 24 * 60 * 60 * 1000.0 +
+                  metadata.duration.inHours * 60 * 60 * 1000.0 +
+                  metadata.duration.inMinutes * 60 * 1000.0 +
+                  metadata.duration.inSeconds * 1000.0 +
+                  metadata.duration.inMilliseconds;
+              model.videoPlayTime.set(millisec);
+            }
+            if (metadata.videoId.isNotEmpty) {
+              model.remoteUrl = metadata.videoId;
+            }
+          }),
+          onAfterEvent: () {},
+          globalKey: key,
           model: model,
           acc: acc,
           autoStart: isAutoPlay, // (_currentIndex < 0) ? true : false,

@@ -42,7 +42,8 @@ class MyStrings {
 
   // Menus
   static String inputNewName = Locale.isKr() ? "복사본의 이름을 입력하세요" : 'input new name';
-  static String inputYoutube = Locale.isKr() ? "유투브 주소를 입력하세요" : 'input Youtube address';
+  static String inputYoutube = Locale.isKr() ? "유투브 주소를 입력하세요" : 'input Youtube web address';
+  static String inputContentsName = Locale.isKr() ? "콘텐츠 제목을 입력하세요" : 'input Contents title';
   static String newBook = Locale.isKr() ? "새로만들기" : 'New Book';
   static String open = Locale.isKr() ? "열기" : 'Open Book';
   static String recent = Locale.isKr() ? "최근 파일 열기" : 'Open Recently Edited';
@@ -61,6 +62,8 @@ class MyStrings {
   static String title = Locale.isKr() ? "제목" : 'Title';
   static String landscape = Locale.isKr() ? "가로" : 'Landscape';
   static String portrait = Locale.isKr() ? "세로" : 'Portrait';
+  static String editMode = Locale.isKr() ? "편집모드" : 'Edit Mode';
+  static String viewMode = Locale.isKr() ? "뷰모드" : 'View Mode';
   static String landPort = Locale.isKr() ? "가로/세로 전환" : 'Landscape or Portrait';
   static String primary = Locale.isKr() ? "프라이머리 위젯" : 'Is Primary Widget';
   static String pageSize = Locale.isKr() ? "페이지 크기" : 'Page Size';
@@ -166,5 +169,5 @@ class MyStrings {
   static String tryNextTime = Locale.isKr() ? '잠시 후 다시 시도 하십시오' : 'Please try again later.';
   static String newContentsBook = Locale.isKr() ? '새 콘텐츠북 만들기' : 'Create New Contents Book';
 
-  static String menuYoutube = Locale.isKr() ? '유투브 콘텐츠 사용' : 'Insert Youtube';
+  static String menuYoutube = Locale.isKr() ? '유투브 콘텐츠 삽입' : 'Insert Youtube';
 }

@@ -39,13 +39,16 @@ double percentToRadius(double radiusPercent, Size realSize) {
   return (radiusPercent * maxR) / 100;
 }
 
-Divider divider() {
-  return const Divider(
-    height: 5,
-    thickness: 1,
-    color: MyColors.divide,
-    indent: 14,
-    endIndent: 14,
+Widget divider({double paddings = 0, double indent = 14, Color color = MyColors.divide}) {
+  return Padding(
+    padding: EdgeInsets.all(paddings),
+    child: Divider(
+      height: 5,
+      thickness: 1,
+      color: MyColors.divide,
+      indent: indent,
+      endIndent: indent,
+    ),
   );
 }
 

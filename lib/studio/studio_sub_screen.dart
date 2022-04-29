@@ -12,6 +12,7 @@ import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:creta00/studio/save_manager.dart';
 import 'package:creta00/constants/constants.dart';
 
+//import '../common/buttons/toggle_switch.dart';
 import '../common/util/my_utils.dart';
 import '../constants/strings.dart';
 import '../model/model_enums.dart';
@@ -25,6 +26,7 @@ import 'sidebar/sidebar.dart';
 class StudioSubScreen extends StatefulWidget {
   final UserModel user;
   bool isFullScreen = false;
+  bool isEditMode = true;
 
   StudioSubScreen({required Key key, required this.user}) : super(key: key);
 
@@ -187,7 +189,7 @@ class StudioSubScreenState extends State<StudioSubScreen> {
         bookManager.defaultBook!.name.value,
         style: MyTextStyles.h5,
       ),
-      leadingWidth: isNarrow ? 200 : 400,
+      leadingWidth: isNarrow ? 200 : 600,
       leading: isNarrow ? logoIcon() : appBarLeading(),
       actions: isNarrow ? [] : appBarAction(),
     );
@@ -240,6 +242,28 @@ class StudioSubScreenState extends State<StudioSubScreen> {
           icon: const Icon(Icons.redo)),
       IconButton(onPressed: () {}, icon: const Icon(Icons.zoom_in)),
       IconButton(onPressed: () {}, icon: const Icon(Icons.zoom_out)),
+      // ToggleSwitch(
+      //   minHeight: 30.0,
+      //   minWidth: 80.0,
+      //   initialLabelIndex: widget.isEditMode ? 0 : 1,
+      //   cornerRadius: 20.0,
+      //   radiusStyle: true,
+      //   activeFgColor: MyColors.puple100,
+      //   inactiveBgColor: MyColors.puple100,
+      //   inactiveFgColor: MyColors.puple600,
+      //   totalSwitches: 2,
+      //   labels: [MyStrings.editMode, MyStrings.viewMode],
+      //   //icons: [Icons.stay_current_landscape, Icons.stay_current_portrait],
+      //   activeBgColors: const [
+      //     [MyColors.puple600],
+      //     [MyColors.puple600]
+      //   ],
+      //   onToggle: (index) {
+      //     logHolder.log('toggle button pressed = $index');
+      //     widget.isEditMode = (index == 0);
+      //     accManagerHolder!.setState();
+      //   },
+      // ),
 
       //appBarTitle(400),
       //IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),

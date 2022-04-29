@@ -5,7 +5,53 @@ import 'package:creta00/common/util/logger.dart';
 //import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 //import 'package:flutter/foundation.dart';
+Widget simpleTextField({
+  required TextEditingController controller,
+  String hintText = '',
+}) {
+  return TextField(
+      //key: ValueKey(Uuid().v4()),
+      keyboardType: TextInputType.text,
+      //autofocus: true,
+      showCursor: true,
+      cursorColor: Colors.white,
+      cursorWidth: 3,
+      maxLines: null,
+      controller: controller,
+      decoration: InputDecoration(
+          hintText: hintText,
+          isDense: true,
+          contentPadding: const EdgeInsets.all(8),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(
+                //width: 1, style: BorderStyle.solid, color: MyColors.secondaryColor),
+                width: 1,
+                style: BorderStyle.solid,
+                color: MyColors.secondaryColor),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(
+                //width: 1, style: BorderStyle.solid, color: MyColors.secondaryColor),
+                width: 1,
+                style: BorderStyle.solid,
+                color: MyColors.mainColor),
+          ),
+          filled: true,
+          suffixIcon: IconButton(
+            //constraints: BoxConstraints.tight(Size(16, 16)),
+            padding: const EdgeInsets.only(right: 5),
+            color: MyColors.mainColor,
+            iconSize: MySizes.smallIcon,
+            icon: const Icon(Icons.close),
+            onPressed: () {
+              controller.clear();
+            },
+          )));
+}
 
 Widget myTextField(String value,
     {required TextEditingController controller,

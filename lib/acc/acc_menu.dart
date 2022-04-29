@@ -208,7 +208,8 @@ class ACCMenu {
             return errMsgWidget(snapshot);
           }
           if (snapshot.connectionState == ConnectionState.done) {
-            if (_type == ContentsType.video || snapshot.data!.type == ContentsType.video) {
+            if ((_type == ContentsType.video || snapshot.data!.type == ContentsType.video) ||
+                (_type == ContentsType.youtube || snapshot.data!.type == ContentsType.youtube)) {
               return videoMenu(context, snapshot.data!.state, snapshot.data!.mute, acc);
             } else if (_type == ContentsType.image || snapshot.data!.type == ContentsType.image) {
               return imageMenu(context, snapshot.data!.state, snapshot.data!.mute, acc);

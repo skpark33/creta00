@@ -162,6 +162,15 @@ class ContentsModel extends AbsModel {
     } else if (mime.startsWith('text')) {
       logHolder.log('text type');
       contentsType = ContentsType.text;
+    } else if (mime.startsWith('youtube')) {
+      logHolder.log('youtube type');
+      contentsType = ContentsType.youtube;
+    } else if (mime.startsWith('instagram')) {
+      logHolder.log('instagram type');
+      contentsType = ContentsType.instagram;
+    } else if (mime.startsWith('pdf')) {
+      logHolder.log('pdf type');
+      contentsType = ContentsType.pdf;
     } else {
       logHolder.log('ERROR: unknown type');
       contentsType = ContentsType.free;
@@ -182,6 +191,22 @@ class ContentsModel extends AbsModel {
 
   bool isSheet() {
     return (contentsType == ContentsType.sheet);
+  }
+
+  bool isYoutube() {
+    return (contentsType == ContentsType.youtube);
+  }
+
+  bool isInstagram() {
+    return (contentsType == ContentsType.instagram);
+  }
+
+  bool isWeb() {
+    return (contentsType == ContentsType.web);
+  }
+
+  bool isPdf() {
+    return (contentsType == ContentsType.pdf);
   }
 
   void printIt() {

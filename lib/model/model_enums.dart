@@ -99,6 +99,9 @@ enum ContentsType {
   text,
   sheet,
   youtube,
+  instagram,
+  web,
+  pdf,
   free,
 }
 
@@ -114,6 +117,12 @@ int contentsTypeToInt(ContentsType value) {
       return 3;
     case ContentsType.youtube:
       return 4;
+    case ContentsType.instagram:
+      return 5;
+    case ContentsType.web:
+      return 6;
+    case ContentsType.pdf:
+      return 7;
     case ContentsType.free:
       return 99;
   }
@@ -131,6 +140,12 @@ ContentsType intToContentsType(int t) {
       return ContentsType.sheet;
     case 4:
       return ContentsType.youtube;
+    case 5:
+      return ContentsType.instagram;
+    case 6:
+      return ContentsType.web;
+    case 7:
+      return ContentsType.pdf;
     default:
       return ContentsType.free;
   }

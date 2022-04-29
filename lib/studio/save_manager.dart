@@ -256,14 +256,14 @@ class SaveManager extends ChangeNotifier {
 
   Future<void> blockAutoSave() async {
     await _lock.synchronized(() async {
-      logHolder.log('autoSave locked------------', level: 5);
+      logHolder.log('autoSave locked------------', level: 6);
       _autoSaveFlag = false;
     });
   }
 
   Future<void> releaseAutoSave() async {
     await _lock.synchronized(() async {
-      logHolder.log('autoSave released------------', level: 5);
+      logHolder.log('autoSave released------------', level: 6);
       _autoSaveFlag = true;
     });
   }
@@ -279,7 +279,7 @@ class SaveManager extends ChangeNotifier {
   Future<void> autoSave() async {
     await _lock.synchronized(() async {
       if (_autoSaveFlag) {
-        logHolder.log('autoSave------------', level: 5);
+        logHolder.log('autoSave------------', level: 6);
         await DbActions.saveAll();
       }
     });

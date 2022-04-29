@@ -232,7 +232,7 @@ class ACCManager extends ChangeNotifier {
 
     ContentsType type = await acc.getCurrentContentsType();
 
-    if (type == ContentsType.video || type == ContentsType.image) {
+    if (type == ContentsType.video || type == ContentsType.image || type == ContentsType.youtube) {
       accMenu.size = Size(accMenu.size.width, 68);
     } else {
       accMenu.size = Size(accMenu.size.width, 36);
@@ -273,7 +273,7 @@ class ACCManager extends ChangeNotifier {
     //if (!accMenu.visible) return;
     logHolder.log("resizeMenu", level: 6);
     double height = 36;
-    if (type == ContentsType.video || type == ContentsType.image) {
+    if (type == ContentsType.video || type == ContentsType.image || type == ContentsType.youtube) {
       height = 68;
     }
 
