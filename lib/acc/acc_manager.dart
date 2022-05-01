@@ -23,6 +23,7 @@ import '../common/undo/undo.dart';
 import '../widgets/base_widget.dart';
 import '../common/util/logger.dart';
 import '../acc/acc_menu.dart';
+import 'acc_youtube.dart';
 //import '../db/db_actions.dart';
 //import '../studio/properties/properties_frame.dart';
 
@@ -102,12 +103,17 @@ class ACCManager extends ChangeNotifier {
     return retval;
   }
 
-  ACC createACC(BuildContext context, PageModel page) {
+  ACC createACC(BuildContext context, PageModel page, {ACCType accType = ACCType.normal}) {
     int order = getMaxOrder() + 1;
     BaseWidget widget =
         BaseWidget(baseWidgetKey: GlobalObjectKey<BaseWidgetState>(const Uuid().v4()));
 
-    ACC acc = ACC(page: page, accChild: widget, idx: order);
+    late ACC acc;
+    if (accType == ACCType.youtube) {
+      acc = ACCYoutube(page: page, accChild: widget, idx: order);
+    } else {
+      acc = ACC(page: page, accChild: widget, idx: order);
+    }
 
     MyChange<ACC> c = MyChange<ACC>.withContext(acc, context, execute: () {
       accManagerHolder!.redoCreateACC(context, acc);

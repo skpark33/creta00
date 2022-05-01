@@ -98,6 +98,7 @@ class MyStrings {
   static String music = Locale.isKr() ? '음악' : "Music";
   static String news = Locale.isKr() ? '뉴스' : "News";
   static String brush = Locale.isKr() ? '브러쉬' : "Brush";
+  static String youtube = Locale.isKr() ? '유튜브' : "Youtube";
 
   static String yes = Locale.isKr() ? '예' : "Yes";
   static String no = Locale.isKr() ? '아니오' : "No";

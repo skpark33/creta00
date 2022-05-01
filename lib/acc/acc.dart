@@ -10,7 +10,6 @@ import 'package:creta00/common/util/my_utils.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 import 'package:creta00/studio/save_manager.dart';
 
-import '../common/cursor/right_click.dart';
 import '../widgets/abs_anime.dart';
 import 'resizable.dart';
 import '../model/acc_property.dart';
@@ -52,8 +51,8 @@ class ACC {
   final List<bool> isRadiusHover = [false, false, false, false];
   CursorType cursor = CursorType.pointer;
 
-  static double _lastOffsetX = 20;
-  static double _lastOffsetY = 20;
+  static double _lastOffsetX = 40;
+  static double _lastOffsetY = 40;
 
   Offset _prevOffset = Offset.zero;
   Size _prevSize = Size.zero;
@@ -263,38 +262,29 @@ class ACC {
           height: realSize.height + resizeButtonSize,
           width: realSize.width + resizeButtonSize,
 
-          child: CrossPlatformClick(
-            // 오른쪽 마우스 버튼 사용
-            onPointerDown: (context, event) {
-              accManagerHolder!.accRightMenu.show(context, this, event);
-            },
-            //onNormalTap: () {},
-            // parent: entry!,
-            // menuItems: const [
-            //   PopupMenuItem(
-            //       child: Text('Copy Name', style: TextStyle(fontSize: 16)), value: "copied"),
-            // ],
-            // onMenuItemTapped: (item) {
-            //   logHolder.log("item tapped: " + (item ?? "-no-item"), level: 6);
-            // },
-            child: _gesture(
-              context,
-              marginSize,
-              realSize,
-              ratio,
-              isAccSelected,
-              child: Stack(
-                children: [
-                  _accChild(mouseMargin, realSize, marginSize),
-                  _customPaint(isAccSelected, realSize, marginSize),
-                ],
-              ),
+          // child: CrossPlatformClick(
+          //   // 오른쪽 마우스 버튼 사용
+          //   onPointerDown: (context, event) {
+          //     accManagerHolder!.accRightMenu.show(context, this, event);
+          //   },
+          child: buildGesture(
+            context,
+            marginSize,
+            realSize,
+            ratio,
+            isAccSelected,
+            child: Stack(
+              children: [
+                buildAccChild(mouseMargin, realSize, marginSize),
+                buildCustomPaint(isAccSelected, realSize, marginSize),
+              ],
             ),
+            //),
           ),
         ));
   }
 
-  Widget _gesture(
+  Widget buildGesture(
       BuildContext context, Size marginSize, Size realSize, Size ratio, bool isAccSelected,
       {required Widget child}) {
     return GestureDetector(
@@ -390,7 +380,7 @@ class ACC {
         });
   }
 
-  Widget _accChild(double mouseMargin, Size realSize, Size marginSize) {
+  Widget buildAccChild(double mouseMargin, Size realSize, Size marginSize) {
     return Padding(
       padding: EdgeInsets.all(mouseMargin),
       child: Transform.rotate(
@@ -445,7 +435,7 @@ class ACC {
     );
   }
 
-  Widget _customPaint(bool isAccSelected, Size realSize, Size marginSize) {
+  Widget buildCustomPaint(bool isAccSelected, Size realSize, Size marginSize) {
     return CustomPaint(
       painter: ResiablePainter(
           cursor,

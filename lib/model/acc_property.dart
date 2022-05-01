@@ -27,6 +27,8 @@ enum CursorType {
 
 //class ACCProperty extends ChangeNotifier {
 class ACCProperty extends AbsModel {
+  ACCType accType;
+
   //late UndoAble<bool> visible;
   late UndoAble<bool> resizable;
   late UndoAble<AnimeType> animeType;
@@ -56,7 +58,7 @@ class ACCProperty extends AbsModel {
 
   SortedMap<int, ContentsModel> contentsMap = SortedMap<int, ContentsModel>(); // db get 전용
 
-  ACCProperty({required ModelType type, required String parent})
+  ACCProperty({required ModelType type, required String parent, this.accType = ACCType.normal})
       : super(type: type, parent: parent) {
     //visible = UndoAble<bool>(true, mid);
     resizable = UndoAble<bool>(true, mid);
@@ -88,7 +90,8 @@ class ACCProperty extends AbsModel {
     save();
   }
 
-  ACCProperty.copy(ACCProperty src, String parentId) : super(parent: parentId, type: src.type) {
+  ACCProperty.copy(ACCProperty src, String parentId, {this.accType = ACCType.normal})
+      : super(parent: parentId, type: src.type) {
     super.copy(src, parentId);
     //visible = UndoAble<bool>(src.visible.value, mid);
     resizable = UndoAble<bool>(src.resizable.value, mid);
@@ -118,7 +121,7 @@ class ACCProperty extends AbsModel {
     boxType = UndoAble<BoxType>(src.boxType.value, mid);
   }
 
-  ACCProperty.createEmptyModel(String srcMid, String pMid)
+  ACCProperty.createEmptyModel(String srcMid, String pMid, {this.accType = ACCType.normal})
       : super(type: ModelType.acc, parent: pMid) {
     super.changeMid(srcMid);
     //visible = UndoAble<bool>(true, srcMid);
@@ -152,6 +155,7 @@ class ACCProperty extends AbsModel {
   @override
   void deserialize(Map<String, dynamic> map) {
     super.deserialize(map);
+    accType = intToAccType(map["accType"] ?? ACCType.normal);
     animeType.set(intToAnimeType(map["animeType"]), save: false);
 
     //visible.set(map["visible"], save: false);
@@ -200,6 +204,7 @@ class ACCProperty extends AbsModel {
   Map<String, dynamic> serialize() {
     return super.serialize()
       ..addEntries({
+        "accType": accTypeToInt(accType),
         "animeType": animeTypeToInt(animeType.value),
         //"visible": visible.value,
         "resizable": resizable.value,

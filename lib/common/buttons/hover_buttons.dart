@@ -21,7 +21,7 @@ class HoverButton extends StatefulWidget {
   final double hoverSize;
 
   IconData? iconData;
-  Widget? iconWidget;
+  String? iconFile;
   Color? iconColor;
   Color? iconHoverColor;
 
@@ -82,7 +82,7 @@ class HoverButton extends StatefulWidget {
       required this.width,
       required this.height,
       required this.onPressed,
-      required this.iconWidget,
+      required this.iconFile,
       required this.onEnter,
       required this.onExit,
       this.text = '',
@@ -138,6 +138,15 @@ class _ButtonHoverState extends State<HoverButton> {
     if (radius < 1) {
       radius = 1;
     }
+    Widget? iconWidget;
+    if (widget.iconFile != null) {
+      iconWidget = Image.asset(
+        widget.iconFile!,
+        //color: MyColors.mainColor,
+        width: isHover ? widget.hoverSize : widget.normalSize,
+        height: isHover ? widget.hoverSize : widget.normalSize,
+      );
+    }
     return GestureDetector(
       onTapDown: (details) {
         if (widget.text.isNotEmpty) {
@@ -192,17 +201,17 @@ class _ButtonHoverState extends State<HoverButton> {
           width: widget.width,
           //height: isHover ? height : height * 0.8,
           height: widget.height * 0.8,
-          child: addElement(),
+          child: addElement(iconWidget),
         ),
       ),
     );
   }
 
-  Widget _iconButton() {
+  Widget _iconButton(Widget? iconWidget) {
     return IconButton(
       icon: widget.useIconData
           ? Icon(widget.iconData!, color: isHover ? widget.iconHoverColor : widget.iconColor!)
-          : widget.icon!,
+          : widget.icon ?? iconWidget!,
       iconSize: isHover ? widget.hoverSize : widget.normalSize,
       padding: const EdgeInsets.all(0),
       onPressed: () {
@@ -214,17 +223,18 @@ class _ButtonHoverState extends State<HoverButton> {
     );
   }
 
-  Widget addElement() {
+  Widget addElement(Widget? iconWidget) {
     return Center(
       child: widget.text.isEmpty
-          ? widget.useIconWidget
-              ? widget.iconWidget!
-              : _iconButton()
+          ? _iconButton(iconWidget)
+          // ? widget.useIconWidget
+          //     ? iconWidget!
+          //     : _iconButton(iconWidget)
           : Row(
               mainAxisAlignment: widget.align,
               children: widget.iconRight
-                  ? [Text(widget.text, style: widget.textStyle), _iconButton()]
-                  : [_iconButton(), Text(widget.text, style: widget.textStyle)],
+                  ? [Text(widget.text, style: widget.textStyle), _iconButton(iconWidget)]
+                  : [_iconButton(iconWidget), Text(widget.text, style: widget.textStyle)],
             ),
     );
   }

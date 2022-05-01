@@ -282,3 +282,27 @@ int propertyTypeToInt(PropertyType value) {
       return 4;
   }
 }
+
+enum ACCType {
+  normal,
+  youtube,
+}
+
+int accTypeToInt(ACCType value) {
+  switch (value) {
+    case ACCType.normal:
+      return 0;
+    case ACCType.youtube:
+      return 1;
+  }
+}
+
+ACCType intToAccType(int t) {
+  switch (t) {
+    case 0:
+      return ACCType.normal;
+    case 1:
+      return ACCType.youtube;
+  }
+  return ACCType.normal;
+}

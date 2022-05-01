@@ -179,4 +179,7 @@ fonts:
         - asset: fonts\Pretendard\Pretendard-Regular.woff2
         - asset: fonts\Pretendard\Pretendard-SemiBold.woff2
         - asset: fonts\Pretendard\Pretendard-Thin.woff2
+    - family: Zocial
+      fonts:
+        - asset: fonts\Zocial\Zocial.ttf
         

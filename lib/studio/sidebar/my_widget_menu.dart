@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:creta00/common/icon/zocial_icons.dart';
 import 'package:creta00/model/contents.dart';
 import 'package:flutter/material.dart';
 
@@ -10,9 +11,12 @@ import 'package:creta00/constants/strings.dart';
 import 'package:creta00/common/util/my_text.dart';
 import 'package:creta00/common/util/my_utils.dart';
 import 'package:creta00/common/util/logger.dart';
+
 import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/acc/acc.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
+
+import '../../model/model_enums.dart';
 
 class MenuModel {
   //complex drawer menu
@@ -20,8 +24,9 @@ class MenuModel {
   final String title;
   final List<String> submenus;
   void Function()? onPressed;
+  final String? iconFile;
 
-  MenuModel(this.icon, this.title, this.submenus);
+  MenuModel(this.icon, this.title, this.submenus, {this.iconFile});
 }
 
 class MyMenuStick extends StatefulWidget {
@@ -56,6 +61,12 @@ class MyMenuStickState extends State<MyMenuStick> {
     MenuModel(Icons.music_note, MyStrings.music, []),
     MenuModel(Icons.feed_outlined, MyStrings.news, []),
     MenuModel(Icons.brush, MyStrings.brush, []),
+    MenuModel(
+      Zocial.youtube_3,
+      MyStrings.youtube,
+      [],
+      iconFile: "assets/youtube.png",
+    ),
   ];
 
   static void createACC(BuildContext context, ContentsModel model) {
@@ -77,6 +88,7 @@ class MyMenuStickState extends State<MyMenuStick> {
     menuModelList[7].onPressed = musicPressed;
     menuModelList[8].onPressed = newsPressed;
     menuModelList[9].onPressed = brushPressed;
+    menuModelList[10].onPressed = youtubePressed;
   }
 
   @override
@@ -97,7 +109,7 @@ class MyMenuStickState extends State<MyMenuStick> {
             child: Container(
                 // decoration: simpleDeco(
                 //     8.0, 0.5, Colors.white.withOpacity(0.2), MyColors.white),
-                height: 560,
+                height: 620,
                 width: isExpanded
                     ? wideWidth
                     : isSubMenuOpen
@@ -115,12 +127,12 @@ class MyMenuStickState extends State<MyMenuStick> {
 
   Widget row() {
     return Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-      isExpanded ? blackIconTiles() : blackIconMenu(),
+      isExpanded ? expandedMenu() : smallMenu(),
       isSubMenuOpen ? invisibleSubMenus() : Container(),
     ]);
   }
 
-  Widget blackIconTiles() {
+  Widget expandedMenu() {
     return Container(
       width: wideWidth,
       color: MyColors.complexDrawerBlack,
@@ -137,23 +149,39 @@ class MyMenuStickState extends State<MyMenuStick> {
 
                 return Padding(
                   padding: const EdgeInsets.only(top: 10, left: 10),
-                  child: HoverButton.withIconData(
-                      hoverSize: 32,
-                      width: 45,
-                      height: 45,
-                      onPressed: () {
-                        setState(() {
-                          isSubMenuOpen = menuModelList[index].submenus.isNotEmpty;
-                          selectedIndex = index;
-                        });
-                        menuModel.onPressed!.call();
-                      },
-                      text: menuModel.title,
-                      iconData: menuModel.icon,
-                      iconColor: MyColors.mainColor,
-                      iconHoverColor: MyColors.primaryText,
-                      onEnter: () {},
-                      onExit: () {}),
+                  child: menuModel.iconFile == null
+                      ? HoverButton.withIconData(
+                          hoverSize: 32,
+                          width: 45,
+                          height: 45,
+                          onPressed: () {
+                            setState(() {
+                              isSubMenuOpen = menuModelList[index].submenus.isNotEmpty;
+                              selectedIndex = index;
+                            });
+                            menuModel.onPressed!.call();
+                          },
+                          text: menuModel.title,
+                          iconData: menuModel.icon,
+                          iconColor: MyColors.mainColor,
+                          iconHoverColor: MyColors.primaryText,
+                          onEnter: () {},
+                          onExit: () {})
+                      : HoverButton.withIconWidget(
+                          hoverSize: 32,
+                          width: 45,
+                          height: 45,
+                          onPressed: () {
+                            setState(() {
+                              isSubMenuOpen = menuModelList[index].submenus.isNotEmpty;
+                              selectedIndex = index;
+                            });
+                            menuModel.onPressed!.call();
+                          },
+                          text: menuModel.title,
+                          iconFile: menuModel.iconFile,
+                          onEnter: () {},
+                          onExit: () {}),
                 );
               },
             ),
@@ -194,7 +222,7 @@ class MyMenuStickState extends State<MyMenuStick> {
     );
   }
 
-  Widget blackIconMenu() {
+  Widget smallMenu() {
     return AnimatedContainer(
       duration: const Duration(seconds: 1),
       width: narrowWidth,
@@ -206,25 +234,41 @@ class MyMenuStickState extends State<MyMenuStick> {
             child: ListView.builder(
                 itemCount: menuModelList.length,
                 itemBuilder: (contex, index) {
-                  // if(index==0) return controlButton();
+                  MenuModel menuModel = menuModelList[index];
+
                   return Padding(
                     padding: const EdgeInsets.only(top: 5, bottom: 5),
-                    child: HoverButton.withIconData(
-                        hoverSize: 32,
-                        width: 45,
-                        height: 45,
-                        onPressed: () {
-                          setState(() {
-                            isSubMenuOpen = menuModelList[index].submenus.isNotEmpty;
-                            selectedIndex = index;
-                          });
-                          menuModelList[index].onPressed!.call();
-                        },
-                        iconData: menuModelList[index].icon,
-                        iconColor: MyColors.mainColor,
-                        iconHoverColor: MyColors.primaryText,
-                        onEnter: () {},
-                        onExit: () {}),
+                    child: menuModel.iconFile == null
+                        ? HoverButton.withIconData(
+                            hoverSize: 32,
+                            width: 45,
+                            height: 45,
+                            onPressed: () {
+                              setState(() {
+                                isSubMenuOpen = menuModel.submenus.isNotEmpty;
+                                selectedIndex = index;
+                              });
+                              menuModel.onPressed!.call();
+                            },
+                            iconData: menuModel.icon,
+                            iconColor: MyColors.mainColor,
+                            iconHoverColor: MyColors.primaryText,
+                            onEnter: () {},
+                            onExit: () {})
+                        : HoverButton.withIconWidget(
+                            hoverSize: 32,
+                            width: 45,
+                            height: 45,
+                            onPressed: () {
+                              setState(() {
+                                isSubMenuOpen = menuModelList[index].submenus.isNotEmpty;
+                                selectedIndex = index;
+                              });
+                              menuModel.onPressed!.call();
+                            },
+                            iconFile: menuModel.iconFile,
+                            onEnter: () {},
+                            onExit: () {}),
                   );
 
                   // return InkWell(
@@ -342,7 +386,7 @@ class MyMenuStickState extends State<MyMenuStick> {
 
   void textPressed() {
     //simpleDialog(context, "Notice", "Not Yet Implemented", MyColors.white);
-    logHolder.log('text Pressed');
+    logHolder.log('text Pressed', level: 6);
   }
 
   void effectPressed() {
@@ -375,5 +419,11 @@ class MyMenuStickState extends State<MyMenuStick> {
 
   void brushPressed() {
     logHolder.log('brush Pressed');
+  }
+
+  void youtubePressed() {
+    logHolder.log('youtube Pressed', level: 6);
+    accManagerHolder!
+        .createACC(context, pageManagerHolder!.getSelected()!, accType: ACCType.youtube);
   }
 }
