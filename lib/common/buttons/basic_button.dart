@@ -8,6 +8,7 @@ Widget basicButton({
   required String name,
   required IconData iconData,
   AlignmentGeometry alignment = Alignment.bottomRight,
+  double height = MySizes.buttonHeight / 2,
 }) {
   return Container(
     alignment: alignment,
@@ -32,7 +33,7 @@ Widget basicButton({
             children: [
               Icon(
                 iconData,
-                size: MySizes.buttonHeight / 2, //MySizes.imageIcon,
+                size: height, //MySizes.imageIcon,
                 color: MyColors.buttonFG,
               ),
               SizedBox(

@@ -598,3 +598,40 @@ String dateToDurationString(DateTime updateTime) {
 
   return '${duration.inMinutes} ${MyStrings.minBefore}';
 }
+
+double durationToMillisec(Duration duration) {
+  return duration.inDays * 24 * 60 * 60 * 1000.0 +
+      duration.inHours * 60 * 60 * 1000.0 +
+      duration.inMinutes * 60 * 1000.0 +
+      duration.inSeconds * 1000.0 +
+      duration.inMilliseconds;
+}
+
+class SimpleRichText extends StatelessWidget {
+  final String title;
+  final String value;
+  final TextStyle titleStyle;
+  final TextStyle valueStyle;
+  final double width;
+
+  // ignore: use_key_in_widget_constructors
+  const SimpleRichText(this.title, this.value, this.width,
+      {this.titleStyle = MyTextStyles.f1, this.valueStyle = MyTextStyles.f1});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      child: RichText(
+        maxLines: null,
+        text: TextSpan(
+          text: '$title : ',
+          style: titleStyle,
+          children: [
+            TextSpan(text: value, style: valueStyle),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -7,18 +7,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 //import 'package:flutter/foundation.dart';
-Widget simpleTextField({
-  required TextEditingController controller,
-  String hintText = '',
-}) {
+Widget simpleTextField(
+    {required TextEditingController controller,
+    String hintText = '',
+    bool enabled = true,
+    bool readOnly = false,
+    bool showCusor = true,
+    bool autofocus = true,
+    double borderWidth = 1,
+    int? maxLine}) {
   return TextField(
+      readOnly: readOnly,
+      enabled: enabled,
+      onTap: () {
+        logHolder.log("OnTap", level: 6);
+      },
+      onChanged: (val) {
+        logHolder.log("onChanged", level: 6);
+      },
       //key: ValueKey(Uuid().v4()),
       keyboardType: TextInputType.text,
-      //autofocus: true,
-      showCursor: true,
+      autofocus: autofocus,
+      showCursor: showCusor,
       cursorColor: Colors.white,
       cursorWidth: 3,
-      maxLines: null,
+      maxLines: maxLine,
       controller: controller,
       decoration: InputDecoration(
           hintText: hintText,
@@ -26,9 +39,9 @@ Widget simpleTextField({
           contentPadding: const EdgeInsets.all(8),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(
+            borderSide: BorderSide(
                 //width: 1, style: BorderStyle.solid, color: MyColors.secondaryColor),
-                width: 1,
+                width: borderWidth,
                 style: BorderStyle.solid,
                 color: MyColors.secondaryColor),
           ),

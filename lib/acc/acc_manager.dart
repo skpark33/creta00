@@ -110,7 +110,7 @@ class ACCManager extends ChangeNotifier {
 
     late ACC acc;
     if (accType == ACCType.youtube) {
-      acc = ACCYoutube(page: page, accChild: widget, idx: order);
+      acc = ACCYoutube(page: page, accChild: widget, idx: order, useDefaultSize: true);
     } else {
       acc = ACC(page: page, accChild: widget, idx: order);
     }

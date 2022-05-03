@@ -20,6 +20,8 @@ class MyStrings {
   static String isSilent = Locale.isKr() ? '소리없는 콘텐츠북' : 'Silent Contents Book';
 
   static String initialName = Locale.isKr() ? '나의 첫 콘텐츠북' : 'My 1st Contents Book';
+  static String add = Locale.isKr() ? '추가' : 'Add';
+  static String paste = Locale.isKr() ? '붙여넣기' : 'Paste';
   static String apply = Locale.isKr() ? '적용' : 'Apply';
   static String close = Locale.isKr() ? '닫기' : 'Close';
   static String cancel = Locale.isKr() ? '취소' : 'Cancel';
@@ -42,8 +44,13 @@ class MyStrings {
 
   // Menus
   static String inputNewName = Locale.isKr() ? "복사본의 이름을 입력하세요" : 'input new name';
-  static String inputYoutube = Locale.isKr() ? "유투브 주소를 입력하세요" : 'input Youtube web address';
-  static String inputContentsName = Locale.isKr() ? "콘텐츠 제목을 입력하세요" : 'input Contents title';
+  static String inputYoutube = Locale.isKr()
+      ? "유투브 콘텐츠의 웹주소를 Ctrl+C 로 복사한 후 붙여넣기 버튼을 누르세요."
+      : 'Copy the web address of the YouTube content with Ctrl+C and press the Paste button.';
+  static String invalidAddress =
+      Locale.isKr() ? "올바르지 않은 웹주소 또는 Video Id 입니다" : 'Invalid web address or Video Id';
+
+  static String inputContentsName = Locale.isKr() ? "콘텐츠 제목을 입력하세요" : 'Input Contents title';
   static String newBook = Locale.isKr() ? "새로만들기" : 'New Book';
   static String open = Locale.isKr() ? "열기" : 'Open Book';
   static String recent = Locale.isKr() ? "최근 파일 열기" : 'Open Recently Edited';
@@ -171,4 +178,7 @@ class MyStrings {
   static String newContentsBook = Locale.isKr() ? '새 콘텐츠북 만들기' : 'Create New Contents Book';
 
   static String menuYoutube = Locale.isKr() ? '유투브 콘텐츠 삽입' : 'Insert Youtube';
+  static String pressYoutubeButton = Locale.isKr()
+      ? '아래 유투브 화면의 플레이버튼을 눌러 주세요'
+      : 'Please click the play button on the YouTube screen below';
 }

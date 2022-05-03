@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:creta00/acc/youtube_dialog.dart';
 import 'package:creta00/common/icon/zocial_icons.dart';
 import 'package:creta00/model/contents.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +16,6 @@ import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/acc/acc.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
-
-import '../../model/model_enums.dart';
 
 class MenuModel {
   //complex drawer menu
@@ -422,8 +421,11 @@ class MyMenuStickState extends State<MyMenuStick> {
   }
 
   void youtubePressed() {
-    logHolder.log('youtube Pressed', level: 6);
-    accManagerHolder!
-        .createACC(context, pageManagerHolder!.getSelected()!, accType: ACCType.youtube);
+    logHolder.log('youtube Pressed....', level: 6);
+    ACC acc = accManagerHolder!
+        //.createACC(context, pageManagerHolder!.getSelected()!, accType: ACCType.youtube);
+        .createACC(context, pageManagerHolder!.getSelected()!);
+    YoutubeDialog dialog = YoutubeDialog(acc);
+    dialog.show(context);
   }
 }

@@ -59,6 +59,14 @@ class ACC {
 
   ACC({required this.page, required this.accChild, required int idx}) {
     accModel = ACCProperty(type: ModelType.acc, parent: page!.mid);
+    if (accModel.containerSize.value.width == 0 && accModel.containerSize.value.height == 0) {
+      accModel.containerSize
+          .set(Size(page!.width.value / 3, page!.height.value / 3), save: false, noUndo: true);
+    }
+    if (accModel.containerOffset.value.dx == 0 && accModel.containerOffset.value.dy == 0) {
+      accModel.containerOffset
+          .set(Offset(page!.width.value / 8, page!.height.value / 8), save: false, noUndo: true);
+    }
     accModel.order.set(idx); // 이 시점에 자동으로 save 가 된다.
   }
 
@@ -435,7 +443,8 @@ class ACC {
     );
   }
 
-  Widget buildCustomPaint(bool isAccSelected, Size realSize, Size marginSize) {
+  Widget buildCustomPaint(bool isAccSelected, Size realSize, Size marginSize,
+      {bool hasDropZone = true}) {
     return CustomPaint(
       painter: ResiablePainter(
           cursor,
@@ -497,14 +506,16 @@ class ACC {
             entry!.markNeedsBuild();
           }
         },
-        child: DropZoneWidget(
-          accId: accModel.mid,
-          onDroppedFile: (model) {
-            logHolder.log('contents added  ${model.mid}');
-            accChild.playManager.pushFromDropZone(this, model);
-            accChild.invalidate();
-          },
-        ),
+        child: hasDropZone
+            ? DropZoneWidget(
+                accId: accModel.mid,
+                onDroppedFile: (model) {
+                  logHolder.log('contents added  ${model.mid}');
+                  accChild.playManager.pushFromDropZone(this, model);
+                  accChild.invalidate();
+                },
+              )
+            : Container(),
       ),
     );
   }

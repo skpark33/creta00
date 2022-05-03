@@ -109,6 +109,10 @@ class PlayManager {
     return _orderMap.isNotEmpty;
   }
 
+  bool isEmpty() {
+    return _orderMap.isEmpty;
+  }
+
   // bool isEmpty() {
   //   return _playList.isEmpty;
   // }

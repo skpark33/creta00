@@ -71,8 +71,8 @@ class ACCProperty extends AbsModel {
 
     primary = UndoAble<bool>(false, mid);
     fullscreen = UndoAble<bool>(false, mid);
-    containerOffset = UndoAble<Offset>(const Offset(100, 100), mid);
-    containerSize = UndoAble<Size>(const Size(640, 480), mid);
+    containerOffset = UndoAble<Offset>(const Offset(0, 0), mid); // 생성자에서 정한다.
+    containerSize = UndoAble<Size>(const Size(0, 0), mid); // 생성자에서 정한다.
     rotate = UndoAble<double>(0, mid);
     contentRotate = UndoAble<bool>(false, mid);
     opacity = UndoAble<double>(1, mid);

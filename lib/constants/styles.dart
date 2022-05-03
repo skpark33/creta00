@@ -96,6 +96,20 @@ class MyTextStyles {
 
   static TextStyle myTextStyle = f1.copyWith(color: MyColors.primaryText);
 
+  static TextStyle get error => myTextStyle.copyWith(
+      color: Colors.red,
+      fontSize: MyFontsSize.s20,
+      height: 1.5,
+      letterSpacing: 0.05,
+      fontWeight: FontWeight.w400);
+
+  static TextStyle get info => myTextStyle.copyWith(
+      color: Colors.blue,
+      fontSize: MyFontsSize.s20,
+      height: 1.5,
+      letterSpacing: 0.05,
+      fontWeight: FontWeight.w400);
+
   static TextStyle get buttonText => myTextStyle.copyWith(
       color: MyColors.buttonFG,
       fontSize: MyFontsSize.s14,

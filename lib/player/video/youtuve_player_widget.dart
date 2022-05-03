@@ -261,8 +261,8 @@ class YoutubePlayerWidgetState extends State<YoutubePlayerWidget> {
     return Stack(children: [
       widget.getClipRect(
         outSize,
-        //player!,
-        getThumbnail(),
+        player!,
+        //getThumbnail(),
       ),
       YoutubeValueBuilder(
           buildWhen: (o, n) => (o.metaData != n.metaData),
