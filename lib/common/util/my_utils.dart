@@ -607,6 +607,15 @@ double durationToMillisec(Duration duration) {
       duration.inMilliseconds;
 }
 
+String durationToString(Duration duration) {
+  String retval = '';
+  if (duration.inDays > 0) retval += '${duration.inDays}${MyStrings.days} ';
+  if (duration.inHours > 0) retval += '${duration.inHours}${MyStrings.hours} ';
+  if (duration.inMinutes > 0) retval += '${duration.inMinutes}${MyStrings.minutes} ';
+  if (duration.inSeconds > 0) retval += '${duration.inSeconds}${MyStrings.seconds}';
+  return retval;
+}
+
 class SimpleRichText extends StatelessWidget {
   final String title;
   final String value;

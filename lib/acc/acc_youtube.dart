@@ -1,19 +1,19 @@
 import 'package:creta00/acc/resizable.dart';
-import 'package:creta00/model/model_enums.dart';
+//mport 'package:creta00/model/model_enums.dart';
 import 'package:creta00/widgets/base_widget.dart';
-import 'package:uuid/uuid.dart';
+//import 'package:uuid/uuid.dart';
 
 import 'package:creta00/model/pages.dart';
 import 'package:flutter/material.dart';
 
-import '../common/buttons/basic_button.dart';
-import '../common/util/logger.dart';
-import '../common/util/my_utils.dart';
-import '../common/util/textfileds.dart';
-import '../constants/strings.dart';
-import '../constants/styles.dart';
-import '../model/contents.dart';
-import '../player/video/youtuve_player_widget.dart';
+//import '../common/buttons/basic_button.dart';
+//import '../common/util/logger.dart';
+//import '../common/util/my_utils.dart';
+//import '../common/util/textfileds.dart';
+//import '../constants/strings.dart';
+//import '../constants/styles.dart';
+//import '../model/contents.dart';
+//import '../player/video/youtuve_player_widget.dart';
 import 'acc_manager.dart';
 import 'acc.dart';
 
@@ -32,7 +32,7 @@ class ACCYoutube extends ACC {
     }
   }
 
-  bool _idInputVisible = true;
+  //bool _idInputVisible = true;
 
   @override
   Widget showOverlay(BuildContext context) {
@@ -64,22 +64,23 @@ class ACCYoutube extends ACC {
             child: Stack(
               children: [
                 buildAccChild(mouseMargin, realSize, marginSize),
-                _idInputVisible
-                    ? InputYoutubeWidget(
-                        acc: this,
-                        dx: resizeButtonSize,
-                        dy: resizeButtonSize,
-                        width: realSize.width - resizeButtonSize,
-                        height: realSize.height - resizeButtonSize,
-                        onOK: () {
-                          _idInputVisible = false;
-                          setState();
-                        },
-                        onCancel: () {
-                          _idInputVisible = false;
-                          setState();
-                        })
-                    : buildCustomPaint(isAccSelected, realSize, marginSize, hasDropZone: false),
+                // _idInputVisible
+                //     ? InputYoutubeWidget(
+                //         acc: this,
+                //         dx: resizeButtonSize,
+                //         dy: resizeButtonSize,
+                //         width: realSize.width - resizeButtonSize,
+                //         height: realSize.height - resizeButtonSize,
+                //         onOK: () {
+                //           _idInputVisible = false;
+                //           setState();
+                //         },
+                //         onCancel: () {
+                //           _idInputVisible = false;
+                //           setState();
+                //         })
+                //     :
+                buildCustomPaint(isAccSelected, realSize, marginSize, hasDropZone: false),
               ],
             ),
 
@@ -105,159 +106,159 @@ class ACCYoutube extends ACC {
   }
 }
 
-class InputYoutubeWidget extends StatefulWidget {
-  final ACC acc;
-  final double dx;
-  final double dy;
-  final double width;
-  final double height;
-  final void Function() onOK;
-  final void Function() onCancel;
+// class InputYoutubeWidget extends StatefulWidget {
+//   final ACC acc;
+//   final double dx;
+//   final double dy;
+//   final double width;
+//   final double height;
+//   final void Function() onOK;
+//   final void Function() onCancel;
 
-  const InputYoutubeWidget({
-    Key? key,
-    required this.acc,
-    required this.dx,
-    required this.dy,
-    required this.width,
-    required this.height,
-    required this.onOK,
-    required this.onCancel,
-  }) : super(key: key);
+//   const InputYoutubeWidget({
+//     Key? key,
+//     required this.acc,
+//     required this.dx,
+//     required this.dy,
+//     required this.width,
+//     required this.height,
+//     required this.onOK,
+//     required this.onCancel,
+//   }) : super(key: key);
 
-  @override
-  State<InputYoutubeWidget> createState() => _InputYoutubeWidgetState();
-}
+//   @override
+//   State<InputYoutubeWidget> createState() => _InputYoutubeWidgetState();
+// }
 
-class _InputYoutubeWidgetState extends State<InputYoutubeWidget> {
-  final TextEditingController _youtubeController = TextEditingController();
-  String errMsg = '';
+// class _InputYoutubeWidgetState extends State<InputYoutubeWidget> {
+//   final TextEditingController _youtubeController = TextEditingController();
+//   String errMsg = '';
 
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      left: widget.dx,
-      top: widget.dy,
-      height: widget.height,
-      width: widget.width,
-      child: glassMorphic(
-        radius: 10,
-        isGlass: true,
-        child: Material(
-          elevation: 2.0,
-          shadowColor: Colors.black,
-          type: MaterialType.card,
-          color: MyColors.primaryColor.withOpacity(.3),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 12),
-                  simpleTextField(
-                    controller: _youtubeController,
-                    hintText: MyStrings.inputYoutube,
-                    maxLine: 1,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    errMsg,
-                    style: MyTextStyles.error,
-                  ),
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    basicButton(
-                        name: MyStrings.apply,
-                        onPressed: () {
-                          String url = _youtubeController.text;
-                          if (url.isEmpty) {}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Positioned(
+//       left: widget.dx,
+//       top: widget.dy,
+//       height: widget.height,
+//       width: widget.width,
+//       child: glassMorphic(
+//         radius: 10,
+//         isGlass: true,
+//         child: Material(
+//           elevation: 2.0,
+//           shadowColor: Colors.black,
+//           type: MaterialType.card,
+//           color: MyColors.primaryColor.withOpacity(.3),
+//           child: Padding(
+//             padding: const EdgeInsets.all(12.0),
+//             child: Column(
+//                 mainAxisAlignment: MainAxisAlignment.start,
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   const SizedBox(height: 12),
+//                   simpleTextField(
+//                     controller: _youtubeController,
+//                     hintText: MyStrings.inputYoutube,
+//                     maxLine: 1,
+//                   ),
+//                   const SizedBox(height: 12),
+//                   Text(
+//                     errMsg,
+//                     style: MyTextStyles.error,
+//                   ),
+//                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+//                     basicButton(
+//                         name: MyStrings.apply,
+//                         onPressed: () {
+//                           String url = _youtubeController.text;
+//                           if (url.isEmpty) {}
 
-                          logHolder.log("url=$url", level: 6);
-                          String youtubeId = '';
-                          if (url.length == 11) {
-                            youtubeId = url;
-                          } else if (url.length > 11) {
-                            String pattern = r'watch\?v=';
-                            int pos = url.lastIndexOf(RegExp(pattern));
-                            if (pos < 1) {
-                              setState(() {
-                                errMsg = MyStrings.invalidAddress;
-                                logHolder.log(errMsg, level: 7);
-                              });
-                              return;
-                            }
-                            youtubeId = url.substring(
-                                pos + pattern.length - 1, pos + pattern.length - 1 + 11);
-                            logHolder.log('youtubeId=$youtubeId', level: 6);
-                          } else {
-                            setState(() {
-                              errMsg = MyStrings.invalidAddress;
-                              logHolder.log(errMsg, level: 7);
-                            });
-                            widget.onOK();
-                            return;
-                          }
-                          setState(() {
-                            ContentsModel model = ContentsModel(widget.acc.accModel.mid,
-                                name: youtubeId, mime: 'youtube/html', bytes: 0, url: youtubeId);
-                            model.remoteUrl = youtubeId;
-                            widget.acc.accModel.accType = ACCType.youtube;
-                            widget.acc.accChild.playManager.pushFromDropZone(widget.acc, model);
+//                           logHolder.log("url=$url", level: 6);
+//                           String youtubeId = '';
+//                           if (url.length == 11) {
+//                             youtubeId = url;
+//                           } else if (url.length > 11) {
+//                             String pattern = r'watch\?v=';
+//                             int pos = url.lastIndexOf(RegExp(pattern));
+//                             if (pos < 1) {
+//                               setState(() {
+//                                 errMsg = MyStrings.invalidAddress;
+//                                 logHolder.log(errMsg, level: 7);
+//                               });
+//                               return;
+//                             }
+//                             youtubeId = url.substring(
+//                                 pos + pattern.length - 1, pos + pattern.length - 1 + 11);
+//                             logHolder.log('youtubeId=$youtubeId', level: 6);
+//                           } else {
+//                             setState(() {
+//                               errMsg = MyStrings.invalidAddress;
+//                               logHolder.log(errMsg, level: 7);
+//                             });
+//                             widget.onOK();
+//                             return;
+//                           }
+//                           setState(() {
+//                             ContentsModel model = ContentsModel(widget.acc.accModel.mid,
+//                                 name: youtubeId, mime: 'youtube/html', bytes: 0, url: youtubeId);
+//                             model.remoteUrl = youtubeId;
+//                             widget.acc.accModel.accType = ACCType.youtube;
+//                             widget.acc.accChild.playManager.pushFromDropZone(widget.acc, model);
 
-                            widget.acc.accChild.invalidate();
-                          });
-                        },
-                        iconData: Icons.done_outlined),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    basicButton(
-                        name: MyStrings.cancel,
-                        onPressed: () {
-                          setState(() {
-                            if (widget.acc.accChild.playManager.isEmpty()) {
-                              widget.acc.accModel.isRemoved.set(true);
-                              //accManagerHolder!.setState();
-                            }
-                            widget.onCancel();
-                          });
-                        },
-                        iconData: Icons.close_outlined),
-                  ]),
-                ]),
-          ),
-        ),
-      ),
-      //),
-    );
-  }
+//                             widget.acc.accChild.invalidate();
+//                           });
+//                         },
+//                         iconData: Icons.done_outlined),
+//                     const SizedBox(
+//                       width: 5,
+//                     ),
+//                     basicButton(
+//                         name: MyStrings.cancel,
+//                         onPressed: () {
+//                           setState(() {
+//                             if (widget.acc.accChild.playManager.isEmpty()) {
+//                               widget.acc.accModel.isRemoved.set(true);
+//                               //accManagerHolder!.setState();
+//                             }
+//                             widget.onCancel();
+//                           });
+//                         },
+//                         iconData: Icons.close_outlined),
+//                   ]),
+//                 ]),
+//           ),
+//         ),
+//       ),
+//       //),
+//     );
+//   }
 
-  Widget displayYoutube(
-    ACC acc,
-    ContentsModel model,
-  ) {
-    YoutubePlayerWidget aWidget = YoutubePlayerWidget(
-      onInitialPlay: ((metadata) {
-        if (metadata.title.isNotEmpty) {
-          model.name = metadata.title;
-          double millisec = metadata.duration.inDays * 24 * 60 * 60 * 1000.0 +
-              metadata.duration.inHours * 60 * 60 * 1000.0 +
-              metadata.duration.inMinutes * 60 * 1000.0 +
-              metadata.duration.inSeconds * 1000.0 +
-              metadata.duration.inMilliseconds;
-          model.videoPlayTime.set(millisec);
-        }
-        if (metadata.videoId.isNotEmpty) {
-          model.remoteUrl = metadata.videoId;
-        }
-      }),
-      onAfterEvent: () {},
-      globalKey: GlobalObjectKey<YoutubePlayerWidgetState>(const Uuid().v4()),
-      model: model,
-      acc: acc,
-      autoStart: false, // (_currentIndex < 0) ? true : false,
-    );
-    aWidget.init();
-    return aWidget;
-  }
-}
+//   Widget displayYoutube(
+//     ACC acc,
+//     ContentsModel model,
+//   ) {
+//     YoutubePlayerWidget aWidget = YoutubePlayerWidget(
+//       onInitialPlay: ((metadata) {
+//         if (metadata.title.isNotEmpty) {
+//           model.name = metadata.title;
+//           double millisec = metadata.duration.inDays * 24 * 60 * 60 * 1000.0 +
+//               metadata.duration.inHours * 60 * 60 * 1000.0 +
+//               metadata.duration.inMinutes * 60 * 1000.0 +
+//               metadata.duration.inSeconds * 1000.0 +
+//               metadata.duration.inMilliseconds;
+//           model.videoPlayTime.set(millisec);
+//         }
+//         if (metadata.videoId.isNotEmpty) {
+//           model.remoteUrl = metadata.videoId;
+//         }
+//       }),
+//       onAfterEvent: () {},
+//       globalKey: GlobalObjectKey<YoutubePlayerWidgetState>(const Uuid().v4()),
+//       model: model,
+//       acc: acc,
+//       autoStart: false, // (_currentIndex < 0) ? true : false,
+//     );
+//     aWidget.init();
+//     return aWidget;
+//   }
+//}

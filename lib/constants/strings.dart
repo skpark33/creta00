@@ -146,6 +146,7 @@ class MyStrings {
   static String seconds = Locale.isKr() ? '초' : "seconds";
   static String minutes = Locale.isKr() ? '분' : "minutes";
   static String hours = Locale.isKr() ? '시' : "hours  ";
+  static String days = Locale.isKr() ? '일' : "hours  ";
   static String forever = Locale.isKr() ? '영구히' : "forever";
   static String playTime = Locale.isKr() ? '플레이 타임 설정' : "playTime";
   static String fitToContents = Locale.isKr() ? '콘텐츠 비율에 맞춤' : "Fit to contents ratio";

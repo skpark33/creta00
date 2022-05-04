@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'package:provider/provider.dart';
+import 'package:sortedmap/sortedmap.dart';
 
 import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/acc/youtube_app.dart';
@@ -21,19 +22,24 @@ import '../model/model_enums.dart';
 import 'acc.dart';
 
 // ignore: constant_identifier_names
-const double WIDTH = 16 * 32;
+const double youtubeCardWidth = 16 * 32;
 // ignore:  constant_identifier_names
-const double HEIGHT = 9 * 32;
+const double youtubeCardHeight = 9 * 32;
+
+const double youtubeGridCardWidth = 16 * 20;
+// ignore:  constant_identifier_names
+const double youtubeGridCardHeight = 9 * 20;
+
+const int maxCard = 48;
+
+YoutubeInfo currentYoutubeInfo = YoutubeInfo();
+YoutubeId currentVideoId = YoutubeId();
 
 class YoutubeId extends ChangeNotifier {
-  String youtubeId = '';
+  String value = '';
   void set(String id) {
-    youtubeId = id;
+    value = id;
     notifyListeners();
-  }
-
-  void clear() {
-    youtubeId = '';
   }
 }
 
@@ -43,6 +49,8 @@ class YoutubeInfo extends ChangeNotifier {
   Duration duration = Duration.zero;
   String videoId = '';
   String errMsg = '';
+  String thumbnail = '';
+  bool isRemoved = false;
 
   void clear() {
     errMsg = '';
@@ -50,15 +58,34 @@ class YoutubeInfo extends ChangeNotifier {
     author = '';
     duration = Duration.zero;
     videoId = '';
+    thumbnail = '';
+    isRemoved = false;
     notifyListeners();
   }
 
-  void set(YoutubeMetaData metadata) {
+  void set(YoutubeMetaData metadata, String pthumbnail) {
     title = metadata.title;
     videoId = metadata.videoId;
     author = metadata.author;
     duration = metadata.duration;
+    thumbnail = pthumbnail;
+  }
+
+  void notify() {
     notifyListeners();
+  }
+
+  void copyFrom(YoutubeInfo that) {
+    title = that.title;
+    videoId = that.videoId;
+    author = that.author;
+    duration = that.duration;
+    thumbnail = that.thumbnail;
+    isRemoved = that.isRemoved;
+  }
+
+  YoutubeInfo copyTo() {
+    return YoutubeInfo()..copyFrom(this);
   }
 }
 
@@ -69,6 +96,7 @@ class YoutubeDialog {
   bool _visible = false;
   bool get visible => _visible;
   OverlayEntry? entry;
+  SortedMap<int, YoutubeInfo> orderMap = SortedMap<int, YoutubeInfo>();
 
   void setState() {
     logHolder.log("YoutubeSelector::setState()", level: 6);
@@ -113,6 +141,7 @@ class YoutubeDialog {
   Widget showOverlay(BuildContext context) {
     return YoutubeSelector(
       acc: acc,
+      orderMap: orderMap,
       onCancel: () {
         if (acc.accChild.playManager.isEmpty()) {
           acc.accModel.isRemoved.set(true);
@@ -120,10 +149,13 @@ class YoutubeDialog {
         }
         unshow(context);
       },
-      onOK: (youtubeId) {
+      onOK: (currentYoutubeInfo) {
         ContentsModel model = ContentsModel(acc.accModel.mid,
-            name: youtubeId, mime: 'youtube/html', bytes: 0, url: youtubeId);
-        model.remoteUrl = youtubeId;
+            name: currentYoutubeInfo.title,
+            mime: 'youtube/html',
+            bytes: 0,
+            url: currentYoutubeInfo.videoId);
+        model.remoteUrl = currentYoutubeInfo.videoId;
         acc.accModel.accType = ACCType.youtube;
         acc.accChild.playManager.pushFromDropZone(acc, model);
         acc.accChild.invalidate();
@@ -134,11 +166,17 @@ class YoutubeDialog {
 
 class YoutubeSelector extends StatefulWidget {
   // ignore: prefer_const_constructors_in_immutables
-  YoutubeSelector({Key? key, required this.acc, required this.onOK, required this.onCancel})
+  YoutubeSelector(
+      {Key? key,
+      required this.acc,
+      required this.orderMap,
+      required this.onOK,
+      required this.onCancel})
       : super(key: key);
 
   final ACC acc;
-  final void Function(String youtubeId) onOK;
+  final SortedMap<int, YoutubeInfo> orderMap;
+  final void Function(YoutubeInfo currentYoutubeInfo) onOK;
   final void Function() onCancel;
 
   @override
@@ -148,11 +186,8 @@ class YoutubeSelector extends StatefulWidget {
 class _YoutubeSelectorState extends State<YoutubeSelector> {
   List<String> playList = [];
 
-  YoutubeInfo info = YoutubeInfo();
-  YoutubeId youtubeId = YoutubeId();
-
   void clear() {
-    info.clear();
+    currentYoutubeInfo.clear();
     //videoIdController.text = '';
   }
 
@@ -168,13 +203,15 @@ class _YoutubeSelectorState extends State<YoutubeSelector> {
     double posX = (screenSize.width - size.width) / 2;
     double posY = (screenSize.height - size.height) / 2 + 30;
 
+    double cardHeight = size.height - youtubeCardHeight - 38 - 20 - 94;
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
-          value: info,
+          value: currentYoutubeInfo,
         ),
         ChangeNotifierProvider.value(
-          value: youtubeId,
+          value: currentVideoId,
         ),
       ],
       child: Positioned(
@@ -191,55 +228,34 @@ class _YoutubeSelectorState extends State<YoutubeSelector> {
               type: MaterialType.card,
               color: MyColors.primaryColor.withOpacity(.3),
               child: Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: const EdgeInsets.all(18.0),
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Row(
-                        //   children: [
-                        //     SizedBox(
-                        //       //height: 50,
-                        //       width: size.width - 172,
-                        //       child: simpleTextField(
-                        //         controller: videoIdController,
-                        //         hintText: MyStrings.inputYoutube,
-                        //         maxLine: 1,
-                        //       ),
-                        //     ),
-                        //     const SizedBox(width: 20),
-                        //     basicButton(
-                        //       height: 38,
-                        //       name: MyStrings.add,
-                        //       iconData: Icons.add,
-                        //       onPressed: () {
-                        //         youtubeId = getYoutubeId();
-                        //         if (youtubeId.isNotEmpty) {
-                        //           playList.add(youtubeId);
-                        //           widget.isGetTitleSucced = false;
-                        //           clear();
-                        //           if (videoIdController.text.isNotEmpty) {
-                        //             videoIdController.clear();
-                        //             setState(() {});
-                        //           }
-                        //         } else {
-                        //           setState(() {});
-                        //         }
-                        //       },
-                        //     ),
-                        //   ],
-                        // ),
-                        //Consumer<YoutubeInfo>(builder: (context, youtubeInfo, child) {
-                        //return genMessage(youtubeInfo);
-                        InputYoutubeId(
-                            youtubeId: youtubeId, info: info, size: size, playList: playList),
-                        YoutubeCard(info: info, playList: playList),
-
+                        Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: InputYoutubeId(size: size, playList: playList),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 6.0),
+                          child: MainCard(
+                            playList: playList,
+                            orderMap: widget.orderMap,
+                          ),
+                        ),
+                        Container(
+                          width: size.width,
+                          height: cardHeight,
+                          padding: const EdgeInsets.only(top: 10),
+                          child: ThumbnailSwipList(
+                              orderMap: widget.orderMap, width: (cardHeight - 20) * (16 / 9)),
+                        ),
                         Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                           basicButton(
                               name: MyStrings.apply,
                               onPressed: () {
-                                widget.onOK(youtubeId.youtubeId);
+                                widget.onOK(currentYoutubeInfo);
                               },
                               iconData: Icons.done_outlined),
                           const SizedBox(
@@ -263,19 +279,164 @@ class _YoutubeSelectorState extends State<YoutubeSelector> {
   }
 }
 
+class ThumbnailSwipList extends StatefulWidget {
+  final SortedMap<int, YoutubeInfo> orderMap;
+  final double width;
+
+  const ThumbnailSwipList({Key? key, required this.orderMap, required this.width})
+      : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return ThumbnailSwipListState();
+  }
+}
+
+class ThumbnailSwipListState extends State<ThumbnailSwipList> {
+  final ScrollController _scrollController = ScrollController(initialScrollOffset: 0.0);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<YoutubeInfo>(builder: (context, youtubeInfo, child) {
+      int idx = 0;
+      return Scrollbar(
+          isAlwaysShown: true,
+          controller: _scrollController,
+          thickness: 20,
+          child: ReorderableListView(
+            scrollDirection: Axis.horizontal,
+            buildDefaultDragHandles: false,
+            scrollController: _scrollController,
+            children: getList(++idx),
+            onReorder: (oldIndex, newIndex) => setState(() {
+              logHolder.log('old=$oldIndex,new=$newIndex', level: 6);
+
+              //final index = newIndex > oldIndex ? newIndex - 1 : newIndex;
+              YoutubeInfo tmp = YoutubeInfo()..copyFrom(widget.orderMap[newIndex]!);
+              widget.orderMap[newIndex]!.copyFrom(widget.orderMap[oldIndex]!);
+              widget.orderMap[oldIndex]!.copyFrom(tmp);
+            }),
+          ));
+    });
+  }
+
+  List<Widget> getList(int idx) {
+    List<Widget> retval = [];
+    for (YoutubeInfo info in widget.orderMap.values) {
+      if (info.isRemoved) continue;
+      retval.add(eachCard(idx, info));
+    }
+    return retval;
+  }
+
+  int getValidCount() {
+    int count = 0;
+    for (YoutubeInfo info in widget.orderMap.values) {
+      if (info.isRemoved) continue;
+      count++;
+    }
+    return count;
+  }
+
+  Widget eachCard(int pageIndex, YoutubeInfo info) {
+    logHolder.log('eachCard($pageIndex)');
+
+    return ReorderableDragStartListener(
+      key: ValueKey(info.videoId),
+      index: pageIndex,
+      child: GestureDetector(
+        //key: ValueKey(info.videoId),
+        onTapDown: (details) {
+          setState(() {
+            logHolder.log('selected = $info.videoId');
+            currentVideoId.set(info.videoId);
+            currentYoutubeInfo.copyFrom(info);
+            currentYoutubeInfo.notify();
+          });
+        },
+        child: Card(
+          color: MyColors.secondaryCompl,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(
+                width: 2.0,
+                color: info.videoId == currentVideoId.value
+                    ? MyColors.mainColor
+                    : MyColors.pageSmallBorderCompl),
+            borderRadius: const BorderRadius.all(Radius.circular(8)),
+          ),
+          child: Container(
+            width: widget.width,
+            padding: const EdgeInsets.all(8),
+            child: Stack(
+              alignment: AlignmentDirectional.bottomEnd,
+              children: [
+                DecoratedBox(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(info.thumbnail),
+                        fit: BoxFit.fitWidth,
+                      ),
+                    ),
+                    child: Container()),
+                Container(
+                  color: Colors.white.withOpacity(0.5),
+                  child: Center(
+                    child: Text(
+                      info.title,
+                      textAlign: TextAlign.center,
+                      maxLines: 3,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  // 삭제 버튼
+                  iconSize: MySizes.smallIcon,
+                  onPressed: () {
+                    info.isRemoved = true;
+                    if (getValidCount() == 0) {
+                      currentVideoId.set('');
+                      currentYoutubeInfo.clear();
+                    } else {
+                      if (info.videoId == currentVideoId.value) {
+                        for (YoutubeInfo info in widget.orderMap.values) {
+                          if (info.isRemoved == false) {
+                            currentVideoId.set(info.videoId);
+                            currentYoutubeInfo.copyFrom(info);
+                            currentYoutubeInfo.notify();
+                          }
+                        }
+                      } else {
+                        setState(() {});
+                      }
+                    }
+                  },
+                  icon: const Icon(Icons.delete_outline),
+                  color: MyColors.icon,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class InputYoutubeId extends StatefulWidget {
   const InputYoutubeId({
     Key? key,
-    required this.youtubeId,
     required this.size,
     required this.playList,
-    required this.info,
   }) : super(key: key);
 
   final Size size;
   final List<String> playList;
-  final YoutubeInfo info;
-  final YoutubeId youtubeId;
 
   @override
   State<InputYoutubeId> createState() => _InputYoutubeIdState();
@@ -295,11 +456,11 @@ class _InputYoutubeIdState extends State<InputYoutubeId> {
             onPressed: () {
               Clipboard.getData(Clipboard.kTextPlain).then((value) {
                 if (value != null && value.text != null) {
-                  widget.info.clear();
+                  currentYoutubeInfo.clear();
                   videoIdController.text = value.text!;
-                  String id = getYoutubeId(widget.info);
+                  String id = getYoutubeId(currentYoutubeInfo);
                   if (id.isNotEmpty) {
-                    widget.youtubeId.set(id);
+                    currentVideoId.set(id);
                     widget.playList.add(id);
                     if (videoIdController.text.isNotEmpty) {
                       //videoIdController.clear();
@@ -326,10 +487,7 @@ class _InputYoutubeIdState extends State<InputYoutubeId> {
           ),
         ],
       ),
-      Container(
-          height: 36,
-          alignment: AlignmentDirectional.centerStart,
-          child: genMessage(widget.youtubeId, widget.info)),
+      Container(height: 36, alignment: AlignmentDirectional.centerStart, child: genMessage()),
     ]);
   }
 
@@ -341,7 +499,7 @@ class _InputYoutubeIdState extends State<InputYoutubeId> {
     }
     logHolder.log("url=$url", level: 6);
     if (url.length == 11) {
-      logHolder.log("youtubeId=$url", level: 6);
+      logHolder.log("currentYoutubeInfo.videoId=$url", level: 6);
       return url;
     }
     if (url.length > 11) {
@@ -352,70 +510,75 @@ class _InputYoutubeIdState extends State<InputYoutubeId> {
         logHolder.log(info.errMsg, level: 7);
         return '';
       }
-      String youtubeId = url.substring(pos + pattern.length - 1, pos + pattern.length - 1 + 11);
-      logHolder.log('youtubeId=$youtubeId', level: 6);
-      return youtubeId;
+      String videoId = url.substring(pos + pattern.length - 1, pos + pattern.length - 1 + 11);
+      logHolder.log('videoId=$videoId', level: 6);
+      return videoId;
     }
     info.errMsg = MyStrings.invalidAddress;
     logHolder.log(info.errMsg, level: 7);
     return '';
   }
 
-  Widget genMessage(YoutubeId youtubeId, YoutubeInfo info) {
-    if (info.errMsg.isEmpty) {
-      if (youtubeId.youtubeId.isNotEmpty && info.title.isEmpty) {
+  Widget genMessage() {
+    if (currentYoutubeInfo.errMsg.isEmpty) {
+      if (currentVideoId.value.isNotEmpty && currentYoutubeInfo.title.isEmpty) {
         return Text(
           MyStrings.pressYoutubeButton,
-          style: MyTextStyles.info,
+          style: MyTextStyles.info.copyWith(color: MyColors.mainColor),
         );
       }
       return const SizedBox(height: 25);
     }
     return Text(
-      info.errMsg,
+      currentYoutubeInfo.errMsg,
       style: MyTextStyles.error,
     );
   }
 }
 
-class YoutubeCard extends StatefulWidget {
-  const YoutubeCard({
+class MainCard extends StatefulWidget {
+  const MainCard({
     Key? key,
-    required this.info,
     required this.playList,
+    required this.orderMap,
   }) : super(key: key);
 
-  final YoutubeInfo info;
   final List<String> playList;
+  final SortedMap<int, YoutubeInfo> orderMap;
 
   @override
-  State<YoutubeCard> createState() => _YoutubeCardState();
+  State<MainCard> createState() => _MainCardState();
 }
 
-class _YoutubeCardState extends State<YoutubeCard> {
+class _MainCardState extends State<MainCard> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<YoutubeId>(builder: (context, youtubeId, child) {
+    return Consumer<YoutubeId>(builder: (context, videoId, child) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          youtubeId.youtubeId.isNotEmpty
+          currentVideoId.value.isNotEmpty
               ? YoutubeApp(
                   key: ValueKey(const Uuid().v4()),
-                  videoId: youtubeId.youtubeId,
+                  videoId: currentVideoId.value,
                   playList: widget.playList,
-                  width: WIDTH,
-                  height: HEIGHT,
-                  isTest: widget.info.title.isEmpty,
-                  onInitialPlay: (metadata) {
+                  width: youtubeCardWidth,
+                  height: youtubeCardHeight,
+                  isTest: currentYoutubeInfo.title.isEmpty,
+                  onInitialPlay: (metadata, thumbnail) {
                     logHolder.log('title=${metadata.title}', level: 6);
                     if (metadata.title.isNotEmpty) {
-                      widget.info.set(metadata);
+                      currentYoutubeInfo.set(metadata, thumbnail);
+                      widget.orderMap[getLastOrder()] = currentYoutubeInfo.copyTo();
+                      currentYoutubeInfo.notify();
                     }
                   },
                 )
-              : Container(height: HEIGHT, width: WIDTH, color: Colors.white.withOpacity(0.5)),
+              : Container(
+                  height: youtubeCardHeight,
+                  width: youtubeCardWidth,
+                  color: Colors.white.withOpacity(0.5)),
           const SizedBox(width: 10),
           Consumer<YoutubeInfo>(builder: (context, youtubeInfo, child) {
             return Column(
@@ -425,35 +588,43 @@ class _YoutubeCardState extends State<YoutubeCard> {
                   SimpleRichText(
                     'Title',
                     youtubeInfo.title,
-                    230,
+                    224,
                     titleStyle: MyTextStyles.body1.copyWith(fontSize: 18),
-                    valueStyle: MyTextStyles.error.copyWith(fontSize: 18),
+                    valueStyle:
+                        MyTextStyles.body1.copyWith(fontSize: 18, color: MyColors.mainColor),
                   ),
                   SimpleRichText(
                     'Author',
                     youtubeInfo.author,
-                    230,
+                    224,
                     titleStyle: MyTextStyles.body1.copyWith(fontSize: 18),
-                    valueStyle: MyTextStyles.error.copyWith(fontSize: 18),
+                    valueStyle:
+                        MyTextStyles.body1.copyWith(fontSize: 18, color: MyColors.mainColor),
                   ),
                   SimpleRichText(
                     'Video Id',
                     youtubeInfo.videoId,
-                    230,
+                    224,
                     titleStyle: MyTextStyles.body1.copyWith(fontSize: 18),
-                    valueStyle: MyTextStyles.error.copyWith(fontSize: 18),
+                    valueStyle:
+                        MyTextStyles.body1.copyWith(fontSize: 18, color: MyColors.mainColor),
                   ),
                   SimpleRichText(
                     'PlayTime',
                     youtubeInfo.duration.toString(),
-                    230,
+                    224,
                     titleStyle: MyTextStyles.body1.copyWith(fontSize: 18),
-                    valueStyle: MyTextStyles.error.copyWith(fontSize: 18),
+                    valueStyle:
+                        MyTextStyles.body1.copyWith(fontSize: 18, color: MyColors.mainColor),
                   ),
                 ]);
           }),
         ],
       );
     });
+  }
+
+  int getLastOrder() {
+    return widget.orderMap.isNotEmpty ? widget.orderMap.keys.last + 1 : 0;
   }
 }

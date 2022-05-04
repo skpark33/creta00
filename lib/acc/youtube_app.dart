@@ -10,7 +10,7 @@ import '../common/util/logger.dart';
 
 // ignore: must_be_immutable
 class YoutubeApp extends StatefulWidget {
-  final void Function(YoutubeMetaData metadata) onInitialPlay;
+  final void Function(YoutubeMetaData metadata, String thumbnail) onInitialPlay;
   final double width;
   final double height;
   final bool isTest;
@@ -127,7 +127,13 @@ class _YoutubeAppState extends State<YoutubeApp> {
               key: ValueKey(const Uuid().v4()),
               buildWhen: (o, n) => (o.metaData.title != n.metaData.title),
               builder: (context, value) {
-                widget.onInitialPlay.call(value.metaData);
+                String thumbnail = YoutubePlayerController.getThumbnail(
+                  //videoId: _controller.params.playlist.first,
+                  videoId: value.metaData.videoId,
+                  quality: ThumbnailQuality.medium,
+                );
+
+                widget.onInitialPlay.call(value.metaData, thumbnail);
                 return Container(); // 화면에는 아무 표시도 하지 않는다.
               })
           : Container(),
@@ -143,7 +149,7 @@ class YoutubeSimpleApp extends YoutubeApp {
     required List<String> playList,
     required double width,
     required double height,
-    required void Function(YoutubeMetaData metadata) onInitialPlay,
+    required void Function(YoutubeMetaData metadata, String thumbnail) onInitialPlay,
   }) : super(
             key: key,
             videoId: videoId,

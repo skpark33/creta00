@@ -17,6 +17,8 @@ import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/acc/acc.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 
+import '../../model/model_enums.dart';
+
 class MenuModel {
   //complex drawer menu
   final IconData icon;
@@ -423,8 +425,7 @@ class MyMenuStickState extends State<MyMenuStick> {
   void youtubePressed() {
     logHolder.log('youtube Pressed....', level: 6);
     ACC acc = accManagerHolder!
-        //.createACC(context, pageManagerHolder!.getSelected()!, accType: ACCType.youtube);
-        .createACC(context, pageManagerHolder!.getSelected()!);
+        .createACC(context, pageManagerHolder!.getSelected()!, accType: ACCType.youtube);
     YoutubeDialog dialog = YoutubeDialog(acc);
     dialog.show(context);
   }
