@@ -387,7 +387,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                       top: 10,
                       left: 10,
                       child: Text(
-                        "ver 0.097",
+                        "ver 0.098",
                         style: MyTextStyles.body1.copyWith(color: Colors.white),
                       )),
                 ],
