@@ -53,6 +53,8 @@ abstract class AbsPlayWidget extends StatefulWidget {
   Future<void> mute() async {}
   Future<void> setSound(double val) async {}
   Future<void> close() async {}
+  Future<void> next() async {}
+  Future<void> prev() async {}
 
   void invalidate() async {}
   bool isInit() {

@@ -155,7 +155,7 @@ class ACCProperty extends AbsModel {
   @override
   void deserialize(Map<String, dynamic> map) {
     super.deserialize(map);
-    accType = intToAccType(map["accType"] ?? ACCType.normal);
+    accType = intToAccType(map["accType"] ?? 0);
     animeType.set(intToAnimeType(map["animeType"]), save: false);
 
     //visible.set(map["visible"], save: false);

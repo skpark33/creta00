@@ -28,10 +28,8 @@ import '../../model/model_enums.dart';
 
 // ignore: must_be_immutable
 class YoutubePlayerWidget extends AbsPlayWidget {
-  final void Function(YoutubeMetaData metadata) onInitialPlay;
   final GlobalObjectKey<YoutubePlayerWidgetState> globalKey;
-
-  List<String> playList = [];
+  final List<String> playList;
   // 'QMhVtPmPAW8',
   // 'uBY1AoiF5Vo',
   // 'puUxEKMub2g',
@@ -47,8 +45,8 @@ class YoutubePlayerWidget extends AbsPlayWidget {
 
   YoutubePlayerWidget({
     Key? key,
-    required this.onInitialPlay,
     required this.globalKey,
+    required this.playList,
     required void Function() onAfterEvent,
     required ContentsModel model,
     required ACC acc,
@@ -64,7 +62,7 @@ class YoutubePlayerWidget extends AbsPlayWidget {
       logHolder.log("YoutubePlayerWidget(url=${model.remoteUrl!})", level: 6);
     }
     videoId = model.remoteUrl ?? model.url;
-    playList.add(videoId);
+    //playList.add(videoId);
   }
 
   late YoutubePlayerController wcontroller;
@@ -77,15 +75,15 @@ class YoutubePlayerWidget extends AbsPlayWidget {
       initialVideoId: videoId,
       params: YoutubePlayerParams(
         loop: true,
+        mute: true,
         playlist: playList,
         autoPlay: true,
-        //startAt: const Duration(minutes: 1, seconds: 36),
         showControls: true,
-        showFullscreenButton: true,
-        desktopMode: false,
-        privacyEnhanced: true,
-        useHybridComposition: true,
-        strictRelatedVideos: true,
+        showFullscreenButton: false,
+        desktopMode: true,
+        privacyEnhanced: false,
+        useHybridComposition: false,
+        strictRelatedVideos: false,
       ),
     );
     wcontroller.onEnterFullscreen = () {
@@ -98,7 +96,7 @@ class YoutubePlayerWidget extends AbsPlayWidget {
     wcontroller.onExitFullscreen = () {
       log('Exited Fullscreen');
     };
-    getThumbnail();
+    //getThumbnail();
     isReady = true;
   }
 
@@ -139,9 +137,9 @@ class YoutubePlayerWidget extends AbsPlayWidget {
   @override
   Future<void> mute() async {
     if (model!.mute.value) {
-      wcontroller.setVolume(1);
+      wcontroller.mute();
     } else {
-      wcontroller.setVolume(0);
+      wcontroller.unMute();
     }
     model!.mute.set(!model!.mute.value);
   }
@@ -162,6 +160,18 @@ class YoutubePlayerWidget extends AbsPlayWidget {
 
       logHolder.log("youtube thumbnail= ${model!.thumbnail!}", level: 6);
     }
+  }
+
+  @override
+  Future<void> next() async {
+    logHolder.log('YoutubePlayerWidget.next()', level: 6);
+    wcontroller.nextVideo();
+  }
+
+  @override
+  Future<void> prev() async {
+    logHolder.log('YoutubePlayerWidget.prev()', level: 6);
+    wcontroller.previousVideo();
   }
 
   @override
@@ -212,13 +222,14 @@ class YoutubePlayerWidgetState extends State<YoutubePlayerWidget> {
 
   Future<bool> waitInit() async {
     //bool isReady = widget.wcontroller.value.isReady;
-    while (!widget.isReady && widget.model!.thumbnail == null) {
+    while (!widget.isReady) {
       await Future.delayed(const Duration(milliseconds: 100));
     }
     if (widget.autoStart) {
       logHolder.log('initState play--${widget.model!.name}---------------', level: 6);
       await widget.play();
     }
+    logHolder.log('waitInit()', level: 6);
     return true;
   }
 
@@ -229,7 +240,7 @@ class YoutubePlayerWidgetState extends State<YoutubePlayerWidget> {
       controller: widget.wcontroller,
     );
     print('player initialized aspectRatio=${player!.aspectRatio}');
-    widget.getThumbnail();
+    //widget.getThumbnail();
 
     Size outSize = widget.getOuterSize(player!.aspectRatio);
     if (bookManagerHolder!.isSilent()) {
@@ -267,12 +278,19 @@ class YoutubePlayerWidgetState extends State<YoutubePlayerWidget> {
       YoutubeValueBuilder(
           buildWhen: (o, n) => (o.metaData != n.metaData),
           builder: (context, value) {
-            widget.onInitialPlay.call(value.metaData);
+            //widget.onInitialPlay.call(value.metaData);
             return Container(); // 화면에는 아무 표시도 하지 않는다.
           })
       //)
     ]);
   }
+
+  // Widget show(Size outSize) {
+  //   return widget.getClipRect(
+  //     outSize,
+  //     player!,
+  //   );
+  // }
 
   Widget getThumbnail() {
     return Material(

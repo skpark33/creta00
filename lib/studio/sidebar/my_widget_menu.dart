@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:creta00/acc/youtube_dialog.dart';
 import 'package:creta00/common/icon/zocial_icons.dart';
+//import 'package:creta00/common/undo/undo.dart';
 import 'package:creta00/model/contents.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,10 @@ import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/acc/acc.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 
+import '../../book_manager.dart';
 import '../../model/model_enums.dart';
+
+YoutubeDialog? youtubeDialog;
 
 class MenuModel {
   //complex drawer menu
@@ -424,9 +428,40 @@ class MyMenuStickState extends State<MyMenuStick> {
 
   void youtubePressed() {
     logHolder.log('youtube Pressed....', level: 6);
-    ACC acc = accManagerHolder!
-        .createACC(context, pageManagerHolder!.getSelected()!, accType: ACCType.youtube);
-    YoutubeDialog dialog = YoutubeDialog(acc);
-    dialog.show(context);
+
+    youtubeDialog ??= YoutubeDialog(
+      onCancel: () {
+        // if (acc.accChild.playManager.isEmpty()) {
+        //   acc.accModel.isRemoved.set(true);
+        //   accManagerHolder!.setState();
+        // }
+      },
+      onOK: (currentYoutubeInfo, playList) async {
+        ACC acc = accManagerHolder!
+            .createACC(context, pageManagerHolder!.getSelected()!, accType: ACCType.youtube);
+
+        ContentsModel model = ContentsModel(acc.accModel.mid,
+            name: currentYoutubeInfo.title,
+            mime: 'youtube/html',
+            bytes: 0,
+            url: currentYoutubeInfo.videoId);
+        model.subList.set(playList.toString());
+
+        logHolder.log("PlayList=${playList.toString()}", level: 6);
+        logHolder.log("thumbnail=${currentYoutubeInfo.thumbnail}", level: 6);
+
+        model.remoteUrl = currentYoutubeInfo.videoId;
+        model.thumbnail = currentYoutubeInfo.thumbnail;
+        model.videoPlayTime.set(durationToMillisec(currentYoutubeInfo.duration));
+
+        acc.accModel.accType = ACCType.youtube;
+        await acc.accChild.playManager.pushFromDropZone(acc, model);
+        acc.accChild.invalidate();
+
+        bookManagerHolder!
+            .setBookThumbnail(model.thumbnail!, ContentsType.image, model.aspectRatio.value);
+      },
+    );
+    youtubeDialog!.show(context);
   }
 }

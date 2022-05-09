@@ -18,6 +18,7 @@ class ContentsModel extends AbsModel {
   ContentsType contentsType = ContentsType.free;
   String lastModifiedTime = "";
 
+  late UndoAble<String> subList;
   late UndoAble<double> playTime; // 1000 분의 1초 milliseconds
   late UndoAble<double> videoPlayTime; // 1000 분의 1초 milliseconds
   late UndoAble<bool> mute;
@@ -30,6 +31,7 @@ class ContentsModel extends AbsModel {
       : super(type: ModelType.contents, parent: accId) {
     genType();
 
+    subList = UndoAble<String>('', mid); // 1000 분의 1초 milliseconds
     playTime = UndoAble<double>(5000, mid); // 1000 분의 1초 milliseconds
     videoPlayTime = UndoAble<double>(5000, mid); // 1000 분의 1초 milliseconds
     mute = UndoAble<bool>(false, mid);
@@ -44,6 +46,7 @@ class ContentsModel extends AbsModel {
       {required this.name, required this.mime, required this.bytes, required this.url, this.file})
       : super(parent: parentId, type: src.type) {
     super.copy(src, parentId);
+    subList = UndoAble<String>(src.subList.value, mid); // 1000 분의 1초 milliseconds
     playTime = UndoAble<double>(src.playTime.value, mid); // 1000 분의 1초 milliseconds
     videoPlayTime = UndoAble<double>(src.videoPlayTime.value, mid); // 1000 분의 1초 milliseconds
     mute = UndoAble<bool>(src.mute.value, mid);
@@ -60,6 +63,7 @@ class ContentsModel extends AbsModel {
   ContentsModel.createEmptyModel(String srcMid, String pMid)
       : super(type: ModelType.contents, parent: pMid) {
     super.changeMid(srcMid);
+    subList = UndoAble<String>('', srcMid); // 1000 분의 1초 milliseconds
     playTime = UndoAble<double>(5000, srcMid); // 1000 분의 1초 milliseconds
     videoPlayTime = UndoAble<double>(5000, srcMid); // 1000 분의 1초 milliseconds
     mute = UndoAble<bool>(false, srcMid);
@@ -107,6 +111,7 @@ class ContentsModel extends AbsModel {
     url = ""; // url 의 desialize 하지 않는다.  즉 DB 로 부터 가져오지 않는다.
     mime = map["mime"];
 
+    subList.set(map["subList"] ?? '', save: false);
     playTime.set(map["playTime"], save: false);
     videoPlayTime.set(map["videoPlayTime"], save: false);
     mute.set(map["mute"], save: false);
@@ -128,6 +133,7 @@ class ContentsModel extends AbsModel {
         "bytes": bytes,
         "url": url,
         "mime": mime,
+        "subList": subList.value,
         "playTime": playTime.value,
         "videoPlayTime": videoPlayTime.value,
         "mute": mute.value,

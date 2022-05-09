@@ -20,6 +20,7 @@ import '../model/users.dart';
 import 'artboard/artboard_frame.dart';
 import 'pages/pages_frame.dart';
 import 'properties/properties_frame.dart';
+import 'sidebar/my_widget_menu.dart';
 import 'sidebar/sidebar.dart';
 
 // ignore: must_be_immutable
@@ -220,6 +221,9 @@ class StudioSubScreenState extends State<StudioSubScreen> {
     //   accManagerHolder!.unshowMenu(context);
     //   accManagerHolder!.destroyEntry(context);
     // }
+    if (youtubeDialog != null) {
+      youtubeDialog!.closeDialog(context);
+    }
     naviPop(context);
     cretaMainHolder!.invalidate();
   }

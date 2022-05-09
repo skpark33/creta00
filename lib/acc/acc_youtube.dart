@@ -1,4 +1,5 @@
 import 'package:creta00/acc/resizable.dart';
+import 'package:creta00/common/util/logger.dart';
 //mport 'package:creta00/model/model_enums.dart';
 import 'package:creta00/widgets/base_widget.dart';
 //import 'package:uuid/uuid.dart';
@@ -14,6 +15,8 @@ import 'package:flutter/material.dart';
 //import '../constants/styles.dart';
 //import '../model/contents.dart';
 //import '../player/video/youtuve_player_widget.dart';
+import '../model/acc_property.dart';
+import '../player/abs_player.dart';
 import 'acc_manager.dart';
 import 'acc.dart';
 
@@ -32,7 +35,33 @@ class ACCYoutube extends ACC {
     }
   }
 
+  ACCYoutube.fromProperty(
+      {required PageModel? page, required BaseWidget accChild, required ACCProperty accModel})
+      : super.fromProperty(page: page, accChild: accChild, accModel: accModel);
+
   //bool _idInputVisible = true;
+
+  @override
+  Future<void> next({bool pause = false}) async {
+    AbsPlayWidget? player = await accChild.playManager.getCurrent();
+    logHolder.log('ACCYoutue.next()', level: 6);
+    if (player != null) {
+      player.next();
+    } else {
+      logHolder.log('Current YoutubePlayerWidget.is null', level: 6);
+    }
+  }
+
+  @override
+  Future<void> prev({bool pause = false}) async {
+    AbsPlayWidget? player = await accChild.playManager.getCurrent();
+    logHolder.log('ACCYoutue.prev()', level: 6);
+    if (player != null) {
+      player.prev();
+    } else {
+      logHolder.log('Current YoutubePlayerWidget.is null', level: 6);
+    }
+  }
 
   @override
   Widget showOverlay(BuildContext context) {
@@ -80,7 +109,8 @@ class ACCYoutube extends ACC {
                 //           setState();
                 //         })
                 //     :
-                buildCustomPaint(isAccSelected, realSize, marginSize, hasDropZone: false),
+                //buildCustomPaint(isAccSelected, realSize, marginSize, hasDropZone: false),
+                buildCustomPaint(isAccSelected, realSize, marginSize, hasDropZone: true),
               ],
             ),
 

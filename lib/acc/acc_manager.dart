@@ -157,8 +157,15 @@ class ACCManager extends ChangeNotifier {
       logHolder.log('pushACCs(${accModel.order.value}, ${accModel.mid})', level: 5);
       const uuid = Uuid();
       GlobalObjectKey<BaseWidgetState> baseWidgetKey = GlobalObjectKey<BaseWidgetState>(uuid.v4());
-      ACC acc = ACC.fromProperty(
-          page: page, accChild: BaseWidget(baseWidgetKey: baseWidgetKey), accModel: accModel);
+
+      late ACC acc;
+      if (accModel.accType == ACCType.youtube) {
+        acc = ACCYoutube.fromProperty(
+            page: page, accChild: BaseWidget(baseWidgetKey: baseWidgetKey), accModel: accModel);
+      } else {
+        acc = ACC.fromProperty(
+            page: page, accChild: BaseWidget(baseWidgetKey: baseWidgetKey), accModel: accModel);
+      }
 
       // acc 를 여기서 등록하면 안되므로 주석으로 막는다.
       // acc overay 에 등록은 StudioMainScreen 의 after build 에서 한다. registerOverayAll

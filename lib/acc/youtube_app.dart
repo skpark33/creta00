@@ -28,16 +28,21 @@ class YoutubeApp extends StatefulWidget {
       : super(key: key);
 
   @override
-  _YoutubeAppState createState() => _YoutubeAppState();
+  YoutubeAppState createState() => YoutubeAppState();
 }
 
-class _YoutubeAppState extends State<YoutubeApp> {
+class YoutubeAppState extends State<YoutubeApp> {
   late YoutubePlayerController _controller;
   YoutubePlayerIFrame? player;
 
   @override
   void setState(VoidCallback fn) {
     if (mounted) super.setState(fn);
+  }
+
+  void close() {
+    _controller.stop();
+    //_controller.close();
   }
 
   @override
@@ -66,10 +71,10 @@ class _YoutubeAppState extends State<YoutubeApp> {
       initialVideoId: widget.videoId,
       params: YoutubePlayerParams(
         loop: true,
+        mute: true,
         playlist: widget.playList,
         autoPlay: true,
-        //startAt: const Duration(minutes: 1, seconds: 36),
-        showControls: false,
+        showControls: true,
         showFullscreenButton: false,
         desktopMode: true,
         privacyEnhanced: true,
@@ -94,6 +99,7 @@ class _YoutubeAppState extends State<YoutubeApp> {
     logHolder.log('build called', level: 6);
     inBuild();
     player = YoutubePlayerIFrame(
+      key: ValueKey(const Uuid().v4()),
       controller: _controller,
     );
     // player!.controller!.listen(
@@ -116,7 +122,6 @@ class _YoutubeAppState extends State<YoutubeApp> {
 
   @override
   void dispose() {
-    //_controller.close();
     super.dispose();
   }
 
@@ -134,6 +139,8 @@ class _YoutubeAppState extends State<YoutubeApp> {
                 );
 
                 widget.onInitialPlay.call(value.metaData, thumbnail);
+                //_controller.setVolume(100);
+                //_controller.unMute();
                 return Container(); // 화면에는 아무 표시도 하지 않는다.
               })
           : Container(),

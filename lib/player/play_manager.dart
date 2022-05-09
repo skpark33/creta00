@@ -1,4 +1,5 @@
 import 'dart:async';
+//import 'dart:convert';
 import 'package:creta00/player/abs_player.dart';
 import 'package:sortedmap/sortedmap.dart';
 //import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -233,6 +234,13 @@ class PlayManager {
     return state;
   }
 
+  Future<AbsPlayWidget?> getCurrent() async {
+    return await _lock.synchronized(() async {
+      logHolder.log("getCurrent, ${_orderMap.length}", level: 6);
+      return _orderMap[_currentOrder];
+    });
+  }
+
   Future<double> getCurrentAspectRatio() async {
     double aspectRatio = -1;
     await _lock.synchronized(() async {
@@ -406,6 +414,7 @@ class PlayManager {
     await _lock.synchronized(() async {
       // push 순서에 따라 order 가 결정된다.
       // 마우스로 끌어다 놓은 경우이다.
+      logHolder.log('pushFromDropZone(${model.mid})=${model.order.value}', level: 6);
       int order = getLastOrder();
       model.order
           .set(order + 1, save: false, noUndo: true); // save 는 어차피 아래에서 되므로, 여기서는 save 하지 않는다.
@@ -416,7 +425,6 @@ class PlayManager {
         // 애니타입인 경우, 새로운 데이터를 이해시키기 위해
         baseWidget.invalidate();
       }
-      logHolder.log('pushFromDropZone(${model.mid})=${model.order.value}', level: 6);
       selectedModelHolder!.setModel(model, invalidate: true);
       _currentOrder = model.order.value;
       accManagerHolder!.setState();
@@ -481,21 +489,21 @@ class PlayManager {
       } else if (model.isYoutube()) {
         GlobalObjectKey<YoutubePlayerWidgetState> key =
             GlobalObjectKey<YoutubePlayerWidgetState>(model.mid);
+
+        logHolder.log('subList=${model.subList.value}', level: 6);
+        List<String> playList = model.subList.value
+            .replaceAll("[", "")
+            .replaceAll("]", "")
+            .replaceAll(" ", "")
+            .split(',');
+        if (playList.isEmpty) {
+          logHolder.log('subList=json decode fail${model.url}', level: 6);
+          playList.add(model.url);
+        }
+        logHolder.log('playList=${playList.toString()}', level: 6);
+
         aWidget = YoutubePlayerWidget(
-          onInitialPlay: ((metadata) {
-            if (metadata.title.isNotEmpty) {
-              model.name = metadata.title;
-              double millisec = metadata.duration.inDays * 24 * 60 * 60 * 1000.0 +
-                  metadata.duration.inHours * 60 * 60 * 1000.0 +
-                  metadata.duration.inMinutes * 60 * 1000.0 +
-                  metadata.duration.inSeconds * 1000.0 +
-                  metadata.duration.inMilliseconds;
-              model.videoPlayTime.set(millisec);
-            }
-            if (metadata.videoId.isNotEmpty) {
-              model.remoteUrl = metadata.videoId;
-            }
-          }),
+          playList: playList,
           onAfterEvent: () {},
           globalKey: key,
           model: model,

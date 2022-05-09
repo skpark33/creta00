@@ -37,14 +37,16 @@ Widget simpleTextField(
           hintText: hintText,
           isDense: true,
           contentPadding: const EdgeInsets.all(8),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(
-                //width: 1, style: BorderStyle.solid, color: MyColors.secondaryColor),
-                width: borderWidth,
-                style: BorderStyle.solid,
-                color: MyColors.secondaryColor),
-          ),
+          enabledBorder: borderWidth > 0
+              ? OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                      //width: 1, style: BorderStyle.solid, color: MyColors.secondaryColor),
+                      width: borderWidth,
+                      style: BorderStyle.solid,
+                      color: MyColors.secondaryColor),
+                )
+              : null,
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: const BorderSide(

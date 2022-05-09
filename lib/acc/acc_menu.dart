@@ -9,6 +9,7 @@ import 'package:creta00/common/buttons/hover_buttons.dart';
 import 'package:creta00/player/play_manager.dart';
 //import 'package:creta00/db/db_actions.dart';
 import '../common/notifiers/notifiers.dart';
+import '../studio/artboard/artboard_frame.dart';
 import 'acc_manager.dart';
 import 'acc.dart';
 
@@ -64,7 +65,7 @@ class ACCMenu {
       return overlayWidget!;
     });
     final overlay = Overlay.of(context)!;
-    overlay.insert(entry!);
+    overlay.insert(entry!, below: stickMenuEntry);
 
     if (overlayWidget != null) {
       return overlayWidget!;
