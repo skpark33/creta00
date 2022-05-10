@@ -83,7 +83,7 @@ Widget myTextField(String value,
     bool enabled = true,
     bool hasBorder = false,
     TextAlignVertical textAlignVertical = TextAlignVertical.top,
-    int maxLines = 1,
+    int? maxLines = 1,
     void Function(String)? onChanged,
     void Function()? onEditingComplete,
     void Function(String)? onSubmitted}) {

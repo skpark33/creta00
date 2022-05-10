@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../book_manager.dart';
 import '../../common/buttons/basic_button.dart';
+import '../../common/buttons/hover_buttons.dart';
 import '../../common/util/logger.dart';
 import '../../common/util/my_utils.dart';
 import '../../common/util/textfileds.dart';
@@ -86,7 +87,7 @@ class _BookPropertyState extends State<BookProperty> {
                   labelText: MyStrings.bookName,
                   controller: nameCon,
                   hasBorder: true,
-                  style: MyTextStyles.body2.copyWith(fontSize: 20),
+                  style: DefaultTextStyle.of(context).style.copyWith(fontSize: 16),
                   onEditingComplete: _onTitleEditingComplete,
                 ),
               ),
@@ -112,7 +113,7 @@ class _BookPropertyState extends State<BookProperty> {
                   controller: descCon,
                   hasBorder: true,
                   maxLines: 6,
-                  style: MyTextStyles.body2.copyWith(fontSize: 20),
+                  style: DefaultTextStyle.of(context).style.copyWith(fontSize: 16),
                   onEditingComplete: _onDescEditingComplete,
                 ),
               ),
@@ -261,6 +262,66 @@ class _BookPropertyState extends State<BookProperty> {
             ],
           ),
         ),
+        Padding(
+            // 조횟수, 좋아요, 싫어요
+            padding: const EdgeInsets.fromLTRB(22, 0, 0, 0),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    HoverButton(
+                        text: MyStrings.viewCount,
+                        width: 100,
+                        height: 30,
+                        onEnter: () {},
+                        onExit: () {},
+                        onPressed: () {},
+                        icon: const Icon(Icons.visibility_outlined)),
+                    Text("${bookManagerHolder!.defaultBook!.viewCount.value}"),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    HoverButton(
+                        text: MyStrings.like,
+                        width: 100,
+                        height: 30,
+                        onEnter: () {},
+                        onExit: () {},
+                        onPressed: () {
+                          setState(() {
+                            bookManagerHolder!.defaultBook!.likeCount.set(
+                                bookManagerHolder!.defaultBook!.likeCount.value + 1,
+                                noUndo: true);
+                          });
+                        },
+                        icon: const Icon(Icons.thumb_up_outlined)),
+                    Text("${bookManagerHolder!.defaultBook!.likeCount.value}"),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    HoverButton(
+                        text: MyStrings.dislike,
+                        width: 100,
+                        height: 30,
+                        onEnter: () {},
+                        onExit: () {},
+                        onPressed: () {
+                          setState(() {
+                            bookManagerHolder!.defaultBook!.dislikeCount.set(
+                                bookManagerHolder!.defaultBook!.dislikeCount.value + 1,
+                                noUndo: true);
+                          });
+                        },
+                        icon: const Icon(Icons.thumb_down_outlined)),
+                    Text("${bookManagerHolder!.defaultBook!.dislikeCount.value}"),
+                  ],
+                ),
+              ],
+            )),
       ],
     );
   }

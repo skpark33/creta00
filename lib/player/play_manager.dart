@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 //import 'dart:convert';
+import 'package:creta00/acc/youtube_dialog.dart';
 import 'package:creta00/player/abs_player.dart';
 import 'package:sortedmap/sortedmap.dart';
 //import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -410,10 +412,14 @@ class PlayManager {
     });
   }
 
-  Future<void> pushFromDropZone(ACC acc, ContentsModel model) async {
+  Future<void> pushFromDropZone(ACC acc, ContentsModel model, {bool clean = false}) async {
     await _lock.synchronized(() async {
       // push 순서에 따라 order 가 결정된다.
       // 마우스로 끌어다 놓은 경우이다.
+      if (clean) {
+        _orderMap.clear();
+      }
+
       logHolder.log('pushFromDropZone(${model.mid})=${model.order.value}', level: 6);
       int order = getLastOrder();
       model.order
@@ -490,14 +496,23 @@ class PlayManager {
         GlobalObjectKey<YoutubePlayerWidgetState> key =
             GlobalObjectKey<YoutubePlayerWidgetState>(model.mid);
 
-        logHolder.log('subList=${model.subList.value}', level: 6);
-        List<String> playList = model.subList.value
-            .replaceAll("[", "")
-            .replaceAll("]", "")
-            .replaceAll(" ", "")
-            .split(',');
+        logHolder.log('subList1=${model.subList.value}', level: 6);
+
+        List<String> playList = [];
+
+        var list = (json.decode(model.subList.value) as List).map(
+          (e) {
+            logHolder.log('each=${e.toString()}', level: 6);
+
+            YoutubeInfo info = YoutubeInfo()..deserialize(e);
+            playList.add(info.videoId);
+            return info;
+          },
+        );
+        logHolder.log('list=${list.toString()}', level: 6);
+
         if (playList.isEmpty) {
-          logHolder.log('subList=json decode fail${model.url}', level: 6);
+          logHolder.log('subList=json decode fail ${model.url}', level: 6);
           playList.add(model.url);
         }
         logHolder.log('playList=${playList.toString()}', level: 6);

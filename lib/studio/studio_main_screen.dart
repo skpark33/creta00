@@ -22,9 +22,8 @@ StudioMainScreen? studioMainHolder;
 
 // ignore: must_be_immutable
 class StudioMainScreen extends StatefulWidget {
-  StudioMainScreen({required this.mainScreenKey, required this.user}) : super(key: mainScreenKey) {
-    //saveManagerHolder = SaveManager();
-  }
+  const StudioMainScreen({required this.mainScreenKey, required this.user})
+      : super(key: mainScreenKey);
   final GlobalKey<MainScreenState> mainScreenKey;
   //final GlobalKey<MainScreenState> mainScreenKey;
 
@@ -125,6 +124,12 @@ class MainScreenState extends State<StudioMainScreen> {
                 } else {
                   pageManagerHolder!.pushPages(snapshot.data!);
                 }
+
+                logHolder.log(
+                    "bookManagerHolder!.defaultBook!=${bookManagerHolder!.defaultBook!.mid}, ${bookManagerHolder!.defaultBook!.viewCount.value}",
+                    level: 6);
+                bookManagerHolder!.defaultBook!.viewCount
+                    .set(bookManagerHolder!.defaultBook!.viewCount.value + 1, noUndo: true);
               }
 
               return StudioSubScreen(key: subScreenKey, user: widget.user);

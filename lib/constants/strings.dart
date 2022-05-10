@@ -182,4 +182,7 @@ class MyStrings {
   static String pressYoutubeButton = Locale.isKr()
       ? '아래 유투브 화면의 플레이버튼을 눌러 주세요'
       : 'Please click the play button on the YouTube screen below';
+  static String like = Locale.isKr() ? '좋아요' : 'Like';
+  static String dislike = Locale.isKr() ? '싫어요' : 'Dislike';
+  static String viewCount = Locale.isKr() ? '조회수' : 'View Count';
 }

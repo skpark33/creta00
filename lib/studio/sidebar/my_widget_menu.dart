@@ -18,7 +18,7 @@ import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/acc/acc.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 
-import '../../book_manager.dart';
+//import '../../book_manager.dart';
 import '../../model/model_enums.dart';
 
 YoutubeDialog? youtubeDialog;
@@ -436,32 +436,55 @@ class MyMenuStickState extends State<MyMenuStick> {
         //   accManagerHolder!.setState();
         // }
       },
-      onOK: (currentYoutubeInfo, playList) async {
-        ACC acc = accManagerHolder!
-            .createACC(context, pageManagerHolder!.getSelected()!, accType: ACCType.youtube);
-
+      onOK: (currentYoutubeInfo, orderMap, oldACC) async {
+        ACC? acc;
+        if (oldACC != null) {
+          acc = oldACC;
+        } else {
+          acc = accManagerHolder!
+              .createACC(context, pageManagerHolder!.getSelected()!, accType: ACCType.youtube);
+        }
         ContentsModel model = ContentsModel(acc.accModel.mid,
             name: currentYoutubeInfo.title,
             mime: 'youtube/html',
             bytes: 0,
             url: currentYoutubeInfo.videoId);
-        model.subList.set(playList.toString());
 
-        logHolder.log("PlayList=${playList.toString()}", level: 6);
-        logHolder.log("thumbnail=${currentYoutubeInfo.thumbnail}", level: 6);
+        youtubeDialog!.apply(acc, model);
+        // ContentsModel model = ContentsModel(acc.accModel.mid,
+        //     name: currentYoutubeInfo.title,
+        //     mime: 'youtube/html',
+        //     bytes: 0,
+        //     url: currentYoutubeInfo.videoId);
 
-        model.remoteUrl = currentYoutubeInfo.videoId;
-        model.thumbnail = currentYoutubeInfo.thumbnail;
-        model.videoPlayTime.set(durationToMillisec(currentYoutubeInfo.duration));
+        // String subList = "[";
+        // for (YoutubeInfo info in orderMap.values) {
+        //   if (subList.length > 2) {
+        //     subList += ",";
+        //   }
+        //   subList += info.serialize();
+        // }
+        // subList += "]";
+        // subList.replaceAll('\n', '').replaceAll('\r', '');
 
-        acc.accModel.accType = ACCType.youtube;
-        await acc.accChild.playManager.pushFromDropZone(acc, model);
-        acc.accChild.invalidate();
+        // model.subList.set(subList);
 
-        bookManagerHolder!
-            .setBookThumbnail(model.thumbnail!, ContentsType.image, model.aspectRatio.value);
+        // logHolder.log("subList=$subList", level: 6);
+        // logHolder.log("thumbnail=${currentYoutubeInfo.thumbnail}", level: 6);
+
+        // model.remoteUrl = currentYoutubeInfo.videoId;
+        // model.thumbnail = currentYoutubeInfo.thumbnail;
+        // model.videoPlayTime.set(currentYoutubeInfo.playTime);
+
+        // acc.accModel.accType = ACCType.youtube;
+        // await acc.accChild.playManager.pushFromDropZone(acc, model);
+        // acc.accChild.invalidate();
+
+        // bookManagerHolder!
+        //     .setBookThumbnail(model.thumbnail!, ContentsType.image, model.aspectRatio.value);
       },
     );
+    youtubeDialog!.clearInfo();
     youtubeDialog!.show(context);
   }
 }

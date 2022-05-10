@@ -23,6 +23,9 @@ class BookModel extends AbsModel {
   late UndoAble<String> thumbnailUrl;
   late UndoAble<ContentsType> thumbnailType;
   late UndoAble<double> thumbnailAspectRatio;
+  late UndoAble<int> likeCount;
+  late UndoAble<int> dislikeCount;
+  late UndoAble<int> viewCount;
   String userId;
 
   BookModel.createEmptyModel(String srcMid, this.userId) : super(type: ModelType.book, parent: '') {
@@ -36,6 +39,9 @@ class BookModel extends AbsModel {
     isAutoPlay = UndoAble<bool>(false, srcMid);
     bookType = UndoAble<BookType>(BookType.signage, srcMid);
     readOnly = UndoAble<bool>(false, srcMid);
+    likeCount = UndoAble<int>(0, srcMid);
+    dislikeCount = UndoAble<int>(0, srcMid);
+    viewCount = UndoAble<int>(0, srcMid);
     description =
         UndoAble<String>("You could do it simple and plain\n from 'Sure thing' of Miguel", srcMid);
   }
@@ -51,6 +57,9 @@ class BookModel extends AbsModel {
     isAutoPlay = UndoAble<bool>(false, mid);
     bookType = UndoAble<BookType>(BookType.signage, mid);
     readOnly = UndoAble<bool>(false, mid);
+    likeCount = UndoAble<int>(0, mid);
+    dislikeCount = UndoAble<int>(0, mid);
+    viewCount = UndoAble<int>(0, mid);
     description =
         UndoAble<String>("You could do it simple and plain\n from 'Sure thing' of Miguel", mid);
     description.set(desc);
@@ -87,6 +96,9 @@ class BookModel extends AbsModel {
     thumbnailUrl.set(map["thumbnailUrl"], save: false);
     thumbnailType.set(intToContentsType(map["thumbnailType"] ?? 99), save: false);
     thumbnailAspectRatio.set((map["thumbnailAspectRatio"] ?? 1), save: false);
+    likeCount.set((map["likeCount"] ?? 0), save: false, noUndo: true);
+    dislikeCount.set((map["likeCount"] ?? 0), save: false, noUndo: true);
+    viewCount.set((map["viewCount"] ?? 0), save: false, noUndo: true);
   }
 
   @override
@@ -104,6 +116,9 @@ class BookModel extends AbsModel {
         "thumbnailUrl": thumbnailUrl.value,
         "thumbnailType": contentsTypeToInt(thumbnailType.value),
         "thumbnailAspectRatio": thumbnailAspectRatio.value,
+        "likeCount": likeCount.value,
+        "dislikeCount": dislikeCount.value,
+        "viewCount": viewCount.value,
       }.entries);
   }
 }

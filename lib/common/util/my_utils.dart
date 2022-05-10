@@ -644,3 +644,7 @@ class SimpleRichText extends StatelessWidget {
     );
   }
 }
+
+List<String> stringToList(String input) {
+  return input.replaceAll("[", "").replaceAll("]", "").replaceAll(" ", "").split(',');
+}

@@ -25,28 +25,32 @@ samples, guidance on mobile development, and a full API reference.
 ## skpark
 ## run way
 ## build directory configuration
-flutter config --build-dir=../release/cretaTest01  
+flutter config --build-dir=../release/cretaTest02  
 
 #visual code 를 재기동한다.
+
+## creta_main.dart 에서 version 번호를 바꾸는 것을 잊지말자.  ver 0.98
+
 ## flutter run -d web-server --web-renderer html
 flutter run -d chrome --web-renderer html
 
+
 ## build and release process
-flutter build web --web-renderer html --release --base-href="/cretaTest01/"
+flutter build web --web-renderer html --release --base-href="/cretaTest02/"
 
 ## first time after create repository
-cd ../release/cretaTest01/web
-echo "# cretaTest01" >> README.md
+cd ../release/cretaTest02/web
+echo "# cretaTest02" >> README.md
 git init
 git add .
 git commit -m "first commit"
 git branch -M main
-git remote add origin https://github.com/skpark33/cretaTest01.git
+git remote add origin https://github.com/skpark33/cretaTest02.git
 git push -u origin main
 
 ## GitHub 페이지에서 Settings 에서 GitHub pages 'click it out here' 를 누른다.
 # Source choice 박스에서 main 을 고른뒤 save 를 눌러주면 웹페이지가 생기다.
-# https://skpark33.github.io/cretaTest01/
+# https://skpark33.github.io/cretaTest02/
 
 # for windows configuration
 
@@ -63,6 +67,15 @@ flutter build windows
 #npm install firebase
 #npm install -g firebase-tools
 #flutter build web --web-renderer html --release --base-href="/accTest0390/"
+
+#############################################
+### Flutter 소스 코드 변경건 
+#############################################
+## Youtube 관련 수정
+copy D:\Flutter\project\creta00\source_modify\youtube_value_builder.daxt  D:\Flutter\src\flutter\.pub-cache\hosted\pub.dartlang.org\youtube_player_iframe-2.2.2\lib\src\helpers\youtube_value_builder.dart
+
+
+
 
 #############################################
 ### Flutter Web fireStore dataabse 사용하기

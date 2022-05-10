@@ -8,10 +8,17 @@ import 'package:creta00/common/util/my_utils.dart';
 import 'package:creta00/common/buttons/hover_buttons.dart';
 import 'package:creta00/player/play_manager.dart';
 //import 'package:creta00/db/db_actions.dart';
+//import '../book_manager.dart';
 import '../common/notifiers/notifiers.dart';
+//import '../model/contents.dart';
+import '../model/contents.dart';
 import '../studio/artboard/artboard_frame.dart';
+//import '../studio/sidebar/my_widget_menu.dart';
 import 'acc_manager.dart';
 import 'acc.dart';
+import 'youtube_dialog.dart';
+
+YoutubeDialog? youtubeEditDialog;
 
 class ACCMenu {
   ContentsType _type = ContentsType.free;
@@ -171,6 +178,26 @@ class ACCMenu {
                             ? Icons.fullscreen_exit_outlined
                             : Icons.fullscreen), // fullscreen_exit,
                       ),
+                      // edit 버튼
+                      (acc != null && acc.accModel.accType == ACCType.youtube)
+                          ? HoverButton.withIconWidget(
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              onEnter: () {},
+                              onExit: () {},
+                              onPressed: () {
+                                onYoutubePressed(context, acc);
+                              },
+                              iconFile: "assets/youtube.png",
+                            )
+                          : HoverButton(
+                              width: buttonWidth,
+                              height: buttonHeight,
+                              onEnter: () {},
+                              onExit: () {},
+                              onPressed: () {},
+                              icon: const Icon(Icons.edit_outlined),
+                            )
                     ],
                   ),
                   const SizedBox(height: 5),
@@ -189,6 +216,26 @@ class ACCMenu {
 
   void onExit() {
     accManagerHolder!.setACCOrderVisible(false);
+  }
+
+  void onYoutubePressed(BuildContext context, ACC? acc) {
+    if (acc != null) {
+      youtubeEditDialog ??= YoutubeDialog(
+        onCancel: () {},
+        onOK: (currentYoutubeInfo, orderMap, oldACC) async {
+          if (oldACC != null) {
+            ContentsModel? model = await oldACC.accChild.playManager.getCurrentModel();
+            if (model != null) {
+              model.name = currentYoutubeInfo.title;
+              model.url = currentYoutubeInfo.videoId;
+              youtubeEditDialog!.apply(oldACC, model);
+            }
+          }
+        },
+      );
+      youtubeEditDialog!.init(acc);
+      youtubeEditDialog!.show(context);
+    }
   }
 
   Widget menuByContentType(BuildContext context, ACC? acc) {

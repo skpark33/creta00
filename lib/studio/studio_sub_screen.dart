@@ -13,6 +13,7 @@ import 'package:creta00/studio/save_manager.dart';
 import 'package:creta00/constants/constants.dart';
 
 //import '../common/buttons/toggle_switch.dart';
+import '../acc/acc_menu.dart';
 import '../common/util/my_utils.dart';
 import '../constants/strings.dart';
 import '../model/model_enums.dart';
@@ -223,6 +224,9 @@ class StudioSubScreenState extends State<StudioSubScreen> {
     // }
     if (youtubeDialog != null) {
       youtubeDialog!.closeDialog(context);
+    }
+    if (youtubeEditDialog != null) {
+      youtubeEditDialog!.closeDialog(context);
     }
     naviPop(context);
     cretaMainHolder!.invalidate();

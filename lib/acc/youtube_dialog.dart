@@ -1,5 +1,7 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
@@ -12,11 +14,15 @@ import 'package:creta00/common/util/logger.dart';
 import 'package:creta00/common/util/my_utils.dart';
 //import 'package:creta00/constants/styles.dart';
 //import 'package:creta00/db/db_actions.dart';
+import '../book_manager.dart';
 import '../common/buttons/basic_button.dart';
 //import '../common/util/textfileds.dart';
 import '../constants/strings.dart';
 import '../constants/styles.dart';
+import '../model/contents.dart';
+import '../model/model_enums.dart';
 import '../studio/artboard/artboard_frame.dart';
+import 'acc.dart';
 
 // ignore: constant_identifier_names
 const double youtubeCardWidth = 16 * 32;
@@ -49,7 +55,7 @@ class YoutubeId extends ChangeNotifier {
 class YoutubeInfo extends ChangeNotifier {
   String title = '';
   String author = '';
-  Duration duration = Duration.zero;
+  double playTime = 0;
   String videoId = '';
   String errMsg = '';
   String thumbnail = '';
@@ -60,7 +66,7 @@ class YoutubeInfo extends ChangeNotifier {
     errMsg = '';
     title = '';
     author = '';
-    duration = Duration.zero;
+    playTime = 0;
     videoId = '';
     thumbnail = '';
     isRemoved = false;
@@ -72,7 +78,7 @@ class YoutubeInfo extends ChangeNotifier {
     title = metadata.title;
     videoId = metadata.videoId;
     author = metadata.author;
-    duration = metadata.duration;
+    playTime = durationToMillisec(metadata.duration);
     thumbnail = pthumbnail;
     order = porder;
   }
@@ -85,7 +91,7 @@ class YoutubeInfo extends ChangeNotifier {
     title = that.title;
     videoId = that.videoId;
     author = that.author;
-    duration = that.duration;
+    playTime = that.playTime;
     thumbnail = that.thumbnail;
     isRemoved = that.isRemoved;
     order = that.order;
@@ -94,20 +100,73 @@ class YoutubeInfo extends ChangeNotifier {
   YoutubeInfo copyTo() {
     return YoutubeInfo()..copyFrom(this);
   }
+
+  String serialize() {
+    return '{"errMsg":"$errMsg","title":"$title","author":"$author","playTime":$playTime,"videoId":"$videoId","thumbnail":"$thumbnail","isRemoved":$isRemoved,"order":$order}';
+  }
+
+  void deserialize(dynamic info) {
+    //dynamic info = jsonDecode(source);
+    errMsg = info["errMsg"];
+    title = info["title"];
+    author = info["author"];
+    playTime = info["playTime"];
+    videoId = info["videoId"];
+    thumbnail = info["thumbnail"];
+    isRemoved = info["isRemoved"];
+    order = info["order"];
+  }
 }
 
 class YoutubeDialog {
-  final void Function(YoutubeInfo currentYoutubeInfo, List<String> playList) onOK;
+  final void Function(
+      YoutubeInfo currentYoutubeInfo, SortedMap<int, YoutubeInfo> orderMap, ACC? oldAcc) onOK;
   final void Function() onCancel;
+  ACC? acc;
   List<String> playList = [];
 
-  YoutubeDialog({required this.onOK, required this.onCancel});
+  YoutubeDialog({required this.onOK, required this.onCancel}) {
+    clearInfo();
+  }
 
   bool _visible = false;
   bool get visible => _visible;
   OverlayEntry? entry;
   SortedMap<int, YoutubeInfo> orderMap = SortedMap<int, YoutubeInfo>();
   Map<String, YoutubeInfo> videoMap = <String, YoutubeInfo>{};
+
+  Future<void> init(ACC? pacc) async {
+    clearInfo();
+    acc = pacc;
+    if (acc == null) {
+      return;
+    }
+    ContentsModel? model = await acc!.accChild.playManager.getCurrentModel();
+    if (model == null) {
+      return;
+    }
+
+    logHolder.log('YoutubeDialog.init ${model.remoteUrl!},  ${model.url}, ${model.subList.value}',
+        level: 6);
+    currentVideoId.set(model.remoteUrl!);
+
+    if (model.subList.value.isNotEmpty) {
+      Iterable<YoutubeInfo> list = (json.decode(model.subList.value) as List).map(
+        (e) {
+          return YoutubeInfo()..deserialize(e);
+        },
+      );
+      for (YoutubeInfo info in list) {
+        playList.add(info.videoId);
+        orderMap[info.order] = info;
+        videoMap[info.videoId] = info;
+        if (info.videoId == currentVideoId.value) {
+          currentYoutubeInfo.copyFrom(info);
+          currentYoutubeInfo.notify();
+        }
+      }
+    }
+  }
 
   void setState() {
     logHolder.log("YoutubeSelector::setState()", level: 6);
@@ -132,9 +191,16 @@ class YoutubeDialog {
     if (appKey != null && appKey!.currentState != null) {
       appKey!.currentState!.close();
     }
+
+    unshow(context);
+  }
+
+  void clearInfo() {
     currentVideoId.clear();
     currentYoutubeInfo.clear();
-    unshow(context);
+    playList.clear();
+    orderMap.clear();
+    videoMap.clear();
   }
 
   Widget show(BuildContext context) {
@@ -165,11 +231,12 @@ class YoutubeDialog {
       videoMap: videoMap,
       onCancel: () {
         onCancel();
+        clearInfo();
         closeDialog(context);
       },
       onOK: (currentYoutubeInfo) {
         if (currentYoutubeInfo.videoId.isNotEmpty) {
-          onOK(currentYoutubeInfo, playList);
+          onOK(currentYoutubeInfo, orderMap, acc);
         }
         closeDialog(context);
         // appKey!.currentState!.close();
@@ -178,6 +245,33 @@ class YoutubeDialog {
         // unshow(context);
       },
     );
+  }
+
+  Future<void> apply(ACC oldAcc, ContentsModel model) async {
+    String subList = "[";
+    for (YoutubeInfo info in orderMap.values) {
+      if (subList.length > 2) {
+        subList += ",";
+      }
+      subList += info.serialize();
+    }
+    subList += "]";
+    model.subList.set(subList);
+
+    logHolder.log("subList=$subList", level: 6);
+    logHolder.log("thumbnail=${currentYoutubeInfo.thumbnail}", level: 6);
+
+    model.remoteUrl = currentYoutubeInfo.videoId;
+    model.thumbnail = currentYoutubeInfo.thumbnail;
+    model.videoPlayTime.set(currentYoutubeInfo.playTime);
+
+    oldAcc.accModel.accType = ACCType.youtube;
+
+    await oldAcc.accChild.playManager.pushFromDropZone(oldAcc, model, clean: true);
+    oldAcc.accChild.invalidate();
+
+    bookManagerHolder!
+        .setBookThumbnail(model.thumbnail!, ContentsType.image, model.aspectRatio.value);
   }
 }
 
@@ -648,6 +742,7 @@ class _MainCardState extends State<MainCard> {
   @override
   Widget build(BuildContext context) {
     return Consumer<YoutubeId>(builder: (context, videoId, child) {
+      logHolder.log('MainCard.build ${currentVideoId.value}', level: 6);
       if (currentVideoId.value.isNotEmpty) {
         appKey = GlobalObjectKey<YoutubeAppState>(const Uuid().v4());
 
@@ -714,7 +809,7 @@ class _MainCardState extends State<MainCard> {
                   ),
                   SimpleRichText(
                     'PlayTime',
-                    youtubeInfo.duration.toString(),
+                    youtubeInfo.playTime.toString(),
                     224,
                     titleStyle: DefaultTextStyle.of(context).style,
                     valueStyle:

@@ -59,7 +59,7 @@ class YoutubePlayerWidget extends AbsPlayWidget {
             autoStart: autoStart) {
     logHolder.log("YoutubePlayerWidget(url=${model.url})", level: 6);
     if (model.remoteUrl != null) {
-      logHolder.log("YoutubePlayerWidget(url=${model.remoteUrl!})", level: 6);
+      logHolder.log("YoutubePlayerWidget(remoteUrl=${model.remoteUrl!})", level: 6);
     }
     videoId = model.remoteUrl ?? model.url;
     //playList.add(videoId);
@@ -70,14 +70,14 @@ class YoutubePlayerWidget extends AbsPlayWidget {
 
   @override
   Future<void> init() async {
-    logHolder.log('initYoutube(${model!.name},${model!.remoteUrl})', level: 6);
+    logHolder.log('initYoutube(${model!.name},$videoId), ${playList.toString()}', level: 6);
     wcontroller = YoutubePlayerController(
       initialVideoId: videoId,
       params: YoutubePlayerParams(
         loop: true,
-        mute: true,
+        mute: autoStart,
         playlist: playList,
-        autoPlay: true,
+        autoPlay: autoStart,
         showControls: true,
         showFullscreenButton: false,
         desktopMode: true,
@@ -98,6 +98,13 @@ class YoutubePlayerWidget extends AbsPlayWidget {
     };
     //getThumbnail();
     isReady = true;
+    if (autoStart) {
+      model!.setPlayState(PlayState.start);
+      model!.mute.set(true, save: false);
+    } else {
+      model!.setPlayState(PlayState.init);
+      model!.mute.set(false, save: false);
+    }
   }
 
   @override
