@@ -117,8 +117,8 @@ class PageManager extends ChangeNotifier {
   }
 
   String redoCreatePage(PageModel page) {
-    page.order.set(pageIndex, noUndo: true);
-    page.isRemoved.set(false, noUndo: true);
+    page.order.set(pageIndex, noUndo: true, save: false);
+    page.isRemoved.set(false, noUndo: true, save: false);
     logHolder.log('redoCreatePage $pageIndex', level: 6);
     pageMap[page.mid] = page;
     orderMap[page.order.value] = page;
@@ -132,7 +132,7 @@ class PageManager extends ChangeNotifier {
     }
     pageIndex--;
     logHolder.log('undoCreatePage $pageIndex', level: 6);
-    page.isRemoved.set(true, noUndo: true);
+    page.isRemoved.set(true, noUndo: true, save: false);
     String mid = page.mid;
     orderMap.remove(page.order.value);
     pageMap.remove(mid);

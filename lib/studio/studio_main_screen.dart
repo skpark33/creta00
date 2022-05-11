@@ -128,8 +128,10 @@ class MainScreenState extends State<StudioMainScreen> {
                 logHolder.log(
                     "bookManagerHolder!.defaultBook!=${bookManagerHolder!.defaultBook!.mid}, ${bookManagerHolder!.defaultBook!.viewCount.value}",
                     level: 6);
-                bookManagerHolder!.defaultBook!.viewCount
-                    .set(bookManagerHolder!.defaultBook!.viewCount.value + 1, noUndo: true);
+                bookManagerHolder!.defaultBook!.viewCount.set(
+                    bookManagerHolder!.defaultBook!.viewCount.value + 1,
+                    noUndo: true,
+                    dontChangeBookTime: true);
               }
 
               return StudioSubScreen(key: subScreenKey, user: widget.user);

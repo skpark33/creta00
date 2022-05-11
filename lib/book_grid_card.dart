@@ -236,10 +236,31 @@ class _HoverWidgetState extends State<HoverWidget> {
                 ? widget.hoverWidget!
                 : (hoverIndex == widget.index && widget.book != null)
                     ? Padding(
-                        padding: const EdgeInsets.only(bottom: 50.0),
-                        child: Text(
-                          widget.book!.description.value,
-                          style: MyTextStyles.cardText1,
+                        padding: const EdgeInsets.only(left: 10, bottom: 50.0, right: 10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            outlineText(
+                              widget.book!.description.value,
+                              fontSize: 16,
+                              textColor: Colors.black,
+                              lineColor: Colors.white,
+                            ),
+                            outlineText(
+                              widget.book!.hashTag.value,
+                              fontSize: 16,
+                              textColor: Colors.black,
+                              lineColor: Colors.white,
+                            ),
+                            likeCountWidget(context,
+                                viewCount: bookManagerHolder!.defaultBook!.viewCount.value,
+                                likeCount: bookManagerHolder!.defaultBook!.likeCount.value,
+                                dislikeCount: bookManagerHolder!.defaultBook!.dislikeCount.value,
+                                onLikeCount: () {},
+                                onDislikeCount: () {},
+                                color: Colors.black),
+                          ],
                         ),
                       )
                     : Container()),

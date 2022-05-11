@@ -134,13 +134,13 @@ class ACCManager extends ChangeNotifier {
     accMap[acc.accModel.mid] = acc;
     setCurrentMid(acc.accModel.mid);
     orderMap[acc.accModel.order.value] = acc;
-    acc.accModel.isRemoved.set(false, noUndo: true);
+    acc.accModel.isRemoved.set(false, noUndo: true, save: false);
     return acc;
   }
 
   ACC undoCreateACC(BuildContext context, ACC acc) {
     logHolder.log("undoCreateACC(${acc.accModel.order.value})", level: 6);
-    acc.accModel.isRemoved.set(true, noUndo: true);
+    acc.accModel.isRemoved.set(true, noUndo: true, save: false);
 
     acc.entry!.remove();
     acc.entry = null;

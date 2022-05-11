@@ -158,6 +158,14 @@ class BookManager extends ChangeNotifier {
     return false;
   }
 
+  bool setHash(String value) {
+    if (defaultBook != null) {
+      defaultBook!.hashTag.set(value);
+      return true;
+    }
+    return false;
+  }
+
   String newNameMaker(String oldName) {
     int idx = oldName.lastIndexOf(RegExp("\\(\\d+\\)\$")); // 제일끝에 괄호로 둘러쌓인 숫자
     String prefix = idx > 0 ? oldName.substring(0, idx) : oldName;

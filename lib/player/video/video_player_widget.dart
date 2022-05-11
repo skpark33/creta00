@@ -55,7 +55,7 @@ class VideoPlayerWidget extends AbsPlayWidget {
         logHolder.log('initialize complete(${wcontroller!.value.duration.inMilliseconds})');
 
         model!.videoPlayTime
-            .set(wcontroller!.value.duration.inMilliseconds.toDouble(), noUndo: true);
+            .set(wcontroller!.value.duration.inMilliseconds.toDouble(), noUndo: true, save: false);
         wcontroller!.setLooping(false);
 
         wcontroller!.onAfterVideoEvent = (event) {
@@ -150,7 +150,8 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   Future<void> afterBuild() async {
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       logHolder.log('afterBuild video', level: 5);
-      widget.model!.aspectRatio.set(widget.wcontroller!.value.aspectRatio, noUndo: true);
+      widget.model!.aspectRatio
+          .set(widget.wcontroller!.value.aspectRatio, noUndo: true, save: false);
       widget.afterBuild();
     });
   }

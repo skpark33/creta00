@@ -291,6 +291,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                           ),
                         ],
                       )),
+                  // 좌측
                   Positioned(
                       left: 90,
                       top: 242,
@@ -312,13 +313,120 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                           SizedBox(
                             height: 20,
                           ),
+                          Text(bookManagerHolder!.defaultBook!.hashTag.value,
+                              style:
+                                  DefaultTextStyle.of(context).style.copyWith(color: Colors.white),
+                              maxLines: 2),
+                          likeCountWidget(context,
+                              viewCount: bookManagerHolder!.defaultBook!.viewCount.value,
+                              likeCount: bookManagerHolder!.defaultBook!.likeCount.value,
+                              dislikeCount: bookManagerHolder!.defaultBook!.dislikeCount.value,
+                              onLikeCount: () {
+                            setState(() {
+                              bookManagerHolder!.defaultBook!.likeCount.set(
+                                  bookManagerHolder!.defaultBook!.likeCount.value + 1,
+                                  noUndo: true);
+                            });
+                          }, onDislikeCount: () {
+                            setState(() {
+                              bookManagerHolder!.defaultBook!.dislikeCount.set(
+                                  bookManagerHolder!.defaultBook!.dislikeCount.value + 1,
+                                  noUndo: true);
+                            });
+                          }),
+
+                          // Padding(
+                          //     // 조횟수, 좋아요, 싫어요
+                          //     padding: const EdgeInsets.fromLTRB(0, 22, 0, 10),
+                          //     child: Row(
+                          //       children: [
+                          //         HoverButton(
+                          //             // text: MyStrings.viewCount,
+                          //             // textStyle: DefaultTextStyle.of(context)
+                          //             //     .style
+                          //             //     .copyWith(color: Colors.white),
+                          //             width: 30,
+                          //             height: 30,
+                          //             onEnter: () {},
+                          //             onExit: () {},
+                          //             onPressed: () {},
+                          //             icon: const Icon(
+                          //               Icons.visibility_outlined,
+                          //               color: Colors.white,
+                          //             )),
+                          //         Text(
+                          //           "${bookManagerHolder!.defaultBook!.viewCount.value}",
+                          //           style: DefaultTextStyle.of(context)
+                          //               .style
+                          //               .copyWith(color: Colors.white),
+                          //         ),
+                          //         const SizedBox(
+                          //           width: 10,
+                          //         ),
+                          //         HoverButton(
+                          //             // text: MyStrings.like,
+                          //             // textStyle: DefaultTextStyle.of(context)
+                          //             //     .style
+                          //             //     .copyWith(color: Colors.white),
+                          //             width: 30,
+                          //             height: 30,
+                          //             onEnter: () {},
+                          //             onExit: () {},
+                          //             onPressed: () {
+                          //               setState(() {
+                          //                 bookManagerHolder!.defaultBook!.likeCount.set(
+                          //                     bookManagerHolder!.defaultBook!.likeCount.value + 1,
+                          //                     noUndo: true);
+                          //               });
+                          //             },
+                          //             icon:
+                          //                 const Icon(Icons.thumb_up_outlined, color: Colors.white)),
+                          //         Text(
+                          //           "${bookManagerHolder!.defaultBook!.likeCount.value}",
+                          //           style: DefaultTextStyle.of(context)
+                          //               .style
+                          //               .copyWith(color: Colors.white),
+                          //         ),
+                          //         const SizedBox(
+                          //           width: 10,
+                          //         ),
+                          //         HoverButton(
+                          //             // text: MyStrings.dislike,
+                          //             // textStyle: DefaultTextStyle.of(context)
+                          //             //     .style
+                          //             //     .copyWith(color: Colors.white),
+                          //             width: 30,
+                          //             height: 30,
+                          //             onEnter: () {},
+                          //             onExit: () {},
+                          //             onPressed: () {
+                          //               setState(() {
+                          //                 bookManagerHolder!.defaultBook!.dislikeCount.set(
+                          //                     bookManagerHolder!.defaultBook!.dislikeCount.value +
+                          //                         1,
+                          //                     noUndo: true);
+                          //               });
+                          //             },
+                          //             icon: const Icon(Icons.thumb_down_outlined,
+                          //                 color: Colors.white)),
+                          //         Text(
+                          //           "${bookManagerHolder!.defaultBook!.dislikeCount.value}",
+                          //           style: DefaultTextStyle.of(context)
+                          //               .style
+                          //               .copyWith(color: Colors.white),
+                          //         ),
+                          //       ],
+                          //     )),
+                          SizedBox(
+                            height: 20,
+                          ),
                           HoverButton(
                               width: 203,
                               height: 56,
                               normalSize: 20,
                               hoverSize: 32,
                               onPressed: () {
-                                logHolder.log("바로가기 clicked", level: 5);
+                                logHolder.log("시작하기 clicked", level: 5);
                                 MainUtil.goToStudio(context, widget.user);
                               },
                               icon: Icon(
@@ -387,7 +495,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                       top: 10,
                       left: 10,
                       child: Text(
-                        "ver 0.098",
+                        "ver 0.099",
                         style: MyTextStyles.body1.copyWith(color: Colors.white),
                       )),
                 ],

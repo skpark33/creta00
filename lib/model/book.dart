@@ -97,7 +97,7 @@ class BookModel extends AbsModel {
     thumbnailType.set(intToContentsType(map["thumbnailType"] ?? 99), save: false);
     thumbnailAspectRatio.set((map["thumbnailAspectRatio"] ?? 1), save: false);
     likeCount.set((map["likeCount"] ?? 0), save: false, noUndo: true);
-    dislikeCount.set((map["likeCount"] ?? 0), save: false, noUndo: true);
+    dislikeCount.set((map["dislikeCount"] ?? 0), save: false, noUndo: true);
     viewCount.set((map["viewCount"] ?? 0), save: false, noUndo: true);
   }
 

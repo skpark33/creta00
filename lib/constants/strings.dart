@@ -64,6 +64,7 @@ class MyStrings {
   static String widgetPropTitle = Locale.isKr() ? "위젯" : 'Widget';
   static String contentsPropTitle = Locale.isKr() ? " [ 콘텐츠 설정 ]" : 'Widget Settings';
   static String bookName = Locale.isKr() ? " 콘텐츠북 이름" : 'Book name';
+  static String hashTag = Locale.isKr() ? " 해쉬태그" : 'Hash Tag';
   static String desc = Locale.isKr() ? "부가 설명" : 'Description';
   static String pageDesc = Locale.isKr() ? " 페이지명" : 'Page description';
   static String title = Locale.isKr() ? "제목" : 'Title';

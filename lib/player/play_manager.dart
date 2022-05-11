@@ -258,7 +258,7 @@ class PlayManager {
     await _lock.synchronized(() async {
       AbsPlayWidget? player = _orderMap[_currentOrder];
       if (player != null) {
-        player.model!.isDynamicSize.set(isDynamicSize, noUndo: true);
+        player.model!.isDynamicSize.set(isDynamicSize, noUndo: true, save: false);
       }
     });
   }
@@ -335,7 +335,7 @@ class PlayManager {
       AbsPlayWidget? player = _orderMap[_currentOrder];
       if (player == null) {
         logHolder.log('$_currentOrder is invalid', level: 7);
-        _toNext(noUndo: true);
+        _toNext();
         return;
       }
       if (false == player.isInit()) {
@@ -367,7 +367,7 @@ class PlayManager {
         if (progressHolder != null) {
           progressHolder!.setProgress(0);
         }
-        next(noUndo: true);
+        next();
 
         //}
         //_currentPlaySec = 0;
@@ -382,7 +382,7 @@ class PlayManager {
           currentModel!.setPlayState(PlayState.none);
           logHolder.log('before next', level: 6);
 
-          next(noUndo: true);
+          next();
           // 비디오가 마무리 작업을 할 시간을 준다.
           Future.delayed(Duration(milliseconds: (_timeGap / 4).round()));
           //_currentPlaySec = 0;
@@ -435,7 +435,8 @@ class PlayManager {
       _currentOrder = model.order.value;
       accManagerHolder!.setState();
       pageManagerHolder!.setState();
-      model.isRemoved.set(true, noUndo: true); // 처음 생성될때 false 이므로 true 로 해놔야 undo 가된다.
+      model.isRemoved
+          .set(true, noUndo: true, save: false); // 처음 생성될때 false 이므로 true 로 해놔야 undo 가된다.
       model.isRemoved.set(false, doComplete: (val) {
         if (_currentOrder < 0) {
           // 생성시
@@ -659,7 +660,7 @@ class PlayManager {
     });
   }
 
-  bool _toNext({bool noUndo = false}) {
+  bool _toNext() {
     logHolder.log('_toNext($_currentOrder)', level: 6);
     int counter = 0;
     int lastOrder = getLastOrder();
@@ -705,7 +706,7 @@ class PlayManager {
     return false;
   }
 
-  Future<void> next({bool pause = false, int until = -1, bool noUndo = false}) async {
+  Future<void> next({bool pause = false, int until = -1}) async {
     await _lock.synchronized(() async {
       //ContentsType prevContentsType = ContentsType.free;
       if (_orderMap.isEmpty) {
@@ -731,7 +732,7 @@ class PlayManager {
           _currentOrder = until;
         }
       } else {
-        if (!_toNext(noUndo: noUndo)) return;
+        if (!_toNext()) return;
       }
       //logHolder.log('play($_currentIndex)--');
       _currentPlaySec = 0;

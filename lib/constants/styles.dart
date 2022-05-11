@@ -77,6 +77,18 @@ class MyTextStyles {
   static TextStyle get cardText1 => myTextStyle.copyWith(
       color: Colors.black,
       fontSize: MyFontsSize.s16,
+      shadows: <Shadow>[
+        Shadow(
+          offset: Offset(5.0, 5.0),
+          //blurRadius: 8.0,
+          color: Color.fromARGB(255, 255, 255, 255),
+        ),
+        Shadow(
+          offset: Offset(5.0, 5.0),
+          //blurRadius: 8.0,
+          color: Color.fromARGB(255, 255, 0, 0),
+        ),
+      ],
       height: 1.5,
       letterSpacing: 0.05,
       fontWeight: FontWeight.w400);

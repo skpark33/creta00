@@ -38,6 +38,7 @@ class BookProperty extends PropertySelector {
 class _BookPropertyState extends State<BookProperty> {
   TextEditingController nameCon = TextEditingController();
   TextEditingController descCon = TextEditingController();
+  TextEditingController hashCon = TextEditingController();
   bool _saveAsMode = false;
   bool _aleadyExist = false;
   String _copyResultMsg = "";
@@ -46,6 +47,7 @@ class _BookPropertyState extends State<BookProperty> {
   @override
   Widget build(BuildContext context) {
     String name = '';
+    String hash = '';
     String desc = '';
     bool readOnly = false;
     bool isPublic = false;
@@ -55,6 +57,7 @@ class _BookPropertyState extends State<BookProperty> {
 
     if (bookManagerHolder != null && bookManagerHolder!.defaultBook != null) {
       name = bookManagerHolder!.defaultBook!.name.value;
+      hash = bookManagerHolder!.defaultBook!.hashTag.value;
       desc = bookManagerHolder!.defaultBook!.description.value;
       readOnly = bookManagerHolder!.defaultBook!.readOnly.value;
       isPublic = bookManagerHolder!.defaultBook!.isPublic.value;
@@ -81,7 +84,7 @@ class _BookPropertyState extends State<BookProperty> {
                 width: layoutPropertiesWidth * 0.75,
                 child: myTextField(
                   name,
-                  maxLines: 2,
+                  maxLines: null,
                   limit: 128,
                   textAlign: TextAlign.start,
                   labelText: MyStrings.bookName,
@@ -112,13 +115,39 @@ class _BookPropertyState extends State<BookProperty> {
                   labelText: MyStrings.desc,
                   controller: descCon,
                   hasBorder: true,
-                  maxLines: 6,
+                  maxLines: null,
                   style: DefaultTextStyle.of(context).style.copyWith(fontSize: 16),
                   onEditingComplete: _onDescEditingComplete,
                 ),
               ),
               writeButton(
                 onPressed: _onDescEditingComplete,
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(22, 6, 10, 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: EdgeInsets.zero,
+                width: layoutPropertiesWidth * 0.75,
+                child: myTextField(
+                  hash,
+                  maxLines: null,
+                  limit: 128,
+                  textAlign: TextAlign.start,
+                  labelText: MyStrings.hashTag,
+                  controller: hashCon,
+                  hasBorder: true,
+                  style: DefaultTextStyle.of(context).style.copyWith(fontSize: 16),
+                  onEditingComplete: _onHashEditingComplete,
+                ),
+              ),
+              writeButton(
+                onPressed: _onHashEditingComplete,
               ),
             ],
           ),
@@ -334,5 +363,11 @@ class _BookPropertyState extends State<BookProperty> {
   void _onDescEditingComplete() {
     logHolder.log("textval = ${descCon.text}");
     bookManagerHolder!.setDesc(descCon.text);
+  }
+
+  void _onHashEditingComplete() {
+    String hashTagForm = '# ${hashCon.text.replaceAll(',', ' #')}';
+    logHolder.log("textval = $hashTagForm");
+    bookManagerHolder!.setHash(hashTagForm);
   }
 }

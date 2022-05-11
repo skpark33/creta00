@@ -67,13 +67,15 @@ class SaveManager extends ChangeNotifier {
     });
   }
 
-  Future<void> pushChanged(String mid, String hint) async {
+  Future<void> pushChanged(String mid, String hint, {bool dontChangeBookTime = false}) async {
     await _datalock.synchronized(() async {
       if (!_dataChangedQue.contains(mid)) {
         logHolder.log('changed:$mid, via $hint', level: 6);
         _dataChangedQue.add(mid);
         notifyListeners();
-        shouldBookSave(mid);
+        if (dontChangeBookTime == false) {
+          shouldBookSave(mid);
+        }
       }
     });
   }

@@ -9,6 +9,7 @@ import 'package:creta00/common/util/logger.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 
 import '../../constants/strings.dart';
+import '../buttons/hover_buttons.dart';
 
 double getDeltaRadiusPercent(Size realSize, double dx, double dy, double direction) {
   if (dx == 0 && dy == 0) return 0;
@@ -647,4 +648,91 @@ class SimpleRichText extends StatelessWidget {
 
 List<String> stringToList(String input) {
   return input.replaceAll("[", "").replaceAll("]", "").replaceAll(" ", "").split(',');
+}
+
+Widget likeCountWidget(
+  BuildContext context, {
+  required int viewCount,
+  required int likeCount,
+  required int dislikeCount,
+  required void Function() onLikeCount,
+  required void Function() onDislikeCount,
+  Color color = Colors.white,
+}) {
+  return Padding(
+      // 조횟수, 좋아요, 싫어요
+      padding: const EdgeInsets.fromLTRB(0, 22, 0, 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          HoverButton(
+              width: 30,
+              height: 30,
+              onEnter: () {},
+              onExit: () {},
+              onPressed: () {},
+              icon: Icon(
+                Icons.visibility_outlined,
+                color: color,
+              )),
+          Text(
+            "$viewCount",
+            style: DefaultTextStyle.of(context).style.copyWith(color: color),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          HoverButton(
+              width: 30,
+              height: 30,
+              onEnter: () {},
+              onExit: () {},
+              onPressed: onLikeCount,
+              icon: Icon(Icons.thumb_up_outlined, color: color)),
+          Text(
+            "$likeCount",
+            style: DefaultTextStyle.of(context).style.copyWith(color: color),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          HoverButton(
+              width: 30,
+              height: 30,
+              onEnter: () {},
+              onExit: () {},
+              onPressed: onDislikeCount,
+              icon: Icon(Icons.thumb_down_outlined, color: color)),
+          Text(
+            "$dislikeCount",
+            style: DefaultTextStyle.of(context).style.copyWith(color: color),
+          ),
+        ],
+      ));
+}
+
+Widget outlineText(String text,
+    {required double fontSize, required Color lineColor, required Color textColor}) {
+  return Stack(
+    children: <Widget>[
+      // Stroked text as border.
+      Text(
+        text,
+        style: TextStyle(
+            fontSize: fontSize,
+            foreground: Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = fontSize / 5
+              ..color = lineColor),
+      ),
+      // Solid text as fill.
+      Text(
+        text,
+        style: TextStyle(
+          fontSize: fontSize,
+          color: textColor,
+        ),
+      ),
+    ],
+  );
 }

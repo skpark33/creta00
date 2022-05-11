@@ -35,31 +35,35 @@ class UndoAble<T> {
   void set(T val,
       {bool save = true,
       bool noUndo = false,
+      bool dontChangeBookTime = false,
       void Function(T val)? doComplete,
       void Function(T val)? undoComplete}) {
     if (val == _value) return; // 값이 동일하다면, 할 필요가 없다.
 
     if (noUndo) {
       _value = val;
+      if (save && saveManagerHolder != null && _mid.isNotEmpty) {
+        saveManagerHolder!.pushChanged(_mid, 'execute', dontChangeBookTime: dontChangeBookTime);
+      }
       return;
     }
 
     MyChange<T> c = MyChange<T>(_value, execute: () {
       _value = val;
       if (save && saveManagerHolder != null && _mid.isNotEmpty) {
-        saveManagerHolder!.pushChanged(_mid, 'redo');
+        saveManagerHolder!.pushChanged(_mid, 'execute', dontChangeBookTime: dontChangeBookTime);
       }
     }, redo: () {
       _value = val;
       if (save && saveManagerHolder != null && _mid.isNotEmpty) {
-        saveManagerHolder!.pushChanged(_mid, 'redo');
+        saveManagerHolder!.pushChanged(_mid, 'redo', dontChangeBookTime: dontChangeBookTime);
       }
       if (doComplete != null) doComplete(_value);
     }, undo: (T old) {
       if (old == _value) return; // 값이 동일하다면, 할 필요가 없다.
       _value = old;
       if (save && saveManagerHolder != null && _mid.isNotEmpty) {
-        saveManagerHolder!.pushChanged(_mid, 'undo');
+        saveManagerHolder!.pushChanged(_mid, 'undo', dontChangeBookTime: dontChangeBookTime);
       }
       if (undoComplete != null) undoComplete(_value);
     });

@@ -73,7 +73,7 @@ abstract class AbsPlayWidget extends StatefulWidget {
     if (model == null) return;
     //model!.setPlayState(PlayState.init);
     if (model!.isDynamicSize.value) {
-      model!.isDynamicSize.set(false, noUndo: true);
+      model!.isDynamicSize.set(false, noUndo: true, save: false);
       acc.resize(model!.aspectRatio.value);
     }
     if (await selectedModelHolder!.isSelectedModel(model!)) {
