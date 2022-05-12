@@ -321,7 +321,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                               viewCount: bookManagerHolder!.defaultBook!.viewCount.value,
                               likeCount: bookManagerHolder!.defaultBook!.likeCount.value,
                               dislikeCount: bookManagerHolder!.defaultBook!.dislikeCount.value,
-                              onLikeCount: () {
+                              alignment: MainAxisAlignment.start, onLikeCount: () {
                             setState(() {
                               bookManagerHolder!.defaultBook!.likeCount.set(
                                   bookManagerHolder!.defaultBook!.likeCount.value + 1,
@@ -495,7 +495,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                       top: 10,
                       left: 10,
                       child: Text(
-                        "ver 0.099",
+                        "Ver 0.100",
                         style: MyTextStyles.body1.copyWith(color: Colors.white),
                       )),
                 ],

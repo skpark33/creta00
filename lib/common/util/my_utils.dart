@@ -658,12 +658,13 @@ Widget likeCountWidget(
   required void Function() onLikeCount,
   required void Function() onDislikeCount,
   Color color = Colors.white,
+  MainAxisAlignment alignment = MainAxisAlignment.center,
 }) {
   return Padding(
       // 조횟수, 좋아요, 싫어요
-      padding: const EdgeInsets.fromLTRB(0, 22, 0, 10),
+      padding: const EdgeInsets.fromLTRB(0, 18, 0, 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: alignment,
         children: [
           HoverButton(
               width: 30,
@@ -711,13 +712,56 @@ Widget likeCountWidget(
       ));
 }
 
+Widget likeCountWidgetReadOnly(
+  BuildContext context, {
+  required int viewCount,
+  required int likeCount,
+  required int dislikeCount,
+  Color color = Colors.white,
+  MainAxisAlignment alignment = MainAxisAlignment.center,
+}) {
+  return Padding(
+      // 조횟수, 좋아요, 싫어요
+      padding: const EdgeInsets.fromLTRB(0, 18, 0, 8),
+      child: Row(
+        mainAxisAlignment: alignment,
+        children: [
+          Icon(
+            Icons.visibility_outlined,
+            color: color,
+          ),
+          Text(
+            "$viewCount",
+            style: DefaultTextStyle.of(context).style.copyWith(color: color),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Icon(Icons.thumb_up_outlined, color: color),
+          Text(
+            "$likeCount",
+            style: DefaultTextStyle.of(context).style.copyWith(color: color),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Icon(Icons.thumb_down_outlined, color: color),
+          Text(
+            "$dislikeCount",
+            style: DefaultTextStyle.of(context).style.copyWith(color: color),
+          ),
+        ],
+      ));
+}
+
 Widget outlineText(String text,
-    {required double fontSize, required Color lineColor, required Color textColor}) {
+    {required double fontSize, required Color lineColor, required Color textColor, int? maxLines}) {
   return Stack(
     children: <Widget>[
       // Stroked text as border.
       Text(
         text,
+        maxLines: maxLines,
         style: TextStyle(
             fontSize: fontSize,
             foreground: Paint()
@@ -728,6 +772,7 @@ Widget outlineText(String text,
       // Solid text as fill.
       Text(
         text,
+        maxLines: maxLines,
         style: TextStyle(
           fontSize: fontSize,
           color: textColor,

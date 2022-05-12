@@ -1,5 +1,6 @@
 import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/model/model_enums.dart';
+import 'package:creta00/studio/save_manager.dart';
 import 'package:flutter/material.dart';
 
 import '../../book_manager.dart';
@@ -175,8 +176,12 @@ class _BookPropertyState extends State<BookProperty> {
         Padding(
           // 읽기 전용
           padding: const EdgeInsets.fromLTRB(22, 0, 0, 0),
-          child: myCheckBox(MyStrings.readOnly, readOnly, () {
-            if (bookManagerHolder!.toggleReadOnly()) {
+          child: myCheckBox(MyStrings.readOnly, readOnly, () async {
+            if (await saveManagerHolder!.isInContentsUploding()) {
+              showSlimDialog(context, MyStrings.contentsUploading2, bgColor: Colors.white);
+              return;
+            }
+            if (bookManagerHolder!.toggleReadOnly(context)) {
               setState(() {});
             }
           }, 18, 2, 8, 2),

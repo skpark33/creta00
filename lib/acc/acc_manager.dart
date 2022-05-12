@@ -53,7 +53,7 @@ class ACCManager extends ChangeNotifier {
     if (setAsAcc && _currentAccMid.isNotEmpty && pageManagerHolder != null) {
       pageManagerHolder!.setAsAcc();
     }
-    setState();
+    notifyAll();
   }
 
   void unsetCurrentMid() {
@@ -218,12 +218,12 @@ class ACCManager extends ChangeNotifier {
       for (String key in accMap.keys) {
         if (accMap[key]!.accModel.primary.value) {
           accMap[key]!.accModel.primary.set(false);
-          accMap[key]!.setState();
+          accMap[key]!.notify();
         }
       }
     }
     acc.accModel.primary.set(primary);
-    acc.setState();
+    acc.notify();
   }
 
   bool isPrimary() {
@@ -274,12 +274,12 @@ class ACCManager extends ChangeNotifier {
     accMenu.position = Offset(dx, dy);
     accMenu.setType(await acc.getCurrentContentsType());
     accMenu.show(context, acc);
-    accMenu.setState();
+    accMenu.notify();
   }
 
   void invalidateMenu(BuildContext context, ACC? acc) {
     if (_currentAccMid.isEmpty) return;
-    accMenu.setState();
+    accMenu.notify();
   }
 
   Future<void> resizeMenu(ContentsType type) async {
@@ -293,7 +293,7 @@ class ACCManager extends ChangeNotifier {
     accMenu.size = Size(accMenu.size.width, height);
     accMenu.setType(type);
     if (accMenu.isShow()) {
-      accMenu.setState();
+      accMenu.notify();
     }
   }
 
@@ -332,8 +332,8 @@ class ACCManager extends ChangeNotifier {
       acc.registerOverlay(context);
       //acc.setDirty(false);
     }
-    setState();
-    pageManagerHolder!.setState(); // Tree 순서를 바꾸기 위해
+    notifyAll();
+    pageManagerHolder!.notify(); // Tree 순서를 바꾸기 위해
     // List<OverlayEntry> newEntries = [];
     // for (ACC acc in orderMap.values) {
     //   newEntries.add(acc.entry!);
@@ -439,7 +439,7 @@ class ACCManager extends ChangeNotifier {
     // }
     //reorderMap();
     mychangeStack.endTrans();
-    setState();
+    notifyAll();
 
     accManagerHolder!.unshowMenu(context);
     return true;
@@ -575,10 +575,10 @@ class ACCManager extends ChangeNotifier {
     return false;
   }
 
-  void setState() {
+  void notifyAll() {
     //reorderMap();
     for (ACC acc in accMap.values) {
-      acc.setState();
+      acc.notify();
     }
     notifyListeners();
   }
@@ -593,13 +593,13 @@ class ACCManager extends ChangeNotifier {
 
   void undo(ACC? acc, BuildContext context) {
     mychangeStack.undo();
-    accManagerHolder!.setState();
+    accManagerHolder!.notifyAll();
     accManagerHolder!.unshowMenu(context);
   }
 
   void redo(ACC? acc, BuildContext context) {
     mychangeStack.redo();
-    accManagerHolder!.setState();
+    accManagerHolder!.notifyAll();
     accManagerHolder!.unshowMenu(context);
   }
 
@@ -622,12 +622,12 @@ class ACCManager extends ChangeNotifier {
     _currentAccMid = orderMap[nextOrder]!.accModel.mid;
 
     accManagerHolder!.unshowMenu(context);
-    setState();
+    notifyAll();
   }
 
   void setACCOrderVisible(bool visible) {
     orderVisible = visible;
-    accManagerHolder!.setState();
+    accManagerHolder!.notifyAll();
   }
 
   Future<void> getNeedleImage() async {
@@ -648,7 +648,7 @@ class ACCManager extends ChangeNotifier {
       if (acc.accModel.isRemoved.value == true) {
         continue;
       }
-      acc.setState();
+      acc.notify();
       // if (acc.page!.mid == modelId) {
       //   if (acc.isVisible == null || !acc.isVisible!) {
       //     logHolder.log('showPages $modelId', level: 6);
@@ -674,7 +674,7 @@ class ACCManager extends ChangeNotifier {
       return;
     }
     acc.toggleFullscreen();
-    accManagerHolder!.setState();
+    accManagerHolder!.notifyAll();
     accManagerHolder!.unshowMenu(context);
   }
 

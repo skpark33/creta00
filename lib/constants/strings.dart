@@ -160,6 +160,9 @@ class MyStrings {
   static String contentsUploading = Locale.isKr()
       ? '콘텐츠를 업로드 중입니다...화면을 닫지 마십시오.'
       : "Content is being uploaded...Do not close the screen.";
+  static String contentsUploading2 = Locale.isKr()
+      ? '콘텐츠를 업로드 중입니다...업로드가 완료된 후, 읽기 전용 모드로 다시 시도하십시오.'
+      : "Content is being uploaded...After the upload is complete, try again in read-only mode.";
   // static String thumbnailUploading = Locale.isKr()
   //     ? '썸네일을 업로드 중입니다...화면을 닫지 마십시오.'
   //     : "Thumbnail is being uploadedl...Do not close the screen.";
@@ -186,4 +189,5 @@ class MyStrings {
   static String like = Locale.isKr() ? '좋아요' : 'Like';
   static String dislike = Locale.isKr() ? '싫어요' : 'Dislike';
   static String viewCount = Locale.isKr() ? '조회수' : 'View Count';
+  static String readOnlyContens = Locale.isKr() ? '읽기 전용 콘텐츠' : "Read Only Contens";
 }

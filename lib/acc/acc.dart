@@ -3,6 +3,7 @@ import 'dart:math';
 // ignore: avoid_web_libraries_in_flutter
 
 //import 'package:flutter/material.dart';
+import 'package:creta00/book_manager.dart';
 import 'package:creta00/player/play_manager.dart';
 import 'package:flutter_neumorphic_null_safety/flutter_neumorphic.dart';
 
@@ -257,6 +258,10 @@ class ACC {
     bool isAccSelected = accManagerHolder!.isCurrentIndex(accModel.mid);
     double mouseMargin = resizeButtonSize / 2;
     Size marginSize = Size(realSize.width + resizeButtonSize, realSize.height + resizeButtonSize);
+    bool isReadOnly = bookManagerHolder!.defaultBook!.readOnly.value;
+
+    logHolder.log('showOverlay: isReadOnly=$isReadOnly', level: 6);
+
     //isVisible = getVisibility();
     return Visibility(
         visible: getVisibility(),
@@ -275,20 +280,27 @@ class ACC {
           //   onPointerDown: (context, event) {
           //     accManagerHolder!.accRightMenu.show(context, this, event);
           //   },
-          child: buildGesture(
-            context,
-            marginSize,
-            realSize,
-            ratio,
-            isAccSelected,
-            child: Stack(
-              children: [
-                buildAccChild(mouseMargin, realSize, marginSize),
-                buildCustomPaint(isAccSelected, realSize, marginSize),
-              ],
-            ),
-            //),
-          ),
+          child: isReadOnly
+              ? GestureDetector(
+                  onLongPressDown: (details) {
+                    logHolder.log("onLongPressDown(${accModel.mid})", level: 7);
+                    selectContents(context, accModel.mid);
+                  },
+                  child: buildAccChild(context, mouseMargin, realSize, marginSize))
+              : buildGesture(
+                  context,
+                  marginSize,
+                  realSize,
+                  ratio,
+                  isAccSelected,
+                  child: Stack(
+                    children: [
+                      buildAccChild(context, mouseMargin, realSize, marginSize),
+                      buildCustomPaint(isAccSelected, realSize, marginSize),
+                    ],
+                  ),
+                  //),
+                ),
         ));
   }
 
@@ -388,7 +400,7 @@ class ACC {
         });
   }
 
-  Widget buildAccChild(double mouseMargin, Size realSize, Size marginSize) {
+  Widget buildAccChild(BuildContext context, double mouseMargin, Size realSize, Size marginSize) {
     return Padding(
       padding: EdgeInsets.all(mouseMargin),
       child: Transform.rotate(
@@ -408,7 +420,11 @@ class ACC {
                 bgColor: accModel.glass.value
                     ? accModel.bgColor.value.withOpacity(0.5)
                     : accModel.bgColor.value,
-                onPressed: () {},
+                onPressed: () {
+                  // readOnly case 에서만 이부분이 호출된다.
+                  logHolder.log('myNeumorphicButton onPressed', level: 6);
+                  selectContents(context, accModel.mid);
+                },
                 child: Transform.rotate(
                   angle: accModel.contentRotate.value ? accModel.rotate.value * (pi / 180) : 0,
                   child: accChild,
@@ -463,7 +479,8 @@ class ACC {
           accModel.radiusTopLeft.value,
           accModel.radiusTopRight.value,
           accModel.radiusBottomLeft.value,
-          accModel.radiusBottomRight.value),
+          accModel.radiusBottomRight.value,
+          accModel.accType),
       child: MouseRegion(
         opaque: false,
         onHover: (details) {
@@ -525,12 +542,12 @@ class ACC {
       accChild.playManager.getModel(order: order).then((model) {
         if (model != null) {
           logHolder.log('Its contents click!!! ${model.mid}', level: 5);
-          selectedModelHolder!.setModel(model);
-          pageManagerHolder!.setAsContents();
-          accManagerHolder!.setCurrentMid(accMid, setAsAcc: false);
+          if (selectedModelHolder != null) selectedModelHolder!.setModel(model);
+          if (pageManagerHolder != null) pageManagerHolder!.setAsContents();
+          if (accManagerHolder != null) accManagerHolder!.setCurrentMid(accMid, setAsAcc: false);
           accChild.playManager.next(pause: true, until: order);
         } else {
-          accManagerHolder!.setCurrentMid(accMid);
+          if (accManagerHolder != null) accManagerHolder!.setCurrentMid(accMid);
         }
         _showACCMenu(context);
       });
@@ -538,11 +555,11 @@ class ACC {
       accChild.playManager.getCurrentModel().then((model) {
         if (model != null) {
           logHolder.log('Its contents click!!! ${model.mid}', level: 5);
-          selectedModelHolder!.setModel(model);
-          pageManagerHolder!.setAsContents();
-          accManagerHolder!.setCurrentMid(accMid, setAsAcc: false);
+          if (selectedModelHolder != null) selectedModelHolder!.setModel(model);
+          if (pageManagerHolder != null) pageManagerHolder!.setAsContents();
+          if (accManagerHolder != null) accManagerHolder!.setCurrentMid(accMid, setAsAcc: false);
         } else {
-          accManagerHolder!.setCurrentMid(accMid);
+          if (accManagerHolder != null) accManagerHolder!.setCurrentMid(accMid);
         }
         _showACCMenu(context);
       });
@@ -841,7 +858,7 @@ class ACC {
     }
   }
 
-  void setState() {
+  void notify() {
     if (entry != null) {
       entry!.markNeedsBuild();
     } else {
@@ -899,7 +916,7 @@ class ACC {
 
   void setBgColor(Color color) {
     accModel.bgColor.set(color);
-    setState();
+    notify();
     accManagerHolder!.notify();
   }
 
@@ -1103,7 +1120,7 @@ class ACC {
     mychangeStack.endTrans();
 
     if (invalidate) {
-      setState();
+      notify();
     }
   }
 
@@ -1124,7 +1141,7 @@ class ACC {
 
   void removeContents(String mid) {
     accChild.playManager.removeById(mid).then<bool>((value) {
-      pageManagerHolder!.setState();
+      pageManagerHolder!.notify();
       accChild.invalidate();
       return value;
     });

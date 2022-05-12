@@ -209,7 +209,7 @@ class PagePropertyState extends State<PageProperty> {
               }
               mychangeStack.endTrans();
               //});
-              pageManagerHolder!.setState();
+              pageManagerHolder!.notify();
             },
           ),
         ),
@@ -243,7 +243,7 @@ class PagePropertyState extends State<PageProperty> {
                     //setState(() {
                     widget.selectedPage!.width.set(int.parse(widthCon.text));
                     //});
-                    pageManagerHolder!.setState();
+                    pageManagerHolder!.notify();
                   },
                 ),
               ),
@@ -273,7 +273,7 @@ class PagePropertyState extends State<PageProperty> {
                     //setState(() {
                     widget.selectedPage!.height.set(int.parse(heightCon.text));
                     //});
-                    pageManagerHolder!.setState();
+                    pageManagerHolder!.notify();
                   },
                 ),
               ),
@@ -286,7 +286,7 @@ class PagePropertyState extends State<PageProperty> {
                   widget.selectedPage!.height.set(int.parse(heightCon.text));
                   //});
                   mychangeStack.endTrans();
-                  pageManagerHolder!.setState();
+                  pageManagerHolder!.notify();
                 },
               ),
             ],
@@ -336,7 +336,7 @@ class PagePropertyState extends State<PageProperty> {
         //     ],
         //     onPressed: (bg) {
         //       widget.selectedPage!.bgColor.set(bg);
-        //       pageManagerHolder!.setState();
+        //       pageManagerHolder!.notify();;
         //     },
         //   ),
 
@@ -383,7 +383,7 @@ class PagePropertyState extends State<PageProperty> {
         //             widget.selectedPage!.bgColor.set(value);
         //             _setUserPallete(value);
         //             //});
-        //             pageManagerHolder!.setState();
+        //             pageManagerHolder!.notify();;
         //           },
         //         );
         //       },
@@ -398,13 +398,13 @@ class PagePropertyState extends State<PageProperty> {
   void _onTitleEditingComplete() {
     logHolder.log("textval = ${descCon.text}");
     widget.selectedPage!.description.set(descCon.text);
-    pageManagerHolder!.setState();
+    pageManagerHolder!.notify();
   }
 
   void _onColorEditingComplete() {
     logHolder.log("textval = ${colorCon.text}");
     widget.selectedPage!.bgColor.set(hexToColor(colorCon.text));
-    pageManagerHolder!.setState();
+    pageManagerHolder!.notify();
   }
 
   Widget _showColorString(Color value) {
@@ -430,7 +430,7 @@ class PagePropertyState extends State<PageProperty> {
     widget.selectedPage!.height.set(temp);
     //});
     mychangeStack.endTrans();
-    pageManagerHolder!.setState();
+    pageManagerHolder!.notify();
   }
 
   int _pageSizeIndex() {
@@ -486,7 +486,7 @@ class PagePropertyState extends State<PageProperty> {
               logHolder
                   .log('color=${widget.selectedPage!.bgColor.value.toString().substring(8, 16)}');
               //});
-              pageManagerHolder!.setState();
+              pageManagerHolder!.notify();
             },
           ));
     }).toList();

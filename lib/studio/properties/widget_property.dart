@@ -212,7 +212,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       if (accWasNotSelected != null) {
         logHolder.log('afterBuild WidgetPropertyState', level: 6);
-        accWasNotSelected!.setState();
+        accWasNotSelected!.notify();
         accWasNotSelected = null;
       }
     });
@@ -364,11 +364,11 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                     if (acc.accModel.borderColor.value != Colors.transparent) {
                       _prevBorderColor = acc.accModel.borderColor.value;
                       acc.accModel.borderColor.set(Colors.transparent);
-                      acc.setState();
+                      acc.notify();
                     } else {
                       if (_prevBorderColor != Colors.transparent) {
                         acc.accModel.borderColor.set(_prevBorderColor);
-                        acc.setState();
+                        acc.notify();
                       }
                     }
                   });
@@ -386,7 +386,10 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                 closeOthers: () {
                   unexpendAll(cornerModel.title);
                 },
-                child: _cornerRow(context, acc),
+                child: // Youtube 는 둥근모서리를 사용할 수 없다.
+                    acc.accModel.accType == ACCType.youtube
+                        ? Container()
+                        : _cornerRow(context, acc),
                 titleLineWidget: Text(
                   '${acc.accModel.radiusTopLeft.value.round()},${acc.accModel.radiusTopRight.value.round()},${acc.accModel.radiusBottomLeft.value.round()},${acc.accModel.radiusBottomRight.value.round()}',
                   style: MyTextStyles.subtitle1,
@@ -468,7 +471,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
             ),
             onPressed: () {
               acc.accModel.sourceRatio.set(!acc.accModel.sourceRatio.value);
-              //acc.setState();
+              //acc.notify();;
               acc.invalidateContents();
               setState(() {});
             },
@@ -498,7 +501,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
             setState(() {
               acc.accModel.containerOffset
                   .set(Offset(double.parse(xCon.text), acc.accModel.containerOffset.value.dy));
-              acc.setState();
+              acc.notify();
             });
           },
         ),
@@ -521,7 +524,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
             setState(() {
               acc.accModel.containerOffset
                   .set(Offset(acc.accModel.containerOffset.value.dx, double.parse(yCon.text)));
-              acc.setState();
+              acc.notify();
             });
           },
         ),
@@ -532,7 +535,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
             acc.accModel.containerOffset
                 .set(Offset(double.parse(xCon.text), double.parse(yCon.text)));
             mychangeStack.endTrans();
-            acc.setState();
+            acc.notify();
             setState(() {});
           },
         ),
@@ -560,7 +563,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
             setState(() {
               acc.accModel.containerSize
                   .set(Size(double.parse(widthCon.text), acc.accModel.containerSize.value.height));
-              acc.setState();
+              acc.notify();
             });
           },
         ),
@@ -582,7 +585,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
             setState(() {
               acc.accModel.containerSize
                   .set(Size(acc.accModel.containerSize.value.width, double.parse(heightCon.text)));
-              acc.setState();
+              acc.notify();
             });
             logHolder.log("textval = ${heightCon.text}");
           },
@@ -594,7 +597,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
             acc.accModel.containerSize
                 .set(Size(double.parse(widthCon.text), double.parse(heightCon.text)));
             mychangeStack.endTrans();
-            acc.setState();
+            acc.notify();
             setState(() {});
           },
         ),
@@ -613,7 +616,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
             onChange: (value) {
               //logHolder.log('onValueChanged: $value');
               acc.accModel.opacity.set(value);
-              acc.setState();
+              acc.notify();
               setState(() {});
             },
           ),
@@ -635,13 +638,13 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
             onValueChanged: (value) {
               //logHolder.log('onValueChanged: $value');
               acc.accModel.rotate.set(value);
-              acc.setState();
+              acc.notify();
               setState(() {});
             },
           )),
       myCheckBox(MyStrings.contentsRotate, acc.accModel.contentRotate.value, () {
         acc.accModel.contentRotate.set(!acc.accModel.contentRotate.value);
-        acc.setState();
+        acc.notify();
         //acc.invalidateContents();
         setState(() {});
       }, 18, 2, 8, 2),
@@ -689,7 +692,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
               ],
               onPressed: (bg) {
                 acc.setBgColor(bg);
-                //pageManagerHolder!.setState();
+                //pageManagerHolder!.notify();;
               },
             ),
             SizedBox(
@@ -772,7 +775,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                     acc.accModel.bgColor.set(Colors.white);
                   }
                 }
-                acc.setState();
+                acc.notify();
                 setState(() {});
               }),
               // CircleAvatar(
@@ -814,9 +817,14 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                     )
                   : Container(),
               myCheckBox(MyStrings.isFixedRatio, acc.accModel.isFixedRatio.value, () {
+                // Youtube 는 가로세로비를 바꿀 수 없다.
+                if (acc.accModel.accType == ACCType.youtube) {
+                  return;
+                }
+
                 acc.accModel.isFixedRatio.set(!acc.accModel.isFixedRatio.value);
                 accManagerHolder!.unshowMenu(context);
-                acc.setState();
+                acc.notify();
                 setState(() {});
               }, 10, 0, 10, 0),
               SizedBox(
@@ -850,7 +858,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
             onColorChanged: (bg) {},
             onColorChangeEnd: (bg) {
               acc.accModel.borderColor.set(bg);
-              acc.setState();
+              acc.notify();
               setState(() {
                 if (acc.accModel.borderWidth.value == 0) {
                   acc.accModel.borderWidth.set(1);
@@ -875,7 +883,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                 setState(() {
                   //autoChangeBgColor(acc);
                   acc.accModel.borderWidth.set(value);
-                  acc.setState();
+                  acc.notify();
                 });
               },
               onChangeStart: (_) {
@@ -887,7 +895,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                 setState(() {
                   autoChangeBgColor(acc);
                   acc.accModel.depth.set(value);
-                  acc.setState();
+                  acc.notify();
                 });
               },
               onChangeStart: (_) {
@@ -899,7 +907,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                 setState(() {
                   autoChangeBgColor(acc);
                   acc.accModel.intensity.set(value);
-                  acc.setState();
+                  acc.notify();
                 });
               },
               onChangeStart: (_) {
@@ -912,7 +920,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                 setState(() {
                   autoChangeBgColor(acc);
                   acc.accModel.lightSource.set(acc.accModel.lightSource.value.copyWith(dx: value));
-                  acc.setState();
+                  acc.notify();
                 });
               },
               onChangeStart: (_) {
@@ -924,7 +932,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                 setState(() {
                   autoChangeBgColor(acc);
                   acc.accModel.lightSource.set(acc.accModel.lightSource.value.copyWith(dy: value));
-                  acc.setState();
+                  acc.notify();
                 });
               },
               onChangeStart: (_) {
@@ -964,7 +972,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                       acc.accModel.radiusTopRight.set(val);
                       acc.accModel.radiusBottomLeft.set(val);
                       acc.accModel.radiusBottomRight.set(val);
-                      acc.setState();
+                      acc.notify();
                     });
                   },
                   onChangeStart: (val) {}),
@@ -975,7 +983,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                     setState(() {
                       acc.accModel.radiusAll.set(0);
                       acc.accModel.radiusTopLeft.set(val);
-                      acc.setState();
+                      acc.notify();
                     });
                   },
                   onChangeStart: (val) {}),
@@ -986,7 +994,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                     setState(() {
                       acc.accModel.radiusAll.set(0);
                       acc.accModel.radiusTopRight.set(val);
-                      acc.setState();
+                      acc.notify();
                     });
                   },
                   onChangeStart: (val) {}),
@@ -997,7 +1005,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                     setState(() {
                       acc.accModel.radiusAll.set(0);
                       acc.accModel.radiusBottomLeft.set(val);
-                      acc.setState();
+                      acc.notify();
                     });
                   },
                   onChangeStart: (val) {}),
@@ -1008,7 +1016,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
                     setState(() {
                       acc.accModel.radiusAll.set(0);
                       acc.accModel.radiusBottomRight.set(val);
-                      acc.setState();
+                      acc.notify();
                     });
                   },
                   onChangeStart: (val) {}),
@@ -1173,7 +1181,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
   //           acc.bgColor.set(Colors.white);
   //         }
   //       }
-  //       acc.setState();
+  //       acc.notify();;
   //       setState(() {});
   //     },
   //   );

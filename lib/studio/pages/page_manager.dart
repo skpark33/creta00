@@ -181,6 +181,16 @@ class PageManager extends ChangeNotifier {
     return '';
   }
 
+  String getLastPage() {
+    String retval = '';
+    for (PageModel model in orderMap.values) {
+      if (model.isRemoved.value == false) {
+        retval = model.mid;
+      }
+    }
+    return retval;
+  }
+
   int getLength() {
     int count = 0;
     for (PageModel model in orderMap.values) {
@@ -220,7 +230,7 @@ class PageManager extends ChangeNotifier {
     if (isPageSelected(mid)) {
       setSelectedIndex(context, getFirstPage());
     }
-    accManagerHolder!.setState();
+    accManagerHolder!.notifyAll();
     return true;
   }
 
@@ -244,9 +254,33 @@ class PageManager extends ChangeNotifier {
     return pageMap[_selectedMid];
   }
 
+  int getPageIndex() {
+    if (_selectedMid.isEmpty) {
+      return 0;
+    }
+    int pageNo = 0;
+    for (PageModel model in orderMap.values) {
+      pageNo++;
+      if (_selectedMid == model.mid) {
+        return pageNo;
+      }
+    }
+    return pageNo;
+  }
+
+  int getPageCount() {
+    int pageCount = 0;
+    for (PageModel model in orderMap.values) {
+      if (model.isRemoved.value == false) {
+        pageCount++;
+      }
+    }
+    return pageCount;
+  }
+
   Future<void> setSelectedIndex(BuildContext context, String val) async {
     _selectedMid = val;
-    pageManagerHolder!.setAsPage(); //setAsPage contain setState()
+    pageManagerHolder!.setAsPage(); //setAsPage contain notify();
     PageModel? page = pageManagerHolder!.getSelected();
     if (page != null) {
       await page.waitPageBuild(); // 페이지가 완전히 빌드 될때까지 기둘린다.
@@ -254,14 +288,67 @@ class PageManager extends ChangeNotifier {
     }
   }
 
+  Future<void> next(BuildContext context) async {
+    PageModel? page = pageManagerHolder!.getSelected();
+    if (page == null) {
+      return;
+    }
+    bool matched = false;
+    int nextOrder = -1;
+    for (int order in orderMap.keys) {
+      if (order == page.order.value) {
+        matched = true;
+        continue;
+      }
+      if (matched && page.isRemoved.value == false) {
+        nextOrder = order;
+        break;
+      }
+    }
+    String mid = '';
+    if (nextOrder < 0) {
+      mid = getFirstPage();
+    } else {
+      mid = orderMap[nextOrder]!.mid;
+    }
+    if (mid.isNotEmpty) {
+      await setSelectedIndex(context, mid);
+    }
+  }
+
+  Future<void> prev(BuildContext context) async {
+    PageModel? page = pageManagerHolder!.getSelected();
+    if (page == null) {
+      return;
+    }
+    int prevOrder = -1;
+    for (int order in orderMap.keys) {
+      if (order == page.order.value) {
+        break;
+      }
+      if (page.isRemoved.value == false) {
+        prevOrder = order;
+      }
+    }
+    String mid = '';
+    if (prevOrder < 0) {
+      mid = getLastPage();
+    } else {
+      mid = orderMap[prevOrder]!.mid;
+    }
+    if (mid.isNotEmpty) {
+      await setSelectedIndex(context, mid);
+    }
+  }
+
   String setSelectedFirst() {
     _selectedMid = getFirstPage();
     if (pageManagerHolder != null) {
       pageManagerHolder!.setAsPage();
-    } //setAsPage contain setState()
+    } //setAsPage contain notify();
     if (accManagerHolder != null) {
       accManagerHolder!.notify();
-    } //setAsPage contain setState()
+    } //setAsPage contain notify();
     return _selectedMid;
   }
 
@@ -274,7 +361,7 @@ class PageManager extends ChangeNotifier {
     }
   }
 
-  void setState() {
+  void notify() {
     notifyListeners();
   }
 

@@ -1,5 +1,6 @@
 import 'package:creta00/book_manager.dart';
 import 'package:creta00/common/util/logger.dart';
+import 'package:creta00/constants/strings.dart';
 import 'package:flutter/material.dart';
 import 'common/buttons/basic_button.dart';
 import 'common/util/my_utils.dart';
@@ -246,20 +247,28 @@ class _HoverWidgetState extends State<HoverWidget> {
                               fontSize: 16,
                               textColor: Colors.black,
                               lineColor: Colors.white,
+                              maxLines: 2,
                             ),
                             outlineText(
                               widget.book!.hashTag.value,
-                              fontSize: 16,
+                              fontSize: 14,
                               textColor: Colors.black,
                               lineColor: Colors.white,
+                              maxLines: 1,
                             ),
-                            likeCountWidget(context,
+                            likeCountWidgetReadOnly(context,
                                 viewCount: bookManagerHolder!.defaultBook!.viewCount.value,
                                 likeCount: bookManagerHolder!.defaultBook!.likeCount.value,
                                 dislikeCount: bookManagerHolder!.defaultBook!.dislikeCount.value,
-                                onLikeCount: () {},
-                                onDislikeCount: () {},
                                 color: Colors.black),
+                            widget.book!.readOnly.value
+                                ? outlineText(
+                                    MyStrings.readOnlyContens,
+                                    fontSize: 14,
+                                    textColor: Colors.red,
+                                    lineColor: Colors.white,
+                                  )
+                                : Container(),
                           ],
                         ),
                       )

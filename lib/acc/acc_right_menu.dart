@@ -22,8 +22,8 @@ class ACCRightMenu {
   final TextEditingController _youtubeController = TextEditingController();
   final TextEditingController _youtubeNameController = TextEditingController();
 
-  void setState() {
-    logHolder.log("ACCRightMenu::setState()", level: 6);
+  void notify() {
+    logHolder.log("ACCRightMenu::notify();", level: 6);
     entry!.markNeedsBuild();
   }
 
@@ -36,7 +36,7 @@ class ACCRightMenu {
       if (entry != null) {
         entry!.remove();
         entry = null;
-        //setState();
+        //notify();;
       }
     }
   }
@@ -119,7 +119,7 @@ class ACCRightMenu {
                   height: 30,
                   onPressed: () {
                     _isYoutube = true;
-                    setState();
+                    notify();
                   }),
               TextButton(
                   child: Text(
@@ -128,7 +128,7 @@ class ACCRightMenu {
                   ),
                   onPressed: () {
                     _isYoutube = true;
-                    setState();
+                    notify();
                     //unshow(context);
                   }),
             ],
@@ -188,7 +188,7 @@ class ACCRightMenu {
                           model.remoteUrl = youtubeId;
                           acc.accChild.playManager.pushFromDropZone(acc, model);
                           _isYoutube = false;
-                          setState();
+                          notify();
                           acc.accChild.invalidate();
                         },
                         iconData: Icons.done_outlined),
@@ -199,7 +199,7 @@ class ACCRightMenu {
                         name: MyStrings.cancel,
                         onPressed: () {
                           _isYoutube = false;
-                          setState();
+                          notify();
                         },
                         iconData: Icons.close_outlined),
                   ]),

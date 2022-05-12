@@ -162,6 +162,18 @@ class MainScreenState extends State<StudioMainScreen> {
         isFullScreen = !isFullScreen;
         subScreenKey.currentState!.setFullScreen(isFullScreen);
       }
+      if (event.isKeyPressed(LogicalKeyboardKey.pageDown)) {
+        if (pageManagerHolder != null) {
+          pageManagerHolder!.next(context);
+        }
+        logHolder.log("pageDown pressed", level: 6);
+      }
+      if (event.isKeyPressed(LogicalKeyboardKey.pageUp)) {
+        if (pageManagerHolder != null) {
+          pageManagerHolder!.prev(context);
+        }
+        logHolder.log("pageUp pressed", level: 6);
+      }
       keys.add(key);
       // Ctrl Key Area
       if ((keys.contains(LogicalKeyboardKey.controlLeft) ||

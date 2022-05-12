@@ -433,8 +433,8 @@ class PlayManager {
       }
       selectedModelHolder!.setModel(model, invalidate: true);
       _currentOrder = model.order.value;
-      accManagerHolder!.setState();
-      pageManagerHolder!.setState();
+      accManagerHolder!.notifyAll();
+      pageManagerHolder!.notify();
       model.isRemoved
           .set(true, noUndo: true, save: false); // 처음 생성될때 false 이므로 true 로 해놔야 undo 가된다.
       model.isRemoved.set(false, doComplete: (val) {
@@ -443,16 +443,16 @@ class PlayManager {
           _currentOrder = model.order.value;
         }
         baseWidget.invalidate();
-        accManagerHolder!.setState();
-        pageManagerHolder!.setState();
+        accManagerHolder!.notifyAll();
+        pageManagerHolder!.notify();
       }, undoComplete: (val) {
         // 삭제시
         if (model.order.value == _currentOrder) {
           _toNext();
         }
         baseWidget.invalidate();
-        accManagerHolder!.setState();
-        pageManagerHolder!.setState();
+        accManagerHolder!.notifyAll();
+        pageManagerHolder!.notify();
       });
     });
   }
@@ -750,9 +750,12 @@ class PlayManager {
         } else {
           await _changeAnimePage();
         } // skpark carousel problem
-        if (pageManagerHolder!.isContents() &&
-            accManagerHolder!.isCurrentIndex(baseWidget.acc!.accModel.mid)) {
-          selectedModelHolder!.setModel(currentPlayer.model!);
+
+        if (pageManagerHolder != null && accManagerHolder != null && selectedModelHolder != null) {
+          if (pageManagerHolder!.isContents() &&
+              accManagerHolder!.isCurrentIndex(baseWidget.acc!.accModel.mid)) {
+            selectedModelHolder!.setModel(currentPlayer.model!);
+          }
         }
       }
       //if (currentPlayer.model!.contentsType != prevContentsType) {
@@ -799,9 +802,11 @@ class PlayManager {
         } else {
           await _changeAnimePage();
         } // skpark carousel problem
-        if (pageManagerHolder!.isContents() &&
-            accManagerHolder!.isCurrentIndex(baseWidget.acc!.accModel.mid)) {
-          selectedModelHolder!.setModel(currentPlayer.model!);
+        if (pageManagerHolder != null && accManagerHolder != null && selectedModelHolder != null) {
+          if (pageManagerHolder!.isContents() &&
+              accManagerHolder!.isCurrentIndex(baseWidget.acc!.accModel.mid)) {
+            selectedModelHolder!.setModel(currentPlayer.model!);
+          }
         }
       }
       //if (currentPlayer.model!.contentsType != prevContentsType) {

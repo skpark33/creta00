@@ -208,3 +208,25 @@ Widget logoIcon2({Color color = MyColors.mainColor, double size = 40}) {
     size: size,
   );
 }
+
+Widget iconWithText(
+    {required String text, required String iconImage, required void Function() onPressed}) {
+  return ElevatedButton(
+      style: ButtonStyle(
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          backgroundColor: MaterialStateProperty.all(MyColors.primaryColor)),
+      onPressed: onPressed,
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        ImageIcon(
+          AssetImage(
+            iconImage,
+          ),
+          size: 20, //MySizes.imageIcon,
+          color: MyColors.secondaryColor,
+        ),
+        SizedBox(
+          width: 10,
+        ),
+        Text(text),
+      ]));
+}

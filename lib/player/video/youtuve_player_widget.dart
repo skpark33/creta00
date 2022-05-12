@@ -70,14 +70,16 @@ class YoutubePlayerWidget extends AbsPlayWidget {
 
   @override
   Future<void> init() async {
+    bool isReadOnly = bookManagerHolder!.defaultBook!.readOnly.value;
+
     logHolder.log('initYoutube(${model!.name},$videoId), ${playList.toString()}', level: 6);
     wcontroller = YoutubePlayerController(
       initialVideoId: videoId,
       params: YoutubePlayerParams(
         loop: true,
-        mute: autoStart,
+        mute: autoStart && (isReadOnly == false),
         playlist: playList,
-        autoPlay: autoStart,
+        autoPlay: autoStart && (isReadOnly == false),
         showControls: true,
         showFullscreenButton: false,
         desktopMode: true,

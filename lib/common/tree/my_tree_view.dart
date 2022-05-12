@@ -237,12 +237,12 @@ class _MyTreeViewState extends State<MyTreeView> {
                       //setState(() {
                       if (model.type == ModelType.page) {
                         widget.pageManager.removePage(context, model.mid);
-                        widget.pageManager.setState();
+                        widget.pageManager.notify();
                         return;
                       }
                       if (model.type == ModelType.acc) {
                         if (accManagerHolder!.removeACCByMid(context, model.mid)) {
-                          widget.pageManager.setState();
+                          widget.pageManager.notify();
                         }
                         return;
                       }

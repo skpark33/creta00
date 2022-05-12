@@ -1,3 +1,4 @@
+import 'package:creta00/acc/acc_manager.dart';
 import 'package:creta00/db/db_actions.dart';
 import 'package:creta00/model/book.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,10 @@ class BookManager extends ChangeNotifier {
   final List<String> _copyNameList = [];
   void addName(String name) {
     _copyNameList.add(name);
+  }
+
+  void notify() {
+    notifyListeners();
   }
 
   BookModel createDefaultBook({String userId = 'b49@sqisoft.com'}) {
@@ -109,9 +114,12 @@ class BookManager extends ChangeNotifier {
     return itsNew;
   }
 
-  bool toggleReadOnly() {
+  bool toggleReadOnly(BuildContext context) {
     if (defaultBook != null) {
       defaultBook!.readOnly.set(!defaultBook!.readOnly.value);
+      bookManagerHolder!.notify();
+      accManagerHolder!.notifyAll();
+      accManagerHolder!.unshowMenu(context);
       return true;
     }
     return false;

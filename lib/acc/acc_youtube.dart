@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 //import '../constants/styles.dart';
 //import '../model/contents.dart';
 //import '../player/video/youtuve_player_widget.dart';
+import '../book_manager.dart';
 import '../model/acc_property.dart';
 import '../player/abs_player.dart';
 import 'acc_manager.dart';
@@ -28,8 +29,8 @@ class ACCYoutube extends ACC {
       bool useDefaultSize = false})
       : super(page: page, accChild: accChild, idx: idx) {
     if (useDefaultSize) {
-      accModel.containerSize
-          .set(Size(page!.width.value * 0.8, page.height.value * 0.8), save: false, noUndo: true);
+      accModel.containerSize.set(Size(page!.width.value * 0.6, page.width.value * 0.6 * (9 / 16)),
+          save: false, noUndo: true);
       accModel.containerOffset
           .set(Offset(page.width.value * 0.9, page.height.value * 0.9), save: false, noUndo: true);
     }
@@ -72,7 +73,9 @@ class ACCYoutube extends ACC {
     bool isAccSelected = accManagerHolder!.isCurrentIndex(accModel.mid);
     double mouseMargin = resizeButtonSize / 2;
     Size marginSize = Size(realSize.width + resizeButtonSize, realSize.height + resizeButtonSize);
-    //isVisible = getVisibility();
+    bool isReadOnly = bookManagerHolder!.defaultBook!.readOnly.value;
+
+    logHolder.log('showOverlay: isReadOnly=$isReadOnly', level: 6);
     return Visibility(
         visible: getVisibility(),
         child: Positioned(
@@ -84,54 +87,39 @@ class ACCYoutube extends ACC {
           top: realOffset.dy - mouseMargin,
           height: realSize.height + resizeButtonSize,
           width: realSize.width + resizeButtonSize,
-          child: buildGesture(
-            context,
-            marginSize,
-            realSize,
-            ratio,
-            isAccSelected,
-            child: Stack(
-              children: [
-                buildAccChild(mouseMargin, realSize, marginSize),
-                // _idInputVisible
-                //     ? InputYoutubeWidget(
-                //         acc: this,
-                //         dx: resizeButtonSize,
-                //         dy: resizeButtonSize,
-                //         width: realSize.width - resizeButtonSize,
-                //         height: realSize.height - resizeButtonSize,
-                //         onOK: () {
-                //           _idInputVisible = false;
-                //           setState();
-                //         },
-                //         onCancel: () {
-                //           _idInputVisible = false;
-                //           setState();
-                //         })
-                //     :
-                //buildCustomPaint(isAccSelected, realSize, marginSize, hasDropZone: false),
-                buildCustomPaint(isAccSelected, realSize, marginSize, hasDropZone: true),
-              ],
-            ),
+          child: isReadOnly
+              ? buildAccChild(context, mouseMargin, realSize, marginSize)
+              : buildGesture(
+                  context,
+                  marginSize,
+                  realSize,
+                  ratio,
+                  isAccSelected,
+                  child: Stack(
+                    children: [
+                      buildAccChild(context, mouseMargin, realSize, marginSize),
+                      buildCustomPaint(isAccSelected, realSize, marginSize, hasDropZone: true),
+                    ],
+                  ),
 
-            // child: CrossPlatformClick(
-            //   onPointerDown: (context, event) {
-            //     accManagerHolder!.accRightMenu.show(context, this, event);
-            //   },
-            //   child: buildGesture(
-            //     context,
-            //     marginSize,
-            //     realSize,
-            //     ratio,
-            //     isAccSelected,
-            //     child: Stack(
-            //       children: [
-            //         buildAccChild(mouseMargin, realSize, marginSize),
-            //         buildCustomPaint(isAccSelected, realSize, marginSize),
-            //       ],
-            //     ),
-            //   ),
-          ),
+                  // child: CrossPlatformClick(
+                  //   onPointerDown: (context, event) {
+                  //     accManagerHolder!.accRightMenu.show(context, this, event);
+                  //   },
+                  //   child: buildGesture(
+                  //     context,
+                  //     marginSize,
+                  //     realSize,
+                  //     ratio,
+                  //     isAccSelected,
+                  //     child: Stack(
+                  //       children: [
+                  //         buildAccChild(mouseMargin, realSize, marginSize),
+                  //         buildCustomPaint(isAccSelected, realSize, marginSize),
+                  //       ],
+                  //     ),
+                  //   ),
+                ),
         ));
   }
 }
@@ -248,7 +236,7 @@ class ACCYoutube extends ACC {
 //                           setState(() {
 //                             if (widget.acc.accChild.playManager.isEmpty()) {
 //                               widget.acc.accModel.isRemoved.set(true);
-//                               //accManagerHolder!.setState();
+//                               //accManagerHolder!.notify();;
 //                             }
 //                             widget.onCancel();
 //                           });

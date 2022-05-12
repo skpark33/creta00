@@ -19,6 +19,7 @@ import 'package:creta00/acc/acc.dart';
 import 'package:creta00/studio/pages/page_manager.dart';
 
 //import '../../book_manager.dart';
+import '../../book_manager.dart';
 import '../../model/model_enums.dart';
 
 YoutubeDialog? youtubeDialog;
@@ -98,8 +99,9 @@ class MyMenuStickState extends State<MyMenuStick> {
 
   @override
   Widget build(BuildContext context) {
+    bool isReadOnly = bookManagerHolder!.defaultBook!.readOnly.value;
     return Visibility(
-      visible: widget.isVisible,
+      visible: widget.isVisible && !isReadOnly,
       child: Positioned(
         left: layoutPageWidth + 12,
         top: 80,
@@ -111,18 +113,32 @@ class MyMenuStickState extends State<MyMenuStick> {
             radius: 8.0,
             //child: Padding(
             //padding: const EdgeInsets.only(left: 12, top: 10),
-            child: Container(
-                // decoration: simpleDeco(
-                //     8.0, 0.5, Colors.white.withOpacity(0.2), MyColors.white),
-                height: 620,
-                width: isExpanded
-                    ? wideWidth
-                    : isSubMenuOpen
-                        ? narrowWidth + subWidth
-                        : narrowWidth,
-                child: row(),
-                color: Colors.white.withOpacity(0.5) //MyColors.compexDrawerCanvasColor,
-                ),
+            child:
+                // isReadOnly
+                //     ? SizedBox(
+                //         width: wideWidth,
+                //         height: 75,
+                //         // 읽기 전용일 경우
+                //         //padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                //         child: myCheckBox(MyStrings.editMode, !isReadOnly, () {
+                //           if (bookManagerHolder!.toggleReadOnly()) {
+                //             setState(() {});
+                //           }
+                //         }, 18, 2, 8, 2),
+                //       )
+                //     :
+                Container(
+                    // decoration: simpleDeco(
+                    //     8.0, 0.5, Colors.white.withOpacity(0.2), MyColors.white),
+                    height: 620,
+                    width: isExpanded
+                        ? wideWidth
+                        : isSubMenuOpen
+                            ? narrowWidth + subWidth
+                            : narrowWidth,
+                    child: row(),
+                    color: Colors.white.withOpacity(0.5) //MyColors.compexDrawerCanvasColor,
+                    ),
             //),
           ),
         ),
@@ -433,7 +449,7 @@ class MyMenuStickState extends State<MyMenuStick> {
       onCancel: () {
         // if (acc.accChild.playManager.isEmpty()) {
         //   acc.accModel.isRemoved.set(true);
-        //   accManagerHolder!.setState();
+        //   accManagerHolder!.notify();;
         // }
       },
       onOK: (currentYoutubeInfo, orderMap, oldACC) async {
@@ -443,6 +459,8 @@ class MyMenuStickState extends State<MyMenuStick> {
         } else {
           acc = accManagerHolder!
               .createACC(context, pageManagerHolder!.getSelected()!, accType: ACCType.youtube);
+          acc.accModel.isFixedRatio.set(true);
+          acc.resizeCurrent();
         }
         ContentsModel model = ContentsModel(acc.accModel.mid,
             name: currentYoutubeInfo.title,

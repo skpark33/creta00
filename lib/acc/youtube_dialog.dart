@@ -168,8 +168,8 @@ class YoutubeDialog {
     }
   }
 
-  void setState() {
-    logHolder.log("YoutubeSelector::setState()", level: 6);
+  void notify() {
+    logHolder.log("YoutubeSelector::notify();", level: 6);
     entry!.markNeedsBuild();
   }
 
@@ -182,7 +182,7 @@ class YoutubeDialog {
         entry!.remove();
         entry = null;
         //videoIdController.dispose();
-        //setState();
+        //notify();;
       }
     }
   }
@@ -264,7 +264,7 @@ class YoutubeDialog {
     model.remoteUrl = currentYoutubeInfo.videoId;
     model.thumbnail = currentYoutubeInfo.thumbnail;
     model.videoPlayTime.set(currentYoutubeInfo.playTime);
-
+    model.aspectRatio.set(16 / 9);
     oldAcc.accModel.accType = ACCType.youtube;
 
     await oldAcc.accChild.playManager.pushFromDropZone(oldAcc, model, clean: true);

@@ -110,7 +110,7 @@ class StudioSubScreenState extends State<StudioSubScreen> {
 
           return SafeArea(
             child: Stack(children: [
-              isNarrow ? narrowLayout(isShort) : wideLayout(isShort),
+              isNarrow ? narrowLayout(isShort, bookManager) : wideLayout(isShort, bookManager),
               SideBar(user: widget.user),
             ]),
             // child: Column(children: [
@@ -129,19 +129,21 @@ class StudioSubScreenState extends State<StudioSubScreen> {
     });
   }
 
-  Widget wideLayout(bool isShort) {
+  Widget wideLayout(bool isShort, BookManager bookManager) {
     if (isShort) {
       return Container();
     }
-
+    bool isReadOnly = bookManager.defaultBook!.readOnly.value;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // We want this side menu only for large screen
-        const SizedBox(
-          width: layoutPageWidth,
-          child: PagesFrame(isNarrow: false),
-        ),
+        isReadOnly
+            ? Container()
+            : const SizedBox(
+                width: layoutPageWidth,
+                child: PagesFrame(isNarrow: false),
+              ),
         Expanded(
           child: //ArtBoardScreen(),
               Stack(
@@ -152,15 +154,17 @@ class StudioSubScreenState extends State<StudioSubScreen> {
             ],
           ),
         ),
-        SizedBox(
-          width: layoutPropertiesWidth,
-          child: PropertiesFrame(isNarrow: false),
-        ),
+        isReadOnly == false
+            ? SizedBox(
+                width: layoutPropertiesWidth,
+                child: PropertiesFrame(isNarrow: false),
+              )
+            : Container()
       ],
     );
   }
 
-  Widget narrowLayout(bool isShort) {
+  Widget narrowLayout(bool isShort, BookManager bookManager) {
     if (isShort) {
       return Container();
     }
@@ -185,6 +189,7 @@ class StudioSubScreenState extends State<StudioSubScreen> {
 
   PreferredSizeWidget buildAppBar(BookManager bookManager) {
     bool isNarrow = MediaQuery.of(context).size.width <= minWindowWidth;
+    bool isReadOnly = bookManager.isReadOnly();
     return AppBar(
       backgroundColor: MyColors.appbar,
       title: Text(
@@ -192,7 +197,11 @@ class StudioSubScreenState extends State<StudioSubScreen> {
         style: MyTextStyles.h5,
       ),
       leadingWidth: isNarrow ? 200 : 600,
-      leading: isNarrow ? logoIcon() : appBarLeading(),
+      leading: isNarrow
+          ? logoIcon()
+          : isReadOnly
+              ? appBarLeadingReadOnly()
+              : appBarLeading(),
       actions: isNarrow ? [] : appBarAction(),
     );
   }
@@ -239,13 +248,13 @@ class StudioSubScreenState extends State<StudioSubScreen> {
         icon: const Icon(Icons.undo),
         onPressed: () {
           accManagerHolder!.undo(null, context);
-          pageManagerHolder!.setState();
+          pageManagerHolder!.notify();
         },
       ),
       IconButton(
           onPressed: () {
             accManagerHolder!.redo(null, context);
-            pageManagerHolder!.setState();
+            pageManagerHolder!.notify();
           },
           icon: const Icon(Icons.redo)),
       IconButton(onPressed: () {}, icon: const Icon(Icons.zoom_in)),
@@ -269,12 +278,54 @@ class StudioSubScreenState extends State<StudioSubScreen> {
       //   onToggle: (index) {
       //     logHolder.log('toggle button pressed = $index');
       //     widget.isEditMode = (index == 0);
-      //     accManagerHolder!.setState();
+      //     accManagerHolder!.notify();;
       //   },
       // ),
 
       //appBarTitle(400),
       //IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
+    ]);
+  }
+
+  Widget appBarLeadingReadOnly() {
+    return Row(children: [
+      logoIcon(),
+      IconButton(
+          onPressed: () {
+            if (pageManagerHolder != null) {
+              setState(() {
+                pageManagerHolder!.prev(context);
+              });
+            }
+          },
+          icon: const Icon(
+            Icons.skip_previous_outlined,
+            semanticLabel: "previos page",
+          )),
+      Text('${pageManagerHolder!.getPageIndex()} / ${pageManagerHolder!.getPageCount()}'),
+      IconButton(
+        icon: const Icon(Icons.skip_next_outlined),
+        onPressed: () {
+          if (pageManagerHolder != null) {
+            setState(() {
+              pageManagerHolder!.next(context);
+            });
+          }
+        },
+      ),
+
+      iconWithText(
+          text: MyStrings.editMode,
+          iconImage: "assets/Publish.png",
+          onPressed: () {
+            bookManagerHolder!.defaultBook!.readOnly.set(false);
+            bookManagerHolder!.notify();
+            accManagerHolder!.notifyAll();
+            accManagerHolder!.unshowMenu(context);
+          }),
+
+      //IconButton(onPressed: () {}, icon: const Icon(Icons.zoom_in)),
+      //IconButton(onPressed: () {}, icon: const Icon(Icons.zoom_out)),
     ]);
   }
 
@@ -308,24 +359,7 @@ class StudioSubScreenState extends State<StudioSubScreen> {
         },
         child: Icon(isPlayed ? Icons.pause_presentation : Icons.slideshow),
       ),
-      ElevatedButton(
-          style: ButtonStyle(
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              backgroundColor: MaterialStateProperty.all(MyColors.primaryColor)),
-          onPressed: () {},
-          child: Row(mainAxisSize: MainAxisSize.min, children: const [
-            ImageIcon(
-              AssetImage(
-                "assets/Publish.png",
-              ),
-              size: 20, //MySizes.imageIcon,
-              color: MyColors.secondaryColor,
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Text('publish'),
-          ])),
+      iconWithText(text: 'publish', iconImage: "assets/Publish.png", onPressed: () {}),
       ElevatedButton(
         style: ButtonStyle(backgroundColor: MaterialStateProperty.all(MyColors.primaryColor)),
         onPressed: () {

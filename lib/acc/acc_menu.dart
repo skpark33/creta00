@@ -1,3 +1,4 @@
+import 'package:creta00/book_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -36,8 +37,8 @@ class ACCMenu {
   double buttonWidth = 30.0;
   double buttonHeight = 30.0;
 
-  void setState() {
-    logHolder.log("ACCMenu::setState()", level: 6);
+  void notify() {
+    logHolder.log("ACCMenu::notify();", level: 6);
     entry!.markNeedsBuild();
   }
 
@@ -50,7 +51,7 @@ class ACCMenu {
       if (entry != null) {
         entry!.remove();
         entry = null;
-        //setState();
+        //notify();;
       }
     }
   }
@@ -96,6 +97,8 @@ class ACCMenu {
 
     //logHolder.log('showOverlay', level: 6);
 
+    bool isReadOnly = bookManagerHolder!.defaultBook!.readOnly.value;
+
     return Visibility(
       visible: _visible,
       child: Positioned(
@@ -121,91 +124,96 @@ class ACCMenu {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 5),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      HoverButton(
-                          width: buttonWidth,
-                          height: buttonHeight,
-                          onEnter: onEnter,
-                          onExit: onExit,
-                          onPressed: () {
-                            accManagerHolder!.up(context);
-                          },
-                          icon: const Icon(Icons.flip_to_front)),
-                      HoverButton(
-                          width: buttonWidth,
-                          height: buttonHeight,
-                          onEnter: onEnter,
-                          onExit: onExit,
-                          onPressed: () {
-                            accManagerHolder!.down(context);
-                          },
-                          icon: const Icon(Icons.flip_to_back)),
-                      HoverButton(
-                          width: buttonWidth,
-                          height: buttonHeight,
-                          onEnter: () {},
-                          onExit: () {},
-                          onPressed: () {
-                            accManagerHolder!.setPrimary();
-                            accManagerHolder!.notify();
-                            setState();
-                            logHolder.log('primary=${accManagerHolder!.isPrimary()}');
-                          },
-                          icon: Icon(Icons.star,
-                              color: accManagerHolder!.isPrimary() ? Colors.red : Colors.black)),
-                      HoverButton(
-                          width: buttonWidth,
-                          height: buttonHeight,
-                          onEnter: () {},
-                          onExit: () {},
-                          onPressed: () {
-                            accManagerHolder!.removeACC(context);
-                          },
-                          icon: const Icon(Icons.delete)),
-                      HoverButton(
-                        width: buttonWidth,
-                        height: buttonHeight,
-                        onEnter: () {},
-                        onExit: () {},
-                        onPressed: () {
-                          accManagerHolder!.toggleFullscreen(context);
-                        },
-                        icon: Icon(accManagerHolder!.isFullscreen()
-                            ? Icons.fullscreen_exit_outlined
-                            : Icons.fullscreen), // fullscreen_exit,
-                      ),
-                      // edit 버튼
-                      (acc != null && acc.accModel.accType == ACCType.youtube)
-                          ? HoverButton.withIconWidget(
-                              width: buttonWidth,
-                              height: buttonHeight,
-                              onEnter: () {},
-                              onExit: () {},
-                              onPressed: () {
-                                onYoutubePressed(context, acc);
-                              },
-                              iconFile: "assets/youtube.png",
-                            )
-                          : HoverButton(
-                              width: buttonWidth,
-                              height: buttonHeight,
-                              onEnter: () {},
-                              onExit: () {},
-                              onPressed: () {},
-                              icon: const Icon(Icons.edit_outlined),
-                            )
-                    ],
-                  ),
-                  const SizedBox(height: 5),
+                  isReadOnly == false ? basicMenu(context, acc) : Container(),
                   menuByContentType(context, acc),
                 ]),
           ),
           //),
         ),
+      ),
+    );
+  }
+
+  Widget basicMenu(BuildContext context, ACC? acc) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          HoverButton(
+              width: buttonWidth,
+              height: buttonHeight,
+              onEnter: onEnter,
+              onExit: onExit,
+              onPressed: () {
+                accManagerHolder!.up(context);
+              },
+              icon: const Icon(Icons.flip_to_front)),
+          HoverButton(
+              width: buttonWidth,
+              height: buttonHeight,
+              onEnter: onEnter,
+              onExit: onExit,
+              onPressed: () {
+                accManagerHolder!.down(context);
+              },
+              icon: const Icon(Icons.flip_to_back)),
+          HoverButton(
+              width: buttonWidth,
+              height: buttonHeight,
+              onEnter: () {},
+              onExit: () {},
+              onPressed: () {
+                accManagerHolder!.setPrimary();
+                accManagerHolder!.notify();
+                notify();
+                logHolder.log('primary=${accManagerHolder!.isPrimary()}');
+              },
+              icon: Icon(Icons.star,
+                  color: accManagerHolder!.isPrimary() ? Colors.red : Colors.black)),
+          HoverButton(
+              width: buttonWidth,
+              height: buttonHeight,
+              onEnter: () {},
+              onExit: () {},
+              onPressed: () {
+                accManagerHolder!.removeACC(context);
+              },
+              icon: const Icon(Icons.delete)),
+          HoverButton(
+            width: buttonWidth,
+            height: buttonHeight,
+            onEnter: () {},
+            onExit: () {},
+            onPressed: () {
+              accManagerHolder!.toggleFullscreen(context);
+            },
+            icon: Icon(accManagerHolder!.isFullscreen()
+                ? Icons.fullscreen_exit_outlined
+                : Icons.fullscreen), // fullscreen_exit,
+          ),
+          // edit 버튼
+          (acc != null && acc.accModel.accType == ACCType.youtube)
+              ? HoverButton.withIconWidget(
+                  width: buttonWidth,
+                  height: buttonHeight,
+                  onEnter: () {},
+                  onExit: () {},
+                  onPressed: () {
+                    onYoutubePressed(context, acc);
+                  },
+                  iconFile: "assets/youtube.png",
+                )
+              : HoverButton(
+                  width: buttonWidth,
+                  height: buttonHeight,
+                  onEnter: () {},
+                  onExit: () {},
+                  onPressed: () {},
+                  icon: const Icon(Icons.edit_outlined),
+                )
+        ],
       ),
     );
   }
@@ -244,27 +252,30 @@ class ACCMenu {
     }
     logHolder.log('menuByContentType', level: 6);
 
-    return FutureBuilder(
-        future: acc.accChild.playManager.getCurrentData(),
-        builder: (BuildContext context, AsyncSnapshot<CurrentData> snapshot) {
-          if (snapshot.hasData == false) {
-            //해당 부분은 data를 아직 받아 오지 못했을때 실행되는 부분을 의미한다.
-            return Container();
-          }
-          if (snapshot.hasError) {
-            //error가 발생하게 될 경우 반환하게 되는 부분
-            return errMsgWidget(snapshot);
-          }
-          if (snapshot.connectionState == ConnectionState.done) {
-            if ((_type == ContentsType.video || snapshot.data!.type == ContentsType.video) ||
-                (_type == ContentsType.youtube || snapshot.data!.type == ContentsType.youtube)) {
-              return videoMenu(context, snapshot.data!.state, snapshot.data!.mute, acc);
-            } else if (_type == ContentsType.image || snapshot.data!.type == ContentsType.image) {
-              return imageMenu(context, snapshot.data!.state, snapshot.data!.mute, acc);
+    return Padding(
+      padding: const EdgeInsets.only(top: 5),
+      child: FutureBuilder(
+          future: acc.accChild.playManager.getCurrentData(),
+          builder: (BuildContext context, AsyncSnapshot<CurrentData> snapshot) {
+            if (snapshot.hasData == false) {
+              //해당 부분은 data를 아직 받아 오지 못했을때 실행되는 부분을 의미한다.
+              return Container();
             }
-          }
-          return Container();
-        });
+            if (snapshot.hasError) {
+              //error가 발생하게 될 경우 반환하게 되는 부분
+              return errMsgWidget(snapshot);
+            }
+            if (snapshot.connectionState == ConnectionState.done) {
+              if ((_type == ContentsType.video || snapshot.data!.type == ContentsType.video) ||
+                  (_type == ContentsType.youtube || snapshot.data!.type == ContentsType.youtube)) {
+                return videoMenu(context, snapshot.data!.state, snapshot.data!.mute, acc);
+              } else if (_type == ContentsType.image || snapshot.data!.type == ContentsType.image) {
+                return imageMenu(context, snapshot.data!.state, snapshot.data!.mute, acc);
+              }
+            }
+            return Container();
+          }),
+    );
   }
 
   Widget videoMenu(BuildContext context, PlayState state, bool mute, ACC? acc) {
@@ -302,7 +313,7 @@ class ACCMenu {
               } else {
                 accManagerHolder!.pause(context);
               }
-              setState();
+              notify();
             },
             icon: Icon(state != PlayState.start ? Icons.play_arrow : Icons.pause)),
         //icon: const Icon(Icons.pause)),
@@ -314,7 +325,7 @@ class ACCMenu {
             height: buttonHeight,
             onPressed: () {
               accManagerHolder!.mute(context);
-              setState();
+              notify();
             },
             icon: Icon(mute ? Icons.volume_off : Icons.volume_up)),
       ],
@@ -359,7 +370,7 @@ class ACCMenu {
                   } else {
                     accManagerHolder!.pause(context, byManual: true);
                   }
-                  setState();
+                  notify();
                 },
                 icon: Icon(state != PlayState.start ? Icons.play_arrow : Icons.pause)),
             getProgressWidget(context, acc),

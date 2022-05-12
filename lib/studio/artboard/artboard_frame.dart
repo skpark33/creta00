@@ -145,7 +145,7 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
                 onPanDown: (details) {
                   if (pageManagerHolder != null && accManagerHolder != null) {
                     accManagerHolder!.setCurrentMid('');
-                    accManagerHolder!.setState();
+                    accManagerHolder!.notifyAll();
                     logHolder.log('artboard onPanDown : ${details.localPosition}', level: 5);
                     accManagerHolder!.unshowMenu(context);
                     pageManagerHolder!.setAsPage();

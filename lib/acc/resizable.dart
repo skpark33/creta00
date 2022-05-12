@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../model/acc_property.dart';
 import '../constants/styles.dart';
 import '../common/util/my_utils.dart';
+import '../model/model_enums.dart';
 
 const double resizeButtonSize = 40.0;
 List<CursorType> cursorList = [
@@ -46,6 +47,7 @@ class ResiablePainter extends CustomPainter {
   final double radiusTopRight;
   final double radiusBottomLeft;
   final double radiusBottomRight;
+  final ACCType accType;
   //final List<bool> isEdgeHover;
   //final List<Rect> rect;
   //Size _realSize = const Size(0, 0);
@@ -73,7 +75,8 @@ class ResiablePainter extends CustomPainter {
       this.radiusTopLeft,
       this.radiusTopRight,
       this.radiusBottomLeft,
-      this.radiusBottomRight)
+      this.radiusBottomRight,
+      this.accType)
       : super() {
     bgPaint.color = MyColors.gray02.withOpacity(.7);
     fgPaint.color = Colors.white;
@@ -154,24 +157,28 @@ class ResiablePainter extends CustomPainter {
         i++;
       }
     }
-    if (isHover || isRadiused) {
-      List<Offset> bigList = [
-        Offset(1.0 * pi, 0.5 * pi),
-        Offset(1.5 * pi, 0.5 * pi),
-        Offset(0.0 * pi, 0.5 * pi),
-        Offset(0.5 * pi, 0.5 * pi),
-      ];
-      List<Offset> smallList = [
-        Offset(1.1 * pi, 0.3 * pi),
-        Offset(1.6 * pi, 0.3 * pi),
-        Offset(0.1 * pi, 0.3 * pi),
-        Offset(0.6 * pi, 0.3 * pi),
-      ];
-      List<Rect> arcList = getRadiusRect(
-          size, radiusTopLeft, radiusTopRight, radiusBottomRight, radiusBottomLeft, widgetSize);
-      for (int i = 0; i < 4; i++) {
-        drawArcHandle(canvas, arcList[i], bigList[i].dx, bigList[i].dy, smallList[i].dx,
-            smallList[i].dy, isRadiusHover[i]);
+    if (accType != ACCType.youtube) {
+      // youtube 는 corner radius 를 줄 수 없다.
+      if (isHover || isRadiused) {
+        List<Offset> bigList = [
+          Offset(1.0 * pi, 0.5 * pi),
+          Offset(1.5 * pi, 0.5 * pi),
+          Offset(0.0 * pi, 0.5 * pi),
+          Offset(0.5 * pi, 0.5 * pi),
+        ];
+        List<Offset> smallList = [
+          Offset(1.1 * pi, 0.3 * pi),
+          Offset(1.6 * pi, 0.3 * pi),
+          Offset(0.1 * pi, 0.3 * pi),
+          Offset(0.6 * pi, 0.3 * pi),
+        ];
+        List<Rect> arcList = getRadiusRect(
+            size, radiusTopLeft, radiusTopRight, radiusBottomRight, radiusBottomLeft, widgetSize);
+
+        for (int i = 0; i < 4; i++) {
+          drawArcHandle(canvas, arcList[i], bigList[i].dx, bigList[i].dy, smallList[i].dx,
+              smallList[i].dy, isRadiusHover[i]);
+        }
       }
     }
   }
