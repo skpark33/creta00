@@ -203,8 +203,8 @@ class YoutubePlayerWidgetState extends State<YoutubePlayerWidget> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      print('afterBuild YoutubePlayerController');
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      print('afterBuild Yout!ubePlayerController');
       player!.controller!.listen((event) {
         if (event.playerState == PlayerState.ended) {
           print('listen, ${event.playerState}');

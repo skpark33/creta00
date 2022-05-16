@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 
 class ProgressNotifier extends ChangeNotifier {
   double progress = 0.0;
-  void setProgress(double val) {
+  String mid = '';
+  void setProgress(double val, String pmid) {
     progress = val;
+    mid = pmid;
     notifyListeners();
   }
 }

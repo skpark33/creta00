@@ -917,7 +917,7 @@ class ACC {
   void setBgColor(Color color) {
     accModel.bgColor.set(color);
     notify();
-    accManagerHolder!.notify();
+    accManagerHolder!.notifyAll();
   }
 
   bool _validationCheck(

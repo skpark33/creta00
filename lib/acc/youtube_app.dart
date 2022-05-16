@@ -49,7 +49,7 @@ class YoutubeAppState extends State<YoutubeApp> {
   void initState() {
     super.initState();
     //inBuild();
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       logHolder.log('afterBuild YoutubePlayerController');
       // if (player!.controller != null) {
       //   player!.controller!.nextVideo();

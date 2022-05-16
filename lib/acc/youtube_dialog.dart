@@ -436,7 +436,7 @@ class ThumbnailSwipListState extends State<ThumbnailSwipList> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {});
   }
 
   @override
@@ -444,7 +444,8 @@ class ThumbnailSwipListState extends State<ThumbnailSwipList> {
     return Consumer<YoutubeInfo>(builder: (context, youtubeInfo, child) {
       widget.reorderMap();
       return Scrollbar(
-          isAlwaysShown: true,
+          //isAlwaysShown: true,
+          thumbVisibility: true,
           controller: _scrollController,
           thickness: 20,
           child: ReorderableListView(

@@ -113,7 +113,7 @@ class SimpleVideoPlayerState extends State<SimpleVideoPlayer> {
   }
 
   Future<void> afterBuild() async {
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {});
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
   }
 
   @override

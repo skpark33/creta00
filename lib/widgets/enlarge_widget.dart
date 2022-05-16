@@ -31,8 +31,8 @@ class EnlargeWidgetState extends State<EnlargeWidget> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      //initAnimeTimer();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      //initAnimeTimer();!
     });
   }
 

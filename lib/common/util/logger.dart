@@ -62,9 +62,10 @@ class DebugBarState extends State<DebugBar> {
               flex: 19,
               child: Scrollbar(
                 thickness: 20,
-                hoverThickness: 25,
-                isAlwaysShown: true,
-                showTrackOnHover: true,
+                //hoverThickness: 25,
+                //isAlwaysShown: true,
+                thumbVisibility: true,
+                //showTrackOnHover: true,
                 child: ListView(
                   padding: EdgeInsets.only(left: 20),
                   shrinkWrap: true,

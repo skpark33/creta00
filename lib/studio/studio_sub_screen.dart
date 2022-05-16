@@ -54,7 +54,7 @@ class StudioSubScreenState extends State<StudioSubScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       logHolder.log('afterBuild StudioSubScreen', level: 6);
       if (accManagerHolder!.registerOverayAll(context)) {
         //setState(() {});

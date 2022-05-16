@@ -356,16 +356,22 @@ class PlayManager {
               currentModel!.manualState == PlayState.start) {
             _currentPlaySec += _timeGap;
             double value = playTime <= 0 ? 0 : _currentPlaySec / playTime;
-            if (progressHolder != null) {
-              progressHolder!.setProgress(value);
+            ContentsModel? selectedModel = await selectedModelHolder!.getModel();
+            if (selectedModel != null &&
+                progressHolder != null &&
+                currentModel!.mid == selectedModel.mid) {
+              progressHolder!.setProgress(value, currentModel!.mid);
             }
           }
           return;
         }
         // 교체 시간이 되었다
         //if (currentModel!.playState == PlayState.start) {
-        if (progressHolder != null) {
-          progressHolder!.setProgress(0);
+        ContentsModel? selectedModel = await selectedModelHolder!.getModel();
+        if (selectedModel != null &&
+            progressHolder != null &&
+            currentModel!.mid == selectedModel.mid) {
+          progressHolder!.setProgress(0, currentModel!.mid);
         }
         next();
 
@@ -661,7 +667,7 @@ class PlayManager {
   }
 
   bool _toNext() {
-    logHolder.log('_toNext($_currentOrder)', level: 6);
+    //logHolder.log('_toNext($_currentOrder)', level: 6);
     int counter = 0;
     int lastOrder = getLastOrder();
     while (counter <= lastOrder) {
@@ -672,7 +678,7 @@ class PlayManager {
       AbsPlayWidget? player = _orderMap[newOrder];
       if (player != null) {
         if (!_isRemoved(player)) {
-          logHolder.log('return _toNext($newOrder)', level: 6);
+          //logHolder.log('return _toNext($newOrder)', level: 6);
           _currentOrder = newOrder;
           return true;
         }

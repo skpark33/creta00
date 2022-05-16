@@ -1,7 +1,7 @@
 import 'package:creta00/common/util/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rive_loading/rive_loading.dart';
+//import 'package:rive_loading/rive_loading.dart';
 //import 'package:progress_indicators/progress_indicators.dart';
 import 'package:creta00/studio/save_manager.dart';
 import 'package:creta00/common/effect/wave_effect.dart';
@@ -147,25 +147,25 @@ class SaveIndicatorState extends State<SaveIndicator> {
     );
   }
 
-  Widget riveIndicator(String text) {
-    return Container(
-      height: 100,
-      color: color,
-      child: RiveLoading(
-        name: 'new_file.riv',
-        loopAnimation: text,
-        endAnimation: 'success',
-        width: 200,
-        height: 200,
-        fit: BoxFit.fill,
-        until: () => Future.delayed(const Duration(seconds: 5)),
-        onSuccess: (_) {
-          logHolder.log('Finished');
-        },
-        onError: (err, stack) {
-          logHolder.log('error: $err', level: 7);
-        },
-      ),
-    );
-  }
+  // Widget riveIndicator(String text) {
+  //   return Container(
+  //     height: 100,
+  //     color: color,
+  //     child: RiveLoading(
+  //       name: 'new_file.riv',
+  //       loopAnimation: text,
+  //       endAnimation: 'success',
+  //       width: 200,
+  //       height: 200,
+  //       fit: BoxFit.fill,
+  //       until: () => Future.delayed(const Duration(seconds: 5)),
+  //       onSuccess: (_) {
+  //         logHolder.log('Finished');
+  //       },
+  //       onError: (err, stack) {
+  //         logHolder.log('error: $err', level: 7);
+  //       },
+  //     ),
+  //   );
+  // }
 }

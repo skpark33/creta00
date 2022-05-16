@@ -14,7 +14,6 @@ import 'package:creta00/model/model_enums.dart';
 import 'package:creta00/acc/acc.dart';
 import 'package:creta00/player/abs_player.dart';
 
-import '../../common/util/my_utils.dart';
 import '../../constants/styles.dart';
 
 // ignore: must_be_immutable
@@ -141,7 +140,7 @@ class ImagePlayerWidgetState extends State<ImagePlayerWidget> {
   }
 
   Future<void> afterBuild() async {
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       widget.afterBuild();
     });
   }
@@ -159,7 +158,7 @@ class ImagePlayerWidgetState extends State<ImagePlayerWidget> {
     } else {
       widget.model!.setPlayState(PlayState.pause);
     }
-    Size outSize = widget.getOuterSize(widget.model!.aspectRatio.value);
+    //Size outSize = widget.getOuterSize(widget.model!.aspectRatio.value);
 
     double topLeft = widget.acc.accModel.radiusTopLeft.value;
     double topRight = widget.acc.accModel.radiusTopRight.value;
@@ -173,47 +172,47 @@ class ImagePlayerWidgetState extends State<ImagePlayerWidget> {
     }
     logHolder.log("uri=<$uri>", level: 5);
 
-    return ClipRRect(
-      borderRadius: BorderRadius.only(
-        topRight: Radius.circular(topRight),
-        topLeft: Radius.circular(topLeft),
-        bottomRight: Radius.circular(bottomRight),
-        bottomLeft: Radius.circular(bottomLeft),
-      ),
-      child: SizedBox.expand(
-        child: FittedBox(
-          alignment: Alignment.center,
-          fit: BoxFit.cover,
-          child: SizedBox(
-            width: outSize.width,
-            height: outSize.height,
-            child: uri.isEmpty
-                ? noImage(errMsg)
-                : Image.network(
-                    uri,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      errMsg = '${widget.model!.name} ${error.toString()}';
-                      logHolder.log(errMsg, level: 7);
-                      return noImage(errMsg);
-                    },
-                  ),
-          ),
-        ),
-      ),
-    );
-
-    // return Container(
-    //   decoration: BoxDecoration(
-    //       //shape: BoxShape.circle,
-    //       borderRadius: BorderRadius.only(
-    //         topLeft: Radius.circular(topLeft),
-    //         topRight: Radius.circular(topRight),
-    //         bottomLeft: Radius.circular(bottomLeft),
-    //         bottomRight: Radius.circular(bottomRight),
+    // return ClipRRect(
+    //   borderRadius: BorderRadius.only(
+    //     topRight: Radius.circular(topRight),
+    //     topLeft: Radius.circular(topLeft),
+    //     bottomRight: Radius.circular(bottomRight),
+    //     bottomLeft: Radius.circular(bottomLeft),
+    //   ),
+    //   child: SizedBox.expand(
+    //     child: FittedBox(
+    //       alignment: Alignment.center,
+    //       fit: BoxFit.cover,
+    //       child: SizedBox(
+    //         width: outSize.width,
+    //         height: outSize.height,
+    //         child: uri.isEmpty
+    //             ? noImage(errMsg)
+    //             : Image.network(
+    //                 uri,
+    //                 fit: BoxFit.cover,
+    //                 errorBuilder: (context, error, stackTrace) {
+    //                   errMsg = '${widget.model!.name} ${error.toString()}';
+    //                   logHolder.log(errMsg, level: 7);
+    //                   return noImage(errMsg);
+    //                 },
+    //               ),
     //       ),
-    //       //image: DecorationImage(fit: BoxFit.fill, image: NetworkImage(widget.model!.url))),
-    //       image: DecorationImage(fit: BoxFit.fill, image: NetworkImage(uri))),
+    //     ),
+    //   ),
     // );
+
+    return Container(
+      decoration: BoxDecoration(
+          //shape: BoxShape.circle,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(topLeft),
+            topRight: Radius.circular(topRight),
+            bottomLeft: Radius.circular(bottomLeft),
+            bottomRight: Radius.circular(bottomRight),
+          ),
+          //image: DecorationImage(fit: BoxFit.fill, image: NetworkImage(widget.model!.url))),
+          image: DecorationImage(fit: BoxFit.fill, image: NetworkImage(uri))),
+    );
   }
 }

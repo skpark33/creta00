@@ -45,7 +45,7 @@ class ArtBoardScreenState extends State<ArtBoardScreen> {
     super.initState();
     onPageSelected(pageManagerHolder!.getSelected());
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       registerStickMenuOverlay(context);
     });
   }

@@ -593,14 +593,14 @@ class ACCManager extends ChangeNotifier {
 
   void undo(ACC? acc, BuildContext context) {
     mychangeStack.undo();
-    accManagerHolder!.notifyAll();
-    accManagerHolder!.unshowMenu(context);
+    notifyAll();
+    unshowMenu(context);
   }
 
   void redo(ACC? acc, BuildContext context) {
     mychangeStack.redo();
-    accManagerHolder!.notifyAll();
-    accManagerHolder!.unshowMenu(context);
+    notifyAll();
+    unshowMenu(context);
   }
 
   void nextACC(BuildContext context) {
@@ -627,7 +627,7 @@ class ACCManager extends ChangeNotifier {
 
   void setACCOrderVisible(bool visible) {
     orderVisible = visible;
-    accManagerHolder!.notifyAll();
+    notifyAll();
   }
 
   Future<void> getNeedleImage() async {
@@ -674,8 +674,8 @@ class ACCManager extends ChangeNotifier {
       return;
     }
     acc.toggleFullscreen();
-    accManagerHolder!.notifyAll();
-    accManagerHolder!.unshowMenu(context);
+    notifyAll();
+    unshowMenu(context);
   }
 
   bool isFullscreen() {

@@ -12,7 +12,7 @@ import 'package:rxdart/rxdart.dart';
 import '../../common/buttons/basic_button.dart';
 import '../../common/util/textfileds.dart';
 import '../../constants/strings.dart';
-import 'menu_item.dart';
+import 'menu_item.dart' as my_menu;
 import '../../common/util/logger.dart';
 import '../../constants/styles.dart';
 import '../../db/creta_db.dart';
@@ -210,7 +210,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
 
   List<Widget> menuList() {
     return [
-      MenuItem(
+      my_menu.MenuItem(
         icon: Icons.create_new_folder,
         title: MyStrings.newBook,
         onTap: () {
@@ -218,7 +218,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
           //BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.homePageClickedEvent);
         },
       ),
-      MenuItem(
+      my_menu.MenuItem(
         icon: Icons.folder_open,
         title: MyStrings.open,
         onTap: () {
@@ -226,12 +226,12 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
           //BlocProvider.of<NavigationBloc>(context).add(NavigationEvents.myAccountClickedEvent);
         },
       ),
-      MenuItem(
+      my_menu.MenuItem(
         onTap: () {},
         icon: Icons.last_page,
         title: MyStrings.recent,
       ),
-      MenuItem(
+      my_menu.MenuItem(
         onTap: () {},
         icon: Icons.paste,
         title: MyStrings.bring,
@@ -243,7 +243,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
         indent: 32,
         endIndent: 32,
       ),
-      MenuItem(
+      my_menu.MenuItem(
         onTap: () {
           DbActions.saveAll();
         },
@@ -254,7 +254,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          MenuItem(
+          my_menu.MenuItem(
               onTap: () {
                 setState(() {
                   _saveAsMode = !_saveAsMode;
@@ -309,7 +309,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
               ))
         ],
       ),
-      MenuItem(
+      my_menu.MenuItem(
         onTap: () {},
         icon: Icons.send,
         title: MyStrings.publish,
@@ -321,7 +321,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin<S
         indent: 32,
         endIndent: 32,
       ),
-      MenuItem(
+      my_menu.MenuItem(
         onTap: () {},
         icon: Icons.book,
         title: MyStrings.bookPropChange,

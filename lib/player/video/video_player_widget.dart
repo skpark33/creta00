@@ -148,7 +148,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   }
 
   Future<void> afterBuild() async {
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       logHolder.log('afterBuild video', level: 5);
       if (widget.wcontroller != null && widget.model != null) {
         widget.model!.aspectRatio

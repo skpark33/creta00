@@ -56,8 +56,8 @@ class CretaMainScreenState extends State<CretaMainScreen> {
   void initState() {
     super.initState();
     bookManagerHolder = BookManager();
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      logHolder.log('afterBuild CretaMainScreen', level: 5);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      logHolder.log('afterBu!ild CretaMainScreen', level: 5);
     });
   }
 
@@ -495,7 +495,7 @@ class CretaMainScreenState extends State<CretaMainScreen> {
                       top: 10,
                       left: 10,
                       child: Text(
-                        "Ver 0.100",
+                        "Ver 0.10.1",
                         style: MyTextStyles.body1.copyWith(color: Colors.white),
                       )),
                 ],

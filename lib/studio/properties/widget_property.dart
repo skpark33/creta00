@@ -209,7 +209,7 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
 
     super.initState();
 
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (accWasNotSelected != null) {
         logHolder.log('afterBuild WidgetPropertyState', level: 6);
         accWasNotSelected!.notify();
@@ -223,7 +223,8 @@ class WidgetPropertyState extends State<WidgetProperty> with SingleTickerProvide
     return Scrollbar(
       thickness: 8.0,
       scrollbarOrientation: ScrollbarOrientation.left,
-      isAlwaysShown: true,
+      thumbVisibility: true,
+      //isAlwaysShown: true,
       controller: _scrollController,
       child: Consumer<ACCManager>(builder: (context, accManager, child) {
         //logHolder.log('Consumer of real accManager');

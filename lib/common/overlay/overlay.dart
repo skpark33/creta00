@@ -145,8 +145,8 @@ class OverlayEntry extends ChangeNotifier {
     if (!overlay.mounted) return;
 
     overlay._entries.remove(this);
-    if (SchedulerBinding.instance!.schedulerPhase == SchedulerPhase.persistentCallbacks) {
-      SchedulerBinding.instance!.addPostFrameCallback((Duration duration) {
+    if (SchedulerBinding.instance.schedulerPhase == SchedulerPhase.persistentCallbacks) {
+      SchedulerBinding.instance.addPostFrameCallback((Duration duration) {
         overlay._markDirty();
       });
     } else {
@@ -291,10 +291,12 @@ class Overlay extends StatefulWidget {
               '${debugRequiredFor.runtimeType} widgets require an Overlay widget ancestor for correct operation.'),
           ErrorHint(
               'The most common way to add an Overlay to an application is to include a MaterialApp or Navigator widget in the runApp() call.'),
-          DiagnosticsProperty<Widget>('The specific widget that failed to find an overlay was', debugRequiredFor,
+          DiagnosticsProperty<Widget>(
+              'The specific widget that failed to find an overlay was', debugRequiredFor,
               style: DiagnosticsTreeStyle.errorProperty),
           if (context.widget != debugRequiredFor)
-            context.describeElement('The context from which that widget was searching for an overlay was'),
+            context.describeElement(
+                'The context from which that widget was searching for an overlay was'),
         ];
 
         throw FlutterError.fromParts(information);
@@ -374,17 +376,24 @@ class OverlayState extends State<Overlay> with TickerProviderStateMixin {
     });
   }
 
-  bool _debugVerifyInsertPosition(OverlayEntry? above, OverlayEntry? below, {Iterable<OverlayEntry>? newEntries}) {
+  bool _debugVerifyInsertPosition(OverlayEntry? above, OverlayEntry? below,
+      {Iterable<OverlayEntry>? newEntries}) {
     assert(
       above == null || below == null,
       'Only one of `above` and `below` may be specified.',
     );
     assert(
-      above == null || (above._overlay == this && _entries.contains(above) && (newEntries?.contains(above) ?? true)),
+      above == null ||
+          (above._overlay == this &&
+              _entries.contains(above) &&
+              (newEntries?.contains(above) ?? true)),
       'The provided entry used for `above` must be present in the Overlay${newEntries != null ? ' and in the `newEntriesList`' : ''}.',
     );
     assert(
-      below == null || (below._overlay == this && _entries.contains(below) && (newEntries?.contains(below) ?? true)),
+      below == null ||
+          (below._overlay == this &&
+              _entries.contains(below) &&
+              (newEntries?.contains(below) ?? true)),
       'The provided entry used for `below` must be present in the Overlay${newEntries != null ? ' and in the `newEntriesList`' : ''}.',
     );
     return true;
@@ -412,11 +421,13 @@ class OverlayState extends State<Overlay> with TickerProviderStateMixin {
         newEntries is List<OverlayEntry> ? newEntries : newEntries.toList(growable: false);
     assert(_debugVerifyInsertPosition(above, below, newEntries: newEntriesList));
     assert(
-      newEntriesList.every((OverlayEntry entry) => entry._overlay == null || entry._overlay == this),
+      newEntriesList
+          .every((OverlayEntry entry) => entry._overlay == null || entry._overlay == this),
       'One or more of the specified entries are already present in another Overlay.',
     );
     assert(
-      newEntriesList.every((OverlayEntry entry) => _entries.indexOf(entry) == _entries.lastIndexOf(entry)),
+      newEntriesList
+          .every((OverlayEntry entry) => _entries.indexOf(entry) == _entries.lastIndexOf(entry)),
       'One or more of the specified entries are specified multiple times.',
     );
     if (newEntriesList.isEmpty) return;
@@ -727,7 +738,8 @@ class _RenderTheatre extends RenderBox with ContainerRenderObjectMixin<RenderBox
         childParentData.offset = _resolvedAlignment!.alongOffset(size - child.size as Offset);
       } else {
         _hasVisualOverflow =
-            RenderStack.layoutPositionedChild(child, childParentData, size, _resolvedAlignment!) || _hasVisualOverflow;
+            RenderStack.layoutPositionedChild(child, childParentData, size, _resolvedAlignment!) ||
+                _hasVisualOverflow;
       }
 
       assert(child.parentData == childParentData);
@@ -801,7 +813,8 @@ class _RenderTheatre extends RenderBox with ContainerRenderObjectMixin<RenderBox
   }
 
   @override
-  Rect? describeApproximatePaintClip(RenderObject child) => _hasVisualOverflow ? Offset.zero & size : null;
+  Rect? describeApproximatePaintClip(RenderObject child) =>
+      _hasVisualOverflow ? Offset.zero & size : null;
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

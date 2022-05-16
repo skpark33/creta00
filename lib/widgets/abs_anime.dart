@@ -29,7 +29,7 @@ class _AbsAnimeState extends State<AbsAnime> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       //initAnimeTimer();
     });
   }

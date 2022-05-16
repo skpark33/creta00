@@ -27,13 +27,13 @@ class PageSwipListState extends State<PageSwipList> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scrollbar(
-        isAlwaysShown: true,
+        thumbVisibility: true,
         controller: _scrollController,
         child: Consumer<PageManager>(
           builder: (context, pageManager, child) {

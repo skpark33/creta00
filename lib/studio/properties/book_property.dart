@@ -202,7 +202,7 @@ class _BookPropertyState extends State<BookProperty> {
             if (bookManagerHolder!.toggleIsAutoPlay()) {
               setState(() {});
             }
-            accManagerHolder!.notify();
+            accManagerHolder!.notifyAll();
           }, 18, 2, 8, 2),
         ),
         Padding(
@@ -212,7 +212,7 @@ class _BookPropertyState extends State<BookProperty> {
             if (bookManagerHolder!.toggleIsSilent()) {
               setState(() {});
             }
-            accManagerHolder!.notify();
+            accManagerHolder!.notifyAll();
           }, 18, 2, 8, 2),
         ),
         // 사본 만들기

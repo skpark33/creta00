@@ -85,7 +85,7 @@ class BaseWidgetState extends State<BaseWidget> {
   void initState() {
     widget.playManager.initTimer();
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       //initAnimeTimer();
     });
 
