@@ -406,8 +406,19 @@ class MyMenuStickState extends State<MyMenuStick> {
   }
 
   void textPressed() {
-    //simpleDialog(context, "Notice", "Not Yet Implemented", MyColors.white);
     logHolder.log('text Pressed', level: 6);
+    ACC acc = accManagerHolder!
+        .createACC(context, pageManagerHolder!.getSelected()!, accType: ACCType.text);
+    String initialText = MyStrings.inputText;
+    ContentsModel model = ContentsModel(acc.accModel.mid,
+        name: 'initialText', mime: 'text/', bytes: initialText.length, url: initialText);
+
+    model.remoteUrl = initialText;
+    model.parentMid.set(acc.accModel.mid);
+    model.fontSize.set(36);
+    acc.accModel.accType = ACCType.text;
+    acc.accModel.bgColor.set(Colors.transparent);
+    acc.accChild.playManager.push(acc, model);
   }
 
   void effectPressed() {

@@ -190,4 +190,21 @@ class MyStrings {
   static String dislike = Locale.isKr() ? '싫어요' : 'Dislike';
   static String viewCount = Locale.isKr() ? '조회수' : 'View Count';
   static String readOnlyContens = Locale.isKr() ? '읽기 전용 콘텐츠' : "Read Only Contens";
+
+  static String scope = Locale.isKr() ? '공개 범위' : "Open Scope";
+  static String scopePublic = Locale.isKr() ? '완전 공개' : "Public";
+  static String scopeOnlyForMe = Locale.isKr() ? '오직 나에게만' : "Only for me";
+  static String scopeOnlyForGroup = Locale.isKr() ? '우리 그룹에게만' : "Only for my group";
+  static String scopeOnlyForGroupAndChild =
+      Locale.isKr() ? '우리 그룹과 하위그룹에게만' : "Only for my group and child";
+  static String scopeEnterprise = Locale.isKr() ? '우리 조직 전체' : "Entire enterprise";
+
+  static String secretLevel = Locale.isKr() ? '비밀 등급' : "Secret Class";
+  static String secretLevelPublic = Locale.isKr() ? '완전 공개' : "Public";
+  static String confidential = Locale.isKr() ? '대외비' : "Confidential";
+  static String thirdClass = Locale.isKr() ? '3급 비밀' : "3rd Class Secret";
+  static String secondClass = Locale.isKr() ? '2급 비밀' : "2nd Class Secret";
+  static String topClass = Locale.isKr() ? '1급 비밀' : "Top Class Secret";
+
+  static String inputText = Locale.isKr() ? '이곳을 클릭하여 텍스트를 입력하세요' : "Click here to input text";
 }

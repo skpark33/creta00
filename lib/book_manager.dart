@@ -125,12 +125,10 @@ class BookManager extends ChangeNotifier {
     return false;
   }
 
-  bool toggleIsPublic() {
+  void setScope(ScopeType s) {
     if (defaultBook != null) {
-      defaultBook!.isPublic.set(!defaultBook!.isPublic.value);
-      return true;
+      defaultBook!.scope.set(s);
     }
-    return false;
   }
 
   bool toggleIsSilent() {
@@ -211,10 +209,16 @@ class BookManager extends ChangeNotifier {
     return false;
   }
 
-  bool isPublic() {
+  ScopeType getScope() {
     if (defaultBook != null) {
-      return defaultBook!.isPublic.value;
+      return defaultBook!.scope.value;
     }
-    return false;
+    return ScopeType.public;
+  }
+
+  void setSecretLevel(SecretLevel s) {
+    if (defaultBook != null) {
+      defaultBook!.secretLevel.set(s);
+    }
   }
 }

@@ -260,7 +260,7 @@ class ACC {
     Size marginSize = Size(realSize.width + resizeButtonSize, realSize.height + resizeButtonSize);
     bool isReadOnly = bookManagerHolder!.defaultBook!.readOnly.value;
 
-    logHolder.log('showOverlay: isReadOnly=$isReadOnly', level: 6);
+    //logHolder.log('showOverlay: isReadOnly=$isReadOnly', level: 6);
 
     //isVisible = getVisibility();
     return Visibility(

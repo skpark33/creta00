@@ -31,6 +31,7 @@ import 'package:creta00/model/model_enums.dart';
 //import '../constants/styles.dart';
 import '../common/notifiers/notifiers.dart';
 import 'abs_player.dart';
+import 'text/text_player_widget.dart';
 import 'video/youtuve_player_widget.dart';
 
 class CurrentData {
@@ -492,6 +493,17 @@ class PlayManager {
         GlobalObjectKey<ImagePlayerWidgetState> key =
             GlobalObjectKey<ImagePlayerWidgetState>(model.mid);
         aWidget = ImagePlayerWidget(
+          key: key,
+          model: model,
+          acc: acc,
+          autoStart: isAutoPlay, // (_currentIndex < 0) ? true : false,
+        );
+        await aWidget.init();
+        if (_currentOrder < 0) _currentOrder = 0;
+      } else if (model.isText()) {
+        GlobalObjectKey<TextPlayerWidgetState> key =
+            GlobalObjectKey<TextPlayerWidgetState>(model.mid);
+        aWidget = TextPlayerWidget(
           key: key,
           model: model,
           acc: acc,

@@ -51,7 +51,8 @@ class _BookPropertyState extends State<BookProperty> {
     String hash = '';
     String desc = '';
     bool readOnly = false;
-    bool isPublic = false;
+    ScopeType scope = ScopeType.public;
+    SecretLevel secretLevel = SecretLevel.public;
     bool isSilent = false;
     bool isAutoPlay = false;
     BookType bookType = BookType.signage;
@@ -61,7 +62,8 @@ class _BookPropertyState extends State<BookProperty> {
       hash = bookManagerHolder!.defaultBook!.hashTag.value;
       desc = bookManagerHolder!.defaultBook!.description.value;
       readOnly = bookManagerHolder!.defaultBook!.readOnly.value;
-      isPublic = bookManagerHolder!.defaultBook!.isPublic.value;
+      scope = bookManagerHolder!.defaultBook!.scope.value;
+      secretLevel = bookManagerHolder!.defaultBook!.secretLevel.value;
       isSilent = bookManagerHolder!.defaultBook!.isSilent.value;
       isAutoPlay = bookManagerHolder!.defaultBook!.isAutoPlay.value;
       bookType = bookManagerHolder!.defaultBook!.bookType.value;
@@ -186,15 +188,7 @@ class _BookPropertyState extends State<BookProperty> {
             }
           }, 18, 2, 8, 2),
         ),
-        Padding(
-          // 공개
-          padding: const EdgeInsets.fromLTRB(22, 0, 0, 0),
-          child: myCheckBox(MyStrings.isPublic, isPublic, () {
-            if (bookManagerHolder!.toggleIsPublic()) {
-              setState(() {});
-            }
-          }, 18, 2, 8, 2),
-        ),
+
         Padding(
           // 자동 플레이
           padding: const EdgeInsets.fromLTRB(22, 0, 0, 0),
@@ -214,6 +208,68 @@ class _BookPropertyState extends State<BookProperty> {
             }
             accManagerHolder!.notifyAll();
           }, 18, 2, 8, 2),
+        ),
+        Padding(
+          // 범위 scope
+          padding: const EdgeInsets.fromLTRB(22, 0, 0, 0),
+          child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            Text(MyStrings.scope),
+            const SizedBox(
+              width: 15,
+            ),
+            DropdownButton<ScopeType>(
+              value: scope,
+              icon: const Icon(Icons.arrow_downward),
+              elevation: 16,
+              //style: const TextStyle(color: Colors.deepPurple),
+              underline: Container(height: 2, color: MyColors.primaryColor),
+              onChanged: (ScopeType? newValue) {
+                setState(() {
+                  bookManagerHolder!.setScope(newValue!);
+                });
+              },
+              items: <ScopeType>[
+                ScopeType.public,
+                ScopeType.onlyForMe,
+                ScopeType.onlyForGroup,
+                ScopeType.onlyForGroupAndChild,
+                ScopeType.enterprise,
+              ].map<DropdownMenuItem<ScopeType>>((ScopeType e) {
+                return DropdownMenuItem<ScopeType>(child: Text(scopeTypeToString(e)), value: e);
+              }).toList(),
+            ),
+          ]),
+        ),
+        Padding(
+          // 비밀등급
+          padding: const EdgeInsets.fromLTRB(22, 0, 0, 0),
+          child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            Text(MyStrings.secretLevel),
+            const SizedBox(
+              width: 15,
+            ),
+            DropdownButton<SecretLevel>(
+              value: secretLevel,
+              icon: const Icon(Icons.arrow_downward),
+              elevation: 16,
+              //style: const TextStyle(color: Colors.deepPurple),
+              underline: Container(height: 2, color: MyColors.primaryColor),
+              onChanged: (SecretLevel? newValue) {
+                setState(() {
+                  bookManagerHolder!.setSecretLevel(newValue!);
+                });
+              },
+              items: <SecretLevel>[
+                SecretLevel.public,
+                SecretLevel.confidential,
+                SecretLevel.thirdClass,
+                SecretLevel.secondClass,
+                SecretLevel.topClass,
+              ].map<DropdownMenuItem<SecretLevel>>((SecretLevel e) {
+                return DropdownMenuItem<SecretLevel>(child: Text(secretLevelToString(e)), value: e);
+              }).toList(),
+            ),
+          ]),
         ),
         // 사본 만들기
         Padding(

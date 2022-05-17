@@ -23,6 +23,7 @@ import '../common/undo/undo.dart';
 import '../widgets/base_widget.dart';
 import '../common/util/logger.dart';
 import '../acc/acc_menu.dart';
+import 'acc_text.dart';
 import 'acc_youtube.dart';
 //import '../db/db_actions.dart';
 //import '../studio/properties/properties_frame.dart';
@@ -111,6 +112,8 @@ class ACCManager extends ChangeNotifier {
     late ACC acc;
     if (accType == ACCType.youtube) {
       acc = ACCYoutube(page: page, accChild: widget, idx: order, useDefaultSize: true);
+    } else if (accType == ACCType.text) {
+      acc = ACCText(page: page, accChild: widget, idx: order, useDefaultSize: true);
     } else {
       acc = ACC(page: page, accChild: widget, idx: order);
     }
@@ -162,6 +165,9 @@ class ACCManager extends ChangeNotifier {
       if (accModel.accType == ACCType.youtube) {
         acc = ACCYoutube.fromProperty(
             page: page, accChild: BaseWidget(baseWidgetKey: baseWidgetKey), accModel: accModel);
+      } else if (accModel.accType == ACCType.text) {
+        acc = ACCText.fromProperty(
+            page: page, accChild: BaseWidget(baseWidgetKey: baseWidgetKey), accModel: accModel);
       } else {
         acc = ACC.fromProperty(
             page: page, accChild: BaseWidget(baseWidgetKey: baseWidgetKey), accModel: accModel);
@@ -180,7 +186,7 @@ class ACCManager extends ChangeNotifier {
 
       for (ContentsModel contents in accModel.contentsMap.values) {
         logHolder.log('pushACCs(${contents.order.value})->pushcontents(${contents.name})',
-            level: 5);
+            level: 6);
         acc.accChild.playManager.push(acc, contents);
       }
     }

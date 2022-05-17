@@ -14,7 +14,8 @@ import '../common/undo/undo.dart';
 // ignore: camel_case_types
 class BookModel extends AbsModel {
   late UndoAble<String> name;
-  late UndoAble<bool> isPublic;
+  late UndoAble<ScopeType> scope;
+  late UndoAble<SecretLevel> secretLevel;
   late UndoAble<bool> isSilent;
   late UndoAble<bool> isAutoPlay;
   late UndoAble<BookType> bookType;
@@ -34,7 +35,8 @@ class BookModel extends AbsModel {
     thumbnailUrl = UndoAble<String>('', srcMid);
     thumbnailType = UndoAble<ContentsType>(ContentsType.free, srcMid);
     thumbnailAspectRatio = UndoAble<double>(1, srcMid);
-    isPublic = UndoAble<bool>(false, srcMid);
+    scope = UndoAble<ScopeType>(ScopeType.public, srcMid);
+    secretLevel = UndoAble<SecretLevel>(SecretLevel.public, srcMid);
     isSilent = UndoAble<bool>(false, srcMid);
     isAutoPlay = UndoAble<bool>(false, srcMid);
     bookType = UndoAble<BookType>(BookType.signage, srcMid);
@@ -52,7 +54,8 @@ class BookModel extends AbsModel {
     thumbnailUrl = UndoAble<String>('', mid);
     thumbnailType = UndoAble<ContentsType>(ContentsType.free, mid);
     thumbnailAspectRatio = UndoAble<double>(1, mid);
-    isPublic = UndoAble<bool>(false, mid);
+    scope = UndoAble<ScopeType>(ScopeType.public, mid);
+    secretLevel = UndoAble<SecretLevel>(SecretLevel.public, mid);
     isSilent = UndoAble<bool>(false, mid);
     isAutoPlay = UndoAble<bool>(false, mid);
     bookType = UndoAble<BookType>(BookType.signage, mid);
@@ -70,7 +73,8 @@ class BookModel extends AbsModel {
   BookModel makeCopy(String newName) {
     BookModel newBook = BookModel(newName, userId, description.value, hashTag.value);
     newBook.bookType.set(bookType.value, save: false);
-    newBook.isPublic.set(isPublic.value, save: false);
+    newBook.scope.set(scope.value, save: false);
+    newBook.secretLevel.set(secretLevel.value, save: false);
     newBook.isSilent.set(isSilent.value, save: false);
     newBook.isAutoPlay.set(isAutoPlay.value, save: false);
     newBook.readOnly.set(readOnly.value, save: false);
@@ -87,7 +91,8 @@ class BookModel extends AbsModel {
     super.deserialize(map);
     name.set(map["name"], save: false);
     userId = map["userId"];
-    isPublic.set(map["isPublic"], save: false);
+    scope.set(intToScopeType(map["scope"] ?? 0), save: false);
+    secretLevel.set(intToSecretLevel(map["secretLevel"] ?? 0), save: false);
     isSilent.set(map["isSilent"] ?? false, save: false);
     isAutoPlay.set(map["isAutoPlay"] ?? false, save: false);
     readOnly.set(map["readOnly"] ?? false, save: false);
@@ -107,7 +112,8 @@ class BookModel extends AbsModel {
       ..addEntries({
         "name": name.value,
         "userId": userId,
-        "isPublic": isPublic.value,
+        "scope": scopeTypeToInt(scope.value),
+        "secretLevel": secretLevelToInt(secretLevel.value),
         "isSilent": isSilent.value,
         "isAutoPlay": isAutoPlay.value,
         "readOnly": readOnly.value,

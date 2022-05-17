@@ -286,6 +286,7 @@ int propertyTypeToInt(PropertyType value) {
 enum ACCType {
   normal,
   youtube,
+  text,
 }
 
 int accTypeToInt(ACCType value) {
@@ -294,6 +295,8 @@ int accTypeToInt(ACCType value) {
       return 0;
     case ACCType.youtube:
       return 1;
+    case ACCType.text:
+      return 2;
   }
 }
 
@@ -305,4 +308,215 @@ ACCType intToAccType(int t) {
       return ACCType.youtube;
   }
   return ACCType.normal;
+}
+
+enum ScopeType {
+  public,
+  onlyForMe,
+  onlyForGroup,
+  onlyForGroupAndChild,
+  enterprise,
+}
+
+int scopeTypeToInt(ScopeType value) {
+  switch (value) {
+    case ScopeType.public:
+      return 0;
+    case ScopeType.onlyForMe:
+      return 1;
+    case ScopeType.onlyForGroup:
+      return 2;
+    case ScopeType.onlyForGroupAndChild:
+      return 3;
+    case ScopeType.enterprise:
+      return 4;
+  }
+}
+
+String scopeTypeToString(ScopeType value) {
+  switch (value) {
+    case ScopeType.public:
+      return MyStrings.scopePublic;
+    case ScopeType.onlyForMe:
+      return MyStrings.scopeOnlyForMe;
+    case ScopeType.onlyForGroup:
+      return MyStrings.scopeOnlyForGroup;
+    case ScopeType.onlyForGroupAndChild:
+      return MyStrings.scopeOnlyForGroupAndChild;
+    case ScopeType.enterprise:
+      return MyStrings.scopeEnterprise;
+  }
+}
+
+ScopeType intToScopeType(int t) {
+  switch (t) {
+    case 0:
+      return ScopeType.public;
+    case 1:
+      return ScopeType.onlyForMe;
+    case 2:
+      return ScopeType.onlyForGroup;
+    case 3:
+      return ScopeType.onlyForGroupAndChild;
+    case 4:
+      return ScopeType.enterprise;
+  }
+  return ScopeType.public;
+}
+
+enum SecretLevel {
+  public,
+  confidential,
+  thirdClass,
+  secondClass,
+  topClass,
+}
+
+int secretLevelToInt(SecretLevel value) {
+  switch (value) {
+    case SecretLevel.public:
+      return 0;
+    case SecretLevel.confidential:
+      return 1;
+    case SecretLevel.thirdClass:
+      return 2;
+    case SecretLevel.secondClass:
+      return 3;
+    case SecretLevel.topClass:
+      return 4;
+  }
+}
+
+SecretLevel intToSecretLevel(int t) {
+  switch (t) {
+    case 0:
+      return SecretLevel.public;
+    case 1:
+      return SecretLevel.confidential;
+    case 2:
+      return SecretLevel.thirdClass;
+    case 3:
+      return SecretLevel.secondClass;
+    case 4:
+      return SecretLevel.topClass;
+  }
+  return SecretLevel.public;
+}
+
+String secretLevelToString(SecretLevel t) {
+  switch (t) {
+    case SecretLevel.public:
+      return MyStrings.secretLevelPublic;
+    case SecretLevel.confidential:
+      return MyStrings.confidential;
+    case SecretLevel.thirdClass:
+      return MyStrings.thirdClass;
+    case SecretLevel.secondClass:
+      return MyStrings.secondClass;
+    case SecretLevel.topClass:
+      return MyStrings.topClass;
+  }
+}
+
+enum TextLine {
+  none,
+  underline,
+  overline,
+  lineThrough,
+}
+
+int textLineToInt(TextLine value) {
+  switch (value) {
+    case TextLine.none:
+      return 0;
+    case TextLine.underline:
+      return 1;
+    case TextLine.overline:
+      return 2;
+    case TextLine.lineThrough:
+      return 3;
+  }
+}
+
+TextLine intToTextLine(int t) {
+  switch (t) {
+    case 0:
+      return TextLine.none;
+    case 1:
+      return TextLine.underline;
+    case 2:
+      return TextLine.overline;
+    case 3:
+      return TextLine.lineThrough;
+  }
+  return TextLine.none;
+}
+
+enum TextAniType {
+  none,
+  marquee,
+  rotate,
+  fade,
+  typer,
+  typewriter,
+  scale,
+  colorize,
+  textLiquidFill,
+  wavy,
+  flicker,
+}
+
+int textAniTypeToInt(TextAniType value) {
+  switch (value) {
+    case TextAniType.none:
+      return 0;
+    case TextAniType.marquee:
+      return 1;
+    case TextAniType.rotate:
+      return 2;
+    case TextAniType.fade:
+      return 3;
+    case TextAniType.typer:
+      return 4;
+    case TextAniType.typewriter:
+      return 5;
+    case TextAniType.scale:
+      return 6;
+    case TextAniType.colorize:
+      return 7;
+    case TextAniType.textLiquidFill:
+      return 8;
+    case TextAniType.wavy:
+      return 9;
+    case TextAniType.flicker:
+      return 10;
+  }
+}
+
+TextAniType intToTextAniType(int t) {
+  switch (t) {
+    case 0:
+      return TextAniType.none;
+    case 1:
+      return TextAniType.marquee;
+    case 2:
+      return TextAniType.rotate;
+    case 3:
+      return TextAniType.fade;
+    case 4:
+      return TextAniType.typer;
+    case 5:
+      return TextAniType.typewriter;
+    case 6:
+      return TextAniType.scale;
+    case 7:
+      return TextAniType.colorize;
+    case 8:
+      return TextAniType.textLiquidFill;
+    case 9:
+      return TextAniType.wavy;
+    case 10:
+      return TextAniType.flicker;
+  }
+  return TextAniType.none;
 }

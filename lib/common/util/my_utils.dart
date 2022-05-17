@@ -781,3 +781,11 @@ Widget outlineText(String text,
     ],
   );
 }
+
+Color stringToColor(String? colorStr, {Color defaultColor = Colors.transparent}) {
+  if (colorStr != null && colorStr.length > 16) {
+    // 'Color(0x000000ff)';
+    return Color(int.parse(colorStr.substring(8, 16), radix: 16));
+  }
+  return defaultColor;
+}
